@@ -13,10 +13,11 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
 
-##  Tailwind CSS 4
+## Tailwind CSS 4
 
 This template uses Tailwind CSS 4, which is a utility-first CSS framework. You can customize the styles by modifying the `tailwind.config.js` file.  
-Currently HeroUI uses Tailwind CSS 3, but @winchesHe  create a port of HeroUI to Tailwind CSS 4, you can find it [here](https://github.com/heroui-inc/heroui/pull/4656), HeroUI packages are available at https://github.com/heroui-inc/heroui/pull/4656#issuecomment-2651218074. 
+Currently HeroUI uses Tailwind CSS 3, but @winchesHe  create a port of HeroUI to Tailwind CSS 4, you can find it [here](https://github.com/heroui-inc/heroui/pull/4656), HeroUI packages are available at <https://github.com/heroui-inc/heroui/pull/4656#issuecomment-2651218074>.
+
 ## How to Use
 
 To clone the project, run the following command:
