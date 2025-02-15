@@ -1,3 +1,5 @@
+import type React from "react";
+
 import { Link } from "@heroui/link";
 
 import { Navbar } from "@/components/navbar";
