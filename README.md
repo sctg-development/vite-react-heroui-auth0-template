@@ -4,12 +4,18 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 
 [Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-template)
 
+## Star the project
+
+**If you appreciate my work, please consider giving it a star! 🤩**
+
 ## Technologies Used
 
 - [Vite 6](https://vitejs.dev/guide/)
 - [HeroUI](https://heroui.com)
 - [Tailwind CSS 4](https://tailwindcss.com)
 - [Tailwind Variants](https://tailwind-variants.org)
+- [React 19](https://reactjs.org)
+- [ESLint 9](https://eslint.org)
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
 
