@@ -23,15 +23,15 @@
     "@heroui/theme": "https://pkg.pr.new/@heroui/theme@4656",
     "@react-aria/visually-hidden": "3.8.19",
     "@react-types/shared": "3.27.0",
-    "@tailwindcss/postcss": "^4.0.8",
-    "@tailwindcss/vite": "^4.0.8",
+    "@tailwindcss/postcss": "^4.0.9",
+    "@tailwindcss/vite": "^4.0.9",
     "clsx": "2.1.1",
     "framer-motion": "12.4.7",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "7.2.0",
     "tailwind-variants": "0.3.1",
-    "tailwindcss": "4.0.8"
+    "tailwindcss": "4.0.9"
   },
   "devDependencies": {
     "@types/node": "22.13.5",
