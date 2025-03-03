@@ -17,6 +17,7 @@
     "@heroui/kbd": "https://pkg.pr.new/@heroui/kbd@63afa9a",
     "@heroui/link": "https://pkg.pr.new/@heroui/link@63afa9a",
     "@heroui/navbar": "https://pkg.pr.new/@heroui/navbar@63afa9a",
+    "@heroui/shared-utils": "https://pkg.pr.new/@heroui/shared-utils@63afa9a",
     "@heroui/snippet": "https://pkg.pr.new/@heroui/snippet@63afa9a",
     "@heroui/switch": "https://pkg.pr.new/@heroui/switch@63afa9a",
     "@heroui/system": "https://pkg.pr.new/@heroui/system@63afa9a",
@@ -24,8 +25,6 @@
     "@react-aria/visually-hidden": "3.8.19",
     "@react-types/shared": "3.27.0",
     "@tailwindcss/postcss": "^4.0.9",
-    "@tailwindcss/vite": "^4.0.9",
-    "clsx": "2.1.1",
     "framer-motion": "12.4.7",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -34,6 +33,7 @@
     "tailwindcss": "4.0.9"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.9",
     "@types/node": "22.13.8",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
