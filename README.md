@@ -32,6 +32,10 @@ To clone the project, run the following command:
 git clone https://github.com/sctg-development/vite-react-heroui-template.git
 ```
 
+### Manual chunk splitting
+
+In the `vite.config.ts` file, all `@heroui` packages are manually split into a separate chunk. This is done to reduce the size of the main bundle. You can remove this configuration if you don't want to split the packages.
+
 ### Install dependencies
 
 You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
