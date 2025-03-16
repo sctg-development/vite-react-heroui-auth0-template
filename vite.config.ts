@@ -66,8 +66,19 @@ function extractPerVendorDependencies(
 export default defineConfig({
   plugins: [react(), tsconfigPaths(), tailwindcss()],
   build: {
+    // Inline assets smaller than 1KB
+    // This is for demonstration purposes only
+    // and should be adjusted based on the project requirements
+    assetsInlineLimit: 1024,
     rollupOptions: {
       output: {
+        // Customizing the output file names
+        assetFileNames: `assets/${packageJson.name}-[name]-[hash][extname]`,
+        entryFileNames: `js/${packageJson.name}-[hash].js`,
+        chunkFileNames: `js/${packageJson.name}-[hash].js`,
+        // Enable source maps for better debugging experience
+        // This should be disabled in production for better performance and security
+        sourcemap: true,
         /**
          * Manual chunk configuration for better code splitting
          *
