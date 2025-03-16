@@ -26,7 +26,7 @@ This template uses i18next for internationalization. You can find the translatio
 The `base`subfolder is the default namespace.  
 For adding a new language, create a new file in the `src/locales/base` folder and add the translations in the `language-code.json` file.  
 Next you will need to add the language to the `i18n.ts` file.  
-The default configuration uses language lazy loading, so the translations are loaded only when needed.  
+The default configuration uses language lazy loading with `i18next-http-backend`, so the translations are loaded only when needed.  
 
 ## Tailwind CSS 4
 
