@@ -40,7 +40,7 @@ i18n
                 url = new URL("./locales/base/zh-CN.json", import.meta.url);
                 break;
               default:
-                url = new URL("./locales/en-US.json", import.meta.url);
+                url = new URL("./locales/base/en-US.json", import.meta.url);
             }
             break;
           default:
