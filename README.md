@@ -25,7 +25,8 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 This template uses i18next for internationalization. You can find the translations in the `src/locales` folder.  
 The `base`subfolder is the default namespace.  
 For adding a new language, create a new file in the `src/locales/base` folder and add the translations in the `language-code.json` file.  
-Next you will need to add the language to the `i18n.ts` file.
+Next you will need to add the language to the `i18n.ts` file.  
+The default configuration uses language lazy loading, so the translations are loaded only when needed.  
 
 ## Tailwind CSS 4
 
