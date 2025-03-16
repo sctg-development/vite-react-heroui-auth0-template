@@ -15,9 +15,17 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 - [Tailwind CSS 4](https://tailwindcss.com)
 - [Tailwind Variants](https://tailwind-variants.org)
 - [React 19](https://reactjs.org)
+- [i18next](https://www.i18next.com)
 - [ESLint 9](https://eslint.org)
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
+
+## Internationalization
+
+This template uses i18next for internationalization. You can find the translations in the `src/locales` folder.  
+The `base`subfolder is the default namespace.  
+For adding a new language, create a new file in the `src/locales/base` folder and add the translations in the `language-code.json` file.  
+Next you will need to add the language to the `i18n.ts` file.
 
 ## Tailwind CSS 4
 

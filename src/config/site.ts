@@ -1,61 +1,64 @@
 export type SiteConfig = typeof siteConfig;
+import i18next from "../i18n";
 
-export const siteConfig = {
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+export const siteConfig = () => ({
+  name: i18next.t("vite-heroui"),
+  description: i18next.t(
+    "make-beautiful-websites-regardless-of-your-design-experience",
+  ),
   navItems: [
     {
-      label: "Home",
+      label: i18next.t("home"),
       href: "/",
     },
     {
-      label: "Docs",
+      label: i18next.t("docs"),
       href: "/docs",
     },
     {
-      label: "Pricing",
+      label: i18next.t("pricing"),
       href: "/pricing",
     },
     {
-      label: "Blog",
+      label: i18next.t("blog"),
       href: "/blog",
     },
     {
-      label: "About",
+      label: i18next.t("about"),
       href: "/about",
     },
   ],
   navMenuItems: [
     {
-      label: "Profile",
+      label: i18next.t("profile"),
       href: "/profile",
     },
     {
-      label: "Dashboard",
+      label: i18next.t("dashboard"),
       href: "/dashboard",
     },
     {
-      label: "Projects",
+      label: i18next.t("projects"),
       href: "/projects",
     },
     {
-      label: "Team",
+      label: i18next.t("team"),
       href: "/team",
     },
     {
-      label: "Calendar",
+      label: i18next.t("calendar"),
       href: "/calendar",
     },
     {
-      label: "Settings",
+      label: i18next.t("settings"),
       href: "/settings",
     },
     {
-      label: "Help & Feedback",
+      label: i18next.t("help-and-feedback"),
       href: "/help-feedback",
     },
     {
-      label: "Logout",
+      label: i18next.t("logout"),
       href: "/logout",
     },
   ],
@@ -66,4 +69,4 @@ export const siteConfig = {
     discord: "https://discord.gg/9b6yyZKmH4",
     sponsor: "https://github.com/sponsors/sctg-development",
   },
-};
+});
