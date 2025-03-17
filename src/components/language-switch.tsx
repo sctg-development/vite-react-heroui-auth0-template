@@ -17,8 +17,16 @@
  */
 import { type FC, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
 
 import { availableLanguages } from "@/i18n";
+import { I18nIcon } from "@/components/icons";
 
 export const LanguageSwitch: FC = () => {
   const { i18n, t } = useTranslation();
@@ -58,15 +66,27 @@ export const LanguageSwitch: FC = () => {
 
   return (
     <div className="flex gap-1">
-      {availableLanguages.map((lng) => (
-        <button
-          key={lng}
-          className={`${language === lng ? "text-primary" : "text-default-600"}`}
-          onClick={() => changeLanguage(lng)}
-        >
-          {getShortLanguage(lng).toLocaleUpperCase()}
-        </button>
-      ))}
+      <Dropdown>
+        <DropdownTrigger>
+          <Button aria-label={t("language")} variant="light">
+            <I18nIcon className="text-default-500" size={24} />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu>
+          {availableLanguages.map((lng) => (
+            <DropdownItem key={lng} aria-label={`${t("language")}: ${lng}`}>
+              <button
+                key={lng}
+                className={`${language === lng ? "text-primary" : "text-default-600"} w-full`}
+                type="button"
+                onClick={() => changeLanguage(lng)}
+              >
+                {getShortLanguage(lng).toLocaleUpperCase()}
+              </button>
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
     </div>
   );
 };
