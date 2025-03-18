@@ -15,7 +15,7 @@ import { link as linkStyles } from "@heroui/theme";
 import { clsx } from "@heroui/shared-utils";
 import { Trans, useTranslation } from "react-i18next";
 
-import { LanguageSwitch } from "./language-switch";
+import { I18nIcon, LanguageSwitch } from "./language-switch";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -27,6 +27,7 @@ import {
   SearchIcon,
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
+import { availableLanguages } from "@/i18n";
 
 export const Navbar = () => {
   const { t } = useTranslation();
@@ -105,7 +106,10 @@ export const Navbar = () => {
             <GithubIcon className="text-default-500" />
           </Link>
           <ThemeSwitch />
-          <LanguageSwitch />
+          <LanguageSwitch
+            availableLanguages={availableLanguages}
+            icon={I18nIcon}
+          />
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
@@ -127,7 +131,10 @@ export const Navbar = () => {
           <GithubIcon className="text-default-500" />
         </Link>
         <ThemeSwitch />
-        <LanguageSwitch />
+        <LanguageSwitch
+          availableLanguages={availableLanguages}
+          icon={I18nIcon}
+        />
         <NavbarMenuToggle />
       </NavbarContent>
 

@@ -55,7 +55,7 @@ The `LanguageSwitch` component allows users to switch between the available lang
 To use the `LanguageSwitch` component in your application, simply include it in your JSX:
 
 ```tsx
-<LanguageSwitch />
+<LanguageSwitch availableLanguages={[{ code: "en-US", nativeName: "English", isRTL: false, isDefault: true },{ code: "fr-FR", nativeName: "Français", isRTL: false }]} />
 ```
 
 This component will render a dropdown menu with the available languages, allowing users to switch languages easily.
