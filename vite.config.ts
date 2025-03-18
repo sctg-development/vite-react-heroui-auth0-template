@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 
-import _package from "./package.json";
+import _package from "./package.json" with { type: "json" };;
 
 /**
  * Package.json type definition for React project
@@ -11,7 +11,7 @@ import _package from "./package.json";
  * Provides TypeScript typing for package.json structure with
  * common fields used in React applications
  */
-type PackageJson = {
+export type PackageJson = {
   name: string;
   private: boolean;
   version: string;
@@ -48,7 +48,7 @@ const packageJson: PackageJson = _package;
  *
  * Used for chunk optimization in the build configuration
  */
-function extractPerVendorDependencies(
+export function extractPerVendorDependencies(
   packageJson: PackageJson,
   vendorPrefix: string,
 ): string[] {
