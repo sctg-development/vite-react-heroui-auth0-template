@@ -22,11 +22,55 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 
 ## Internationalization
 
-This template uses i18next for internationalization. You can find the translations in the `src/locales` folder.  
-The `base`subfolder is the default namespace.  
-For adding a new language, create a new file in the `src/locales/base` folder and add the translations in the `language-code.json` file.  
-Next you will need to add the language to the `i18n.ts` file.  
-The default configuration uses language lazy loading with `i18next-http-backend`, so the translations are loaded only when needed.  
+This template uses i18next for internationalization. The configuration and available languages are defined in the `src/i18n.ts` file.
+
+### Adding a New Language
+
+To add a new language to the application, follow these steps:
+
+1. **Update the `availableLanguages` array:**
+   - Open the `src/i18n.ts` file.
+   - Add a new object to the `availableLanguages` array with the following properties:
+     - `code`: The ISO 639-1 language code (e.g., "en-US").
+     - `nativeName`: The native name of the language (e.g., "English").
+     - `isRTL`: Whether the language is right-to-left (e.g., `false`).
+
+2. **Create a Translation File:**
+   - In the `src/locales/base` directory, create a new JSON file named with the language code (e.g., `en-US.json`).
+   - Add the translations for the new language in this file.
+
+3. **Update the Load Path:**
+   - In the `src/i18n.ts` file, manually add a switch case to the `loadPath` function to handle the new JSON file for the added language.
+
+### Language Switch Component
+
+The `LanguageSwitch` component allows users to switch between the available languages. It is defined in the `src/components/language-switch.tsx` file.
+
+- The component uses the i18n instance to change the language and update the document metadata.
+- It automatically updates the document direction based on the language (left-to-right or right-to-left).
+- The selected language is stored in `localStorage` to persist the user's preference.
+
+### Example Usage
+
+To use the `LanguageSwitch` component in your application, simply include it in your JSX:
+
+```tsx
+<LanguageSwitch />
+```
+
+This component will render a dropdown menu with the available languages, allowing users to switch languages easily.
+
+### Lazy Loading
+
+The default configuration uses the `i18next-http-backend` plugin for language lazy loading. This means that translations are loaded only when needed, improving the application's performance.
+
+### Summary
+
+- **Configuration:** `src/i18n.ts`
+- **Translations:** `src/locales/base`
+- **Language Switch:** `src/components/language-switch.tsx`
+
+By following the steps above, you can easily add new languages and manage internationalization for your application.
 
 ## Tailwind CSS 4
 
