@@ -60,11 +60,12 @@ i18n
   .use(i18nextHttpBackend)
   .use(initReactI18next) // passes i18n down to react-i18next
   .init<HttpBackendOptions>({
-    lng: "en-US",
-    fallbackLng:
+    lng:
       localStorage.getItem("preferredLanguage") ||
       availableLanguages.find((lang) => lang.isDefault)?.code ||
       fallbackLng,
+    fallbackLng: fallbackLng,
+
     ns: ["base"],
     defaultNS: "base",
     interpolation: {
