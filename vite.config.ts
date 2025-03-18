@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 
-import _package from "./package.json" with { type: "json" };;
+import _package from "./package.json" with { type: "json" };
 
 /**
  * Package.json type definition for React project
