@@ -75,6 +75,11 @@ export const I18nIcon: FC<IconSvgProps> = ({
  * ```tsx
  * <LanguageSwitch  availableLanguages={[{ code: "en-US", nativeName: "English", isRTL: false, isDefault: true },{ code: "fr-FR", nativeName: "Français", isRTL: false }]} />
  * ```
+ * @example
+ * ```tsx
+ * import { availableLanguages } from "@/i18n";
+ * <LanguageSwitch availableLanguages={availableLanguages} />
+ * ```
  */
 export const LanguageSwitch: FC<LanguageSwitchProps> = ({
   availableLanguages: availableLanguages = [
