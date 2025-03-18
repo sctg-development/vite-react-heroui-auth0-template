@@ -58,6 +58,13 @@ To use the `LanguageSwitch` component in your application, simply include it in 
 <LanguageSwitch availableLanguages={[{ code: "en-US", nativeName: "English", isRTL: false, isDefault: true },{ code: "fr-FR", nativeName: "Français", isRTL: false }]} />
 ```
 
+or more simply using the `availableLanguages` array defined in the `src/i18n.ts` file:
+
+```tsx
+import { availableLanguages } from "@/i18n";
+<LanguageSwitch availableLanguages={availableLanguages} />
+```
+
 This component will render a dropdown menu with the available languages, allowing users to switch languages easily.
 
 ### Lazy Loading
