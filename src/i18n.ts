@@ -42,10 +42,11 @@ export interface AvailableLanguage {
   code: string; // ISO 639-1 language code
   nativeName: string; // Native name of the language
   isRTL: boolean; // Right-to-left language
+  isDefault?: boolean; // Default language
 }
 
 export const availableLanguages: AvailableLanguage[] = [
-  { code: "en-US", nativeName: "English", isRTL: false },
+  { code: "en-US", nativeName: "English", isRTL: false, isDefault: true },
   { code: "fr-FR", nativeName: "Français", isRTL: false },
   { code: "es-ES", nativeName: "Español", isRTL: false },
   { code: "zh-CN", nativeName: "中文", isRTL: false },
@@ -53,12 +54,17 @@ export const availableLanguages: AvailableLanguage[] = [
   { code: "he-IL", nativeName: "עברית", isRTL: true },
 ];
 
+const fallbackLng = "en-US";
+
 i18n
   .use(i18nextHttpBackend)
   .use(initReactI18next) // passes i18n down to react-i18next
   .init<HttpBackendOptions>({
     lng: "en-US",
-    fallbackLng: "en-US",
+    fallbackLng:
+      localStorage.getItem("preferredLanguage") ||
+      availableLanguages.find((lang) => lang.isDefault)?.code ||
+      fallbackLng,
     ns: ["base"],
     defaultNS: "base",
     interpolation: {
