@@ -64,6 +64,12 @@ export function extractPerVendorDependencies(
  * @see https://vitejs.dev/config/
  */
 export default defineConfig({
+  define: {
+    "import.meta.env.AUTH0_DOMAIN": JSON.stringify(process.env.AUTH0_DOMAIN),
+    "import.meta.env.AUTH0_CLIENT_ID": JSON.stringify(
+      process.env.AUTH0_CLIENT_ID,
+    ),
+  },
   plugins: [react(), tsconfigPaths(), tailwindcss()],
   build: {
     // Inline assets smaller than 1KB
