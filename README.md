@@ -20,6 +20,46 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
 
+## Authentication with Auth0
+
+This template uses the Auth0 React SDK to provide an authentication layer. Below are the steps to set up and configure Auth0 for this project.
+
+### Setting Up Auth0
+
+1. **Create an Auth0 Account:**
+   - Go to [Auth0](https://auth0.com) and sign up for a free account.
+
+2. **Create a New Application:**
+   - In the Auth0 dashboard, navigate to the "Applications" section.
+   - Click on "Create Application".
+   - Choose a name for your application.
+   - Select "Single Page Web Applications" as the application type.
+   - Click "Create".
+
+3. **Configure Application Settings:**
+   - In the application settings, you will find your `Client ID` and `Domain`.
+   - Set the "Allowed Callback URLs" to `http://localhost:5173` (or your development URL).
+   - Set the "Allowed Logout URLs" to `http://localhost:5173` (or your development URL).
+   - Set the "Allowed Web Origins" to `http://localhost:5173` (or your development URL).
+
+### Environment Variables
+
+To keep your Auth0 credentials secure, use environment variables. Create a `.env` file in the root of your project and add the following:
+
+```env
+AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_DOMAIN=your-auth0-domain
+```
+
+### GitHub secrets
+
+For using the provided GitHub Actions workflows, you need to add the following secrets to your repository:
+
+```env
+AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_DOMAIN=your-auth0-domain
+```
+
 ## Internationalization
 
 This template uses i18next for internationalization. The configuration and available languages are defined in the `src/i18n.ts` file.
