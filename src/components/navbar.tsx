@@ -16,6 +16,7 @@ import { clsx } from "@heroui/shared-utils";
 import { Trans, useTranslation } from "react-i18next";
 
 import { I18nIcon, LanguageSwitch } from "./language-switch";
+import { LoginLogoutButton } from "./auth0";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -110,6 +111,7 @@ export const Navbar = () => {
             availableLanguages={availableLanguages}
             icon={I18nIcon}
           />
+          <LoginLogoutButton />
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
@@ -135,6 +137,7 @@ export const Navbar = () => {
           availableLanguages={availableLanguages}
           icon={I18nIcon}
         />
+        <LoginLogoutButton />
         <NavbarMenuToggle />
       </NavbarContent>
 
