@@ -100,6 +100,18 @@ AUTH0_CLIENT_ID=your-auth0-client-id
 AUTH0_DOMAIN=your-auth0-domain
 ```
 
+### Auth0 Route Guard
+
+You can use the `AuthenticationGuard` component to protect routes that require authentication. This component will redirect users to the login page if they are not authenticated.
+
+```tsx
+import { AuthenticationGuard } from "./components/auth0";
+<Route
+          element={<AuthenticationGuard component={DocsPage} />}
+          path="/docs"
+        />
+```
+
 ## Internationalization
 
 This template uses i18next for internationalization. The configuration and available languages are defined in the `src/i18n.ts` file.
