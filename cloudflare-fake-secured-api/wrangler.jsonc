@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "cloudflare-fake-api",
+	"name": "cloudflare-fake-secured-api",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-03-19",
 	"observability": {
