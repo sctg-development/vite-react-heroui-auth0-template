@@ -1,6 +1,7 @@
 import { Trans, useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
+import { Snippet } from "@heroui/snippet";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -33,8 +34,10 @@ export default function ApiPage() {
           <h1 className={title()}>
             <Trans t={t}>api-answer</Trans>
           </h1>
-          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
         </div>
+        <Snippet symbol="" title="api-response">
+          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+        </Snippet>
       </section>
     </DefaultLayout>
   );
