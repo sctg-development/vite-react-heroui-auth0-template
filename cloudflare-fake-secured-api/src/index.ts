@@ -14,6 +14,17 @@ const fakePayload = {
 
 export default {
 	async fetch(request: Request, env: Env, ctx): Promise<Response> {
+		const { pathname } = new URL(request.url);
+
+		const { success } = await env.RATE_LIMITER.limit({ key: pathname });
+
+		if (!success) {
+			return new Response(JSON.stringify(`429 Failure – rate limit exceeded for ${pathname}`), {
+				status: 429,
+				headers: { contentType: 'application/json' },
+			});
+		}
+
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {
 				status: 204,
@@ -26,15 +37,27 @@ export default {
 		if (request.headers.has('Authorization')) {
 			const token = request.headers.get('Authorization')?.split(' ')[1];
 
+			// Check if the Authorization header is present and has a string at the second index
 			if (token) {
 				const { access, payload } = await checkPermissions(token, env.READ_PERMISSION, env);
 
-				return new Response(JSON.stringify({ ...fakePayload, query: request.url, authenticatedUser: payload.sub }), {
-					headers: { ...corsHeaders(env) },
-				});
+				// Query the API if the user has the required permission
+				if (access) {
+					const date = new Date();
+
+					return new Response(
+						JSON.stringify({ ...fakePayload, query: request.url, authenticatedUser: payload.sub, date: date.toISOString() }),
+						{
+							headers: { ...corsHeaders(env), contentType: 'application/json' },
+						},
+					);
+				}
 			}
 		}
 
-		return new Response('Not allowed', { status: 403, headers: { ...corsHeaders(env) } });
+		return new Response(JSON.stringify('403 Failure - Not allowed'), {
+			status: 403,
+			headers: { ...corsHeaders(env), contentType: 'application/json' },
+		});
 	},
 } satisfies ExportedHandler<Env>;
