@@ -32,5 +32,7 @@
   "language": "Idioma",
   "log-in": "Acceso",
   "log-out": "Cierre de sesión",
-  "reload": "Recargar"
+  "reload": "Recargar",
+  "api": "API asegurada",
+  "api-answer": "Respuesta de API asegurada"
 }

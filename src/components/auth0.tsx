@@ -16,7 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import {
+  GetTokenSilentlyOptions,
+  useAuth0,
+  withAuthenticationRequired,
+} from "@auth0/auth0-react";
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
@@ -38,9 +42,11 @@ export function Profile() {
 }
 
 /**
- * Show a login button for calling the Auth0 login function
- * @param text - Custom text for the button (default: "Log in")
- * @returns Login button
+ * Renders a login button for Auth0 authentication.
+ * Only shows when the user is not authenticated.
+ * @param props - Component props
+ * @param [props.text] - Custom text for the button. Defaults to localized "log-in" text.
+ * @returns Login button or null if user is already authenticated
  */
 export const LoginButton: FC<{ text?: string }> = ({ text }) => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
@@ -75,10 +81,12 @@ interface LogoutButtonProps {
 }
 
 /**
- * Show a logout button for calling the Auth0 logout function
- * @param showButtonIfNotAuthenticated - Show the button even if the user is not authenticated
- * @param text - Custom text for the button (default: "Log out")
- * @returns
+ * Renders a logout button for Auth0 authentication.
+ * By default, only shows when the user is authenticated.
+ * @param props - Component props
+ * @param [props.showButtonIfNotAuthenticated=false] - When true, shows the button even if user is not authenticated
+ * @param [props.text] - Custom text for the button. Defaults to localized "log-out" text.
+ * @returns Logout button or null based on authentication status and showButtonIfNotAuthenticated setting
  */
 export const LogoutButton: FC<LogoutButtonProps> = ({
   showButtonIfNotAuthenticated: showButtonIfNotAuthenticated = false,
@@ -114,8 +122,9 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
 };
 
 /**
- * Show a login or logout button based on the user's authentication status
- * @returns Login or logout button
+ * Conditionally renders either a login or logout button based on authentication status.
+ * Provides a convenient way to toggle between auth actions in a single component.
+ * @returns Either the LoginButton or LogoutButton component
  */
 export const LoginLogoutButton: FC = () => {
   const { isAuthenticated } = useAuth0();
@@ -124,12 +133,14 @@ export const LoginLogoutButton: FC = () => {
 };
 
 /**
- * A higher-order component that wraps a component in an authentication guard
- * @param component
- * @returns the component wrapped in an authentication guard or a loading spinner
+ * Higher-order component that protects routes requiring authentication.
+ * Redirects unauthenticated users to the login page and shows a loading state during the redirect.
+ * @param props - Component props
+ * @param props.component - The component to render when the user is authenticated
+ * @returns The protected component or loading state
  * @example
  * ```tsx
- * <AuthenticationGuard component={MyComponent} />
+ * <AuthenticationGuard component={ProtectedDashboard} />
  * ```
  */
 export const AuthenticationGuard: FC<{ component: FC }> = ({ component }) => {
@@ -142,4 +153,49 @@ export const AuthenticationGuard: FC<{ component: FC }> = ({ component }) => {
   });
 
   return <Component />;
+};
+
+/**
+ * Simple type matching the Auth0 getAccessTokenSilently function
+ */
+export type GetAccessTokenFunction = {
+  (options: GetTokenSilentlyOptions): Promise<any>;
+};
+
+/**
+ * Fetches JSON data from a secured API endpoint using Auth0 token authentication.
+ * Handles the token acquisition and authorization header setup automatically.
+ * 
+ * @param {string} url - The URL of the secured API endpoint to fetch data from
+ * @param {GetAccessTokenFunction} getAccessTokenFunction - Function to retrieve an access token, typically Auth0's getAccessTokenSilently
+ * @returns {Promise<any>} Promise resolving to the JSON response from the API
+ * @throws {Error} If token acquisition fails or the API request fails
+ * @example
+ * ```tsx
+ * const { getAccessTokenSilently } = useAuth0();
+ * const data = await getJsonFromSecuredApi('https://api.example.com/data', getAccessTokenSilently);
+ * ```
+ */
+export const getJsonFromSecuredApi = async (
+  url: string,
+  getAccessTokenFunction: GetAccessTokenFunction,
+) => {
+  try {
+    const accessToken = await getAccessTokenFunction({
+      authorizationParams: {
+        audience: import.meta.env.AUTH0_AUDIENCE,
+        scope: import.meta.env.AUTH0_SCOPE,
+      },
+    });
+    const apiResponse = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return await apiResponse.json();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };

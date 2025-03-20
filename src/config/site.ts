@@ -12,8 +12,8 @@ export const siteConfig = () => ({
       href: "/",
     },
     {
-      label: i18next.t("docs"),
-      href: "/docs",
+      label: i18next.t("api"),
+      href: "/api",
     },
     {
       label: i18next.t("pricing"),

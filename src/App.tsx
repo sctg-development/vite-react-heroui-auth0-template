@@ -9,7 +9,7 @@ import { title } from "./components/primitives";
 import { AuthenticationGuard, LogoutButton } from "./components/auth0";
 
 import IndexPage from "@/pages/index";
-import DocsPage from "@/pages/docs";
+import ApiPage from "@/pages/api";
 import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
@@ -48,8 +48,8 @@ function App() {
       <Routes>
         <Route element={<IndexPage />} path="/" />
         <Route
-          element={<AuthenticationGuard component={DocsPage} />}
-          path="/docs"
+          element={<AuthenticationGuard component={ApiPage} />}
+          path="/api"
         />
         <Route
           element={<AuthenticationGuard component={PricingPage} />}

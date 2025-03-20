@@ -43,14 +43,62 @@ git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.g
 cd vite-react-heroui-auth0-template
 
 # Install dependencies
-npm install
+npm install && cd cloudflare-fake-secured-api && npm install && cd ..
 
 # Create a .env file with your Auth0 credentials
-echo "AUTH0_CLIENT_ID=your-auth0-client-id\nAUTH0_DOMAIN=your-auth0-domain" > .env
+cat <<EOF > .env
+AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_CLIENT_SECRET=your-auth0-client-secret
+AUTH0_DOMAIN=your-auth0-domain
+AUTH0_SCOPE=read:api,write:api
+AUTH0_AUDIENCE=http://localhost:5173
+API_BASE_URL=http://localhost:8787/api
+CORS_ORIGIN=http://localhost:5173
+READ_PERMISSION=read:api
+EOF
 
 # Start the development server
-npm run dev:env
+npm run dev:env &
+# Start the Cloudflare Worker
+npm run wrangler:env
+
 ```
+
+## Table of Contents
+
+- [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
+  - [Star the project](#star-the-project)
+  - [Features](#features)
+  - [Technologies Used](#technologies-used)
+  - [Quick Start](#quick-start)
+  - [Table of Contents](#table-of-contents)
+  - [Authentication with Auth0](#authentication-with-auth0)
+    - [Setting Up Auth0](#setting-up-auth0)
+    - [Environment Variables](#environment-variables)
+    - [GitHub secrets](#github-secrets)
+    - [Auth0 Route Guard](#auth0-route-guard)
+    - [Secure API Calls](#secure-api-calls)
+      - [Auth0 API Configuration](#auth0-api-configuration)
+      - [Making Secure API Calls](#making-secure-api-calls)
+      - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
+      - [Understanding Token Flow](#understanding-token-flow)
+  - [Internationalization](#internationalization)
+    - [Adding a New Language](#adding-a-new-language)
+    - [Language Switch Component](#language-switch-component)
+    - [Example Usage](#example-usage)
+    - [Lazy Loading](#lazy-loading)
+    - [Summary](#summary)
+  - [Project Structure](#project-structure)
+  - [Available Scripts](#available-scripts)
+  - [Deployment](#deployment)
+  - [Tailwind CSS 4](#tailwind-css-4)
+  - [How to Use](#how-to-use)
+    - [Manual chunk splitting](#manual-chunk-splitting)
+    - [Install dependencies](#install-dependencies)
+    - [Run the development server](#run-the-development-server)
+    - [Setup pnpm (optional)](#setup-pnpm-optional)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Authentication with Auth0
 
@@ -111,6 +159,85 @@ import { AuthenticationGuard } from "./components/auth0";
           path="/docs"
         />
 ```
+
+### Secure API Calls
+
+The template includes a fully-configured secure API call system that demonstrates how to communicate with protected backend services using Auth0 token authentication.
+
+#### Auth0 API Configuration
+
+To enable secure API calls in your application:
+
+1. **Create an API in Auth0 Dashboard:**
+   - Navigate to "APIs" section in the Auth0 dashboard
+   - Click "Create API"
+   - Provide a descriptive name (e.g., "My Application API")
+   - Set the identifier (audience) - typically a URL or URI (e.g., `https://api.myapp.com`)
+   - Configure the signing algorithm (RS256 recommended)
+
+2. **Configure API Settings:**
+   - Enable RBAC (Role-Based Access Control) if you need granular permission management
+   - Define permissions (scopes) that represent specific actions (e.g., `read:api`, `write:api`)
+   - Configure token settings as needed (expiration, etc.)
+
+3. **Set Environment Variables:**
+   Add the following to your `.env` file:
+
+   ```
+   AUTH0_AUDIENCE=your-api-identifier
+   AUTH0_SCOPE=read:api,write:api
+   API_BASE_URL=http://your-api-url.com
+   ```
+
+4. **Sample Configuration:**
+   For reference, view the [Auth0 API configuration](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-api.pdf) used in the demo deployment.
+
+#### Making Secure API Calls
+
+The template provides a utility function `getJsonFromSecuredApi` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+
+```tsx
+// Example usage in a component
+import { getJsonFromSecuredApi } from "@/components/auth0";
+
+// Inside your component:
+const { getAccessTokenSilently } = useAuth0();
+const apiData = await getJsonFromSecuredApi(
+  `${import.meta.env.API_BASE_URL}/endpoint`,
+  getAccessTokenSilently
+);
+```
+
+This function automatically:
+
+- Requests the appropriate token with configured audience and scope
+- Attaches the token to the request header
+- Handles errors appropriately
+- Returns the JSON response
+
+#### Testing with Cloudflare Workers
+
+For demonstration purposes, the template includes a Cloudflare Worker that acts as a secured backend API:
+
+1. **Deploy the Worker:**
+
+```bash
+cd cloudflare-fake-secured-api
+npm install
+cd ..
+npm run wrangler
+```
+
+3. **Test API Integration:**
+   With both your application and the worker running, navigate to the `/api` route in your application to see the secure API call in action.
+
+#### Understanding Token Flow
+
+1. Your application requests an access token from Auth0 with specific audience and scope
+2. Auth0 issues a JWT token containing the requested permissions
+3. Your application includes this token in the Authorization header
+4. The backend API validates the token using Auth0's public key
+5. If valid, the API processes the request according to the permissions in the token
 
 ## Internationalization
 

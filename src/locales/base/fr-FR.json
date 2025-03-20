@@ -32,5 +32,7 @@
   "language": "Langue",
   "log-in": "Se connecter",
   "log-out": "Déconnexion",
-  "reload": "Recharger"
+  "reload": "Recharger",
+  "api": "API sécurisée",
+  "api-answer": "Réponse API sécurisée"
 }
