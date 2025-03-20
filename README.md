@@ -1,4 +1,4 @@
-# Vite & HeroUI Template
+# Vite, Auth0 & HeroUI Template
 
 This is a template for creating applications using Vite 6, HeroUI (v2) and an Auth0 authentication layer.
 
