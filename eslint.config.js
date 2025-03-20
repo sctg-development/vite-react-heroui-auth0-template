@@ -23,6 +23,8 @@ export default [
         window: 'readonly',
         SVGSVGElement: 'readonly',
         URL: 'readonly',
+        console: 'readonly',
+        fetch: 'readonly',
       },
       parserOptions: {
         ecmaFeatures: {
