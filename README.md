@@ -1,12 +1,24 @@
 # Vite & HeroUI Template
 
-This is a template for creating applications using Vite 6 and HeroUI (v2).
+This is a template for creating applications using Vite 6, HeroUI (v2) and an Auth0 authentication layer.
 
-[Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-template)
+[Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-auth0-template)
 
 ## Star the project
 
 **If you appreciate my work, please consider giving it a star! 🤩**
+
+## Features
+
+- 🚀 Fast development with Vite 6
+- 🎨 Beautiful UI components from HeroUI v2
+- 🔐 Authentication with Auth0
+- 🌐 Internationalization with i18next (6 languages included)
+- 🌙 Dark/Light mode support
+- 📱 Responsive design
+- 🧩 Type-safe with TypeScript
+- 🧹 Code quality with ESLint 9
+- 📦 Optimized build with manual chunk splitting
 
 ## Technologies Used
 
@@ -16,9 +28,29 @@ This is a template for creating applications using Vite 6 and HeroUI (v2).
 - [Tailwind Variants](https://tailwind-variants.org)
 - [React 19](https://reactjs.org)
 - [i18next](https://www.i18next.com)
+- [Auth0 React SDK](https://auth0.com/docs/quickstart/spa/react)
 - [ESLint 9](https://eslint.org)
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
+
+# Change directory
+cd vite-react-heroui-auth0-template
+
+# Install dependencies
+npm install
+
+# Create a .env file with your Auth0 credentials
+echo "AUTH0_CLIENT_ID=your-auth0-client-id\nAUTH0_DOMAIN=your-auth0-domain" > .env
+
+# Start the development server
+npm run dev
+```
 
 ## Authentication with Auth0
 
@@ -127,6 +159,62 @@ The default configuration uses the `i18next-http-backend` plugin for language la
 
 By following the steps above, you can easily add new languages and manage internationalization for your application.
 
+## Project Structure
+
+```
+vite-react-heroui-auth0-template/
+├── public/               # Static assets
+├── src/
+│   ├── components/       # Reusable UI components
+│   ├── config/           # Configuration files
+│   ├── hooks/            # Custom React hooks
+│   ├── layouts/          # Page layout components
+│   ├── locales/          # Translation files
+│   ├── pages/            # Page components
+│   ├── styles/           # Global styles
+│   ├── types/            # TypeScript definitions
+│   ├── App.tsx           # Main application component
+│   ├── i18n.ts           # i18next configuration
+│   ├── main.tsx          # Application entry point
+│   └── provider.tsx      # HeroUI provider setup
+├── .github/              # GitHub workflows and configuration
+├── .vscode/              # VS Code configuration
+├── tailwind.config.js    # Tailwind CSS configuration
+├── vite.config.ts        # Vite configuration
+└── update-heroui.ts      # Helper script to update HeroUI packages
+```
+
+## Available Scripts
+
+```bash
+# Start the development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run ESLint to check and fix code
+npm run lint
+
+# Preview production build locally
+npm run preview
+
+# Update HeroUI packages to the latest beta
+npm run update:heroui
+```
+
+## Deployment
+
+This template includes a GitHub Actions workflow to automatically deploy your application to GitHub Pages. To use this feature:
+
+1. Enable GitHub Pages in the repository settings and set the source to GitHub Actions
+2. Enable GitHub Actions in the repository settings
+3. Add your Auth0 credentials as GitHub repository secrets:
+   - `AUTH0_CLIENT_ID`
+   - `AUTH0_DOMAIN`
+4. Push the changes to your repository
+5. The application will be deployed automatically on each push to the main branch
+
 ## Tailwind CSS 4
 
 This template uses Tailwind CSS 4, which is a utility-first CSS framework. You can customize the styles by modifying the `tailwind.config.js` file.  
@@ -137,7 +225,7 @@ Currently HeroUI uses Tailwind CSS 3, but [@winchesHe](https://github.com/winche
 To clone the project, run the following command:
 
 ```bash
-git clone https://github.com/sctg-development/vite-react-heroui-template.git
+git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 ```
 
 ### Manual chunk splitting
@@ -168,6 +256,12 @@ public-hoist-pattern[]=*@heroui/*
 
 After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 ## License
 
-Licensed under the [MIT license](https://github.com/sctg-development/vite-react-heroui-template/blob/main/LICENSE).
+This template is primarily licensed under the [MIT license](https://github.com/sctg-development/vite-react-heroui-auth0-template/blob/main/LICENSE).
+
+**Exception:** Four specific files (`site-loading.tsx`, `language-switch.tsx`, `vite.config.ts`, and `auth0.tsx`) are licensed under the AGPL-3.0 license as they contain code originating from my other repositories.
