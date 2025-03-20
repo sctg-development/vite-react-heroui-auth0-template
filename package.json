@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:env": "export $(cat .env | xargs) && vite",
     "build": "tsc && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",

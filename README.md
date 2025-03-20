@@ -49,7 +49,7 @@ npm install
 echo "AUTH0_CLIENT_ID=your-auth0-client-id\nAUTH0_DOMAIN=your-auth0-domain" > .env
 
 # Start the development server
-npm run dev
+npm run dev:env
 ```
 
 ## Authentication with Auth0

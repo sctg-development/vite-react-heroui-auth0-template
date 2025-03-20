@@ -25,4 +25,5 @@ dist-ssr
 
 pnpm-lock.yaml
 yarn.lock
-bun.lockb
+bun.lockb.env
+.env
