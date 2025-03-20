@@ -36,6 +36,7 @@ jobs:
         
         - name: Create .env file
           run: |
+            echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1/p' > cloudflare-fake-secured-api/.env
             echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" > cloudflare-fake-secured-api/.env
             echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> cloudflare-fake-secured-api/.env
             echo "AUTH0_SCOPE=${{ secrets.AUTH0_SCOPE }}" >> cloudflare-fake-secured-api/.env
@@ -49,7 +50,9 @@ jobs:
             cd cloudflare-fake-secured-api
             cp wrangler.jsonc wrangler.jsonc.bak
             export $(cat .env | xargs)
-            cat wrangler.jsonc.bak | sed 's|// "vars".*.|"vars": { "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'" },|' > wrangler.jsonc
+            cat wrangler.jsonc.bak | \
+              sed 's|// "vars".*.|"vars": { "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'" },|' \|
+              sed 's|// "routes".*.|"routes": [{ "pattern": "'"${DOMAIN_NAME}"'", "custom_domain": true }]|'  > wrangler.jsonc
         - name: Deploy
           uses: cloudflare/wrangler-action@v3
           with:
