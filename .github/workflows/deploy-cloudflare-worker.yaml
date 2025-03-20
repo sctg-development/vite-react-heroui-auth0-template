@@ -47,7 +47,8 @@ jobs:
         - name: Replace "// vars.*" in wrangler.jsonc with a json string
           run: |
             cd cloudflare-fake-secured-api
-            sed -i 's/\/\/ vars.*/"vars": { "AUTH0_DOMAIN": "${{ secrets.AUTH0_DOMAIN }}", "AUTH0_CLIENT_ID": "${{ secrets.AUTH0_CLIENT_ID }}", "AUTH0_SCOPE": "${{ secrets.AUTH0_SCOPE }}", "AUTH0_AUDIENCE": "${{ secrets.AUTH0_AUDIENCE }}", "API_BASE_URL": "${{ secrets.API_BASE_URL }}", "CORS_ORIGIN": "${{ secrets.CORS_ORIGIN }}", "READ_PERMISSION": "${{ secrets.READ_PERMISSION }}" },/' wrangler.jsonc
+            cp wrangler.jsonc wrangler.jsonc.bak
+            cat wrangler.jsonc.bak | sed 's/\/\/ "vars".*/"vars": { "AUTH0_DOMAIN": "${{ secrets.AUTH0_DOMAIN }}", "AUTH0_CLIENT_ID": "${{ secrets.AUTH0_CLIENT_ID }}", "AUTH0_SCOPE": "${{ secrets.AUTH0_SCOPE }}", "AUTH0_AUDIENCE": "${{ secrets.AUTH0_AUDIENCE }}", "API_BASE_URL": "${{ secrets.API_BASE_URL }}", "CORS_ORIGIN": "${{ secrets.CORS_ORIGIN }}", "READ_PERMISSION": "${{ secrets.READ_PERMISSION }}" },/' > wrangler.jsonc
         - name: Deploy
           uses: cloudflare/wrangler-action@v3
           with:
