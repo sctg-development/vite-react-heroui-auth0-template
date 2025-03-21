@@ -39,8 +39,10 @@ export default function ApiPage() {
             <Trans t={t}>api-answer</Trans>
           </h1>
         </div>
-        <Snippet symbol="" title="api-response">
-          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+        <Snippet className="max-w-11/12" symbol="" title="api-response">
+          <div className="max-w-2xs sm:max-w-sm md:max-w-md lg:max-w-5xl  whitespace-break-spaces  text-wrap break-words">
+            {JSON.stringify(apiResponse, null, 2)}
+          </div>
         </Snippet>
       </section>
     </DefaultLayout>
