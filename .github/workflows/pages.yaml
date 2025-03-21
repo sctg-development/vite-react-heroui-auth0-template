@@ -5,12 +5,8 @@ on:
     branches:
       - main
     paths:
-      - src/**
-      - public/**
-      - vite.config.js
-      - package.json
-      - package-lock.json
-      - tsconfig.json
+      - client/**
+      
 #   release:
 #     types: [published]
 #   schedule:
