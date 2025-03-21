@@ -15,12 +15,16 @@ export default function ApiPage() {
   useEffect(() => {
     const fetchData = async () => {
       if (isAuthenticated) {
-        setApiResponse(
-          await getJsonFromSecuredApi(
+        try {
+          const response = await getJsonFromSecuredApi(
             `${import.meta.env.API_BASE_URL}/get/${user?.sub}`,
             getAccessTokenSilently,
-          ),
-        );
+          );
+
+          setApiResponse(response);
+        } catch (error) {
+          setApiResponse((error as Error).message);
+        }
       }
     };
 
