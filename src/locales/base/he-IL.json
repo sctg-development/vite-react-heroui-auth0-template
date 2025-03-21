@@ -34,5 +34,6 @@
   "log-out": "יציאה",
   "reload": "לִטעוֹן מִחָדָשׁ",
   "api": "API מאובטח",
-  "api-answer": "תשובת API מאובטחת"
+  "api-answer": "תשובת API מאובטחת",
+  "log-out-someone": "התנתק {{name}}"
 }

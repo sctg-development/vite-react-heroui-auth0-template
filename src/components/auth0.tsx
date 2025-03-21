@@ -92,11 +92,11 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
   showButtonIfNotAuthenticated: showButtonIfNotAuthenticated = false,
   text,
 }) => {
-  const { isAuthenticated, logout } = useAuth0();
+  const { isAuthenticated, logout, user } = useAuth0();
   const { t } = useTranslation();
 
   if (!text) {
-    text = t("log-out");
+    text = t("log-out-someone", { name: user?.name });
   }
 
   return (

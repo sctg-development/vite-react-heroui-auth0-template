@@ -34,5 +34,6 @@
   "log-out": "Logout",
   "reload": "Reload",
   "api": "Secured API",
-  "api-answer": "Secured API answer"
+  "api-answer": "Secured API answer",
+  "log-out-someone": "Log out {{name}}"
 }

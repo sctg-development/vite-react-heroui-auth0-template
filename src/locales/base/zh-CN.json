@@ -34,5 +34,6 @@
   "log-out": "注销",
   "reload": "重新加载",
   "api": "固定API",
-  "api-answer": "安全的API答案"
+  "api-answer": "安全的API答案",
+  "log-out-someone": "注销{{name}}"
 }

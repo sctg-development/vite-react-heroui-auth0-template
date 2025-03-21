@@ -34,5 +34,6 @@
   "log-out": "Cierre de sesión",
   "reload": "Recargar",
   "api": "API asegurada",
-  "api-answer": "Respuesta de API asegurada"
+  "api-answer": "Respuesta de API asegurada",
+  "log-out-someone": "Iniciar sesión {{nombre}}"
 }
