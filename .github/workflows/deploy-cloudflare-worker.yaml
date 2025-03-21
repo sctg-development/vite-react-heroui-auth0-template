@@ -40,7 +40,7 @@ jobs:
 
             echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> cloudflare-fake-secured-api/.env
             echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> cloudflare-fake-secured-api/.env
-            echo "AUTH0_SCOPE=${{ secrets.AUTH0_SCOPE }}" >> cloudflare-fake-secured-api/.env
+            echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> cloudflare-fake-secured-api/.env
             echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> cloudflare-fake-secured-api/.env
             echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> cloudflare-fake-secured-api/.env
             echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> cloudflare-fake-secured-api/.env
