@@ -96,6 +96,7 @@ npm run wrangler:env
     - [Manual chunk splitting](#manual-chunk-splitting)
     - [Install dependencies](#install-dependencies)
     - [Run the development server](#run-the-development-server)
+    - [Run the Cloudflare Worker](#run-the-cloudflare-worker)
     - [Setup pnpm (optional)](#setup-pnpm-optional)
   - [Contributing](#contributing)
   - [License](#license)
@@ -345,6 +346,12 @@ vite-react-heroui-auth0-template/
 # Start the development server
 npm run dev
 
+# Start the development server with environment variables
+npm run dev:env
+
+# Run the Cloudflare Worker
+npm run wrangler
+
 # Build for production
 npm run build
 
@@ -399,6 +406,12 @@ npm install
 
 ```bash
 npm run dev
+```
+
+### Run the Cloudflare Worker
+
+```bash
+npm run wrangler
 ```
 
 ### Setup pnpm (optional)
