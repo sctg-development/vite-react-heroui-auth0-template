@@ -136,7 +136,13 @@ To keep your Auth0 credentials secure, use environment variables. Create a `.env
 
 ```env
 AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_CLIENT_SECRET=your-auth0-secret
 AUTH0_DOMAIN=your-auth0-domain
+AUTH0_SCOPE="openid profile email read:api write:api"
+AUTH0_AUDIENCE=https://myapi.example.com
+API_BASE_URL=https://myapi.example.com/api
+CORS_ORIGIN=https://your-github-username.github.io
+READ_PERMISSION=read:api
 ```
 
 ### GitHub secrets
@@ -145,8 +151,17 @@ For using the provided GitHub Actions workflows, you need to add the following s
 
 ```env
 AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_CLIENT_SECRET=your-auth0-secret
 AUTH0_DOMAIN=your-auth0-domain
+AUTH0_SCOPE="openid profile email read:api write:api"
+AUTH0_AUDIENCE=https://myapi.example.com
+API_BASE_URL=https://myapi.example.com/api
+CORS_ORIGIN=https://your-github-username.github.io
+READ_PERMISSION=read:api
 ```
+each secrets should be manually entered in Github like:
+<img width="815" alt="image" src="https://github.com/user-attachments/assets/5543905d-6645-4c78-bbf0-715a33a796dd" />
+
 
 ### Auth0 Route Guard
 
