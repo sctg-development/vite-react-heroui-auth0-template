@@ -35,5 +35,5 @@
   "reload": "Recharger",
   "api": "API sécurisée",
   "api-answer": "Réponse API sécurisée",
-  "log-out-someone": "Se déconnecter {{nom}}"
+  "log-out-someone": "Se déconnecter {{name}}"
 }

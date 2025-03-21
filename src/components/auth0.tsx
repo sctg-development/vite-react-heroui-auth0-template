@@ -28,6 +28,10 @@ import { useTranslation } from "react-i18next";
 
 import { SiteLoading } from "./site-loading";
 
+/**
+ * Renders the user's profile name with a tooltip showing their username.
+ * @returns The user's name with a tooltip showing their username
+ */
 export function Profile() {
   const { user } = useAuth0();
 
@@ -80,12 +84,18 @@ interface LogoutButtonProps {
   text?: string;
 }
 
+export const getNameWithFailback = () => {
+  const { user } = useAuth0();
+
+  return user?.nickname || user?.name || user?.sub || "";
+};
+
 /**
  * Renders a logout button for Auth0 authentication.
  * By default, only shows when the user is authenticated.
  * @param props - Component props
  * @param [props.showButtonIfNotAuthenticated=false] - When true, shows the button even if user is not authenticated
- * @param [props.text] - Custom text for the button. Defaults to localized "log-out" text.
+ * @param [props.text] - Custom text for the button. Defaults to localized "log-out-someone" text filled with user name or ID
  * @returns Logout button or null based on authentication status and showButtonIfNotAuthenticated setting
  */
 export const LogoutButton: FC<LogoutButtonProps> = ({
@@ -96,27 +106,34 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
   const { t } = useTranslation();
 
   if (!text) {
-    text = t("log-out-someone", { name: user?.name });
+    text = t("log-out-someone", {
+      name: getNameWithFailback(),
+    });
   }
 
   return (
     (isAuthenticated || showButtonIfNotAuthenticated) && (
-      <Button
-        className="text-sm font-normal text-default-600 bg-default-100"
-        type="button"
-        onPress={() => {
-          logout({
-            logoutParams: {
-              returnTo: new URL(
-                import.meta.env.BASE_URL || "/",
-                window.location.origin,
-              ).toString(),
-            },
-          });
-        }}
+      <Tooltip
+        content={`${user?.name || ""}\n${user?.nickname || ""}\n${user?.email || ""}\n${user?.sub || ""} `}
+        delay={750}
       >
-        <span>{text}</span> {Profile()}
-      </Button>
+        <Button
+          className="text-sm font-normal text-default-600 bg-default-100"
+          type="button"
+          onPress={() => {
+            logout({
+              logoutParams: {
+                returnTo: new URL(
+                  import.meta.env.BASE_URL || "/",
+                  window.location.origin,
+                ).toString(),
+              },
+            });
+          }}
+        >
+          <span>{text}</span>
+        </Button>
+      </Tooltip>
     )
   );
 };
@@ -205,6 +222,7 @@ export const getJsonFromSecuredApi = async (
 
     return await apiResponse.json();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     throw error;
   }
