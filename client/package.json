@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:env": "set -a && source .env && set +a && vite",
+    "dev:env": "set -a && source ../.env && set +a && vite",
     "build": "tsc && vite build",
-    "build:env": "set -a && source .env && set +a && vite build",
+    "build:env": "set -a && source ../.env && set +a && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "wrangler": "cd cloudflare-fake-secured-api && npm run dev:env",
     "preview": "vite preview",

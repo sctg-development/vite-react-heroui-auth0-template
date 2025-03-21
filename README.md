@@ -43,10 +43,10 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 
 # Change directory
-cd vite-react-heroui-auth0-template
+cd vite-react-heroui-auth0-template/client
 
 # Install dependencies
-npm install && cd cloudflare-fake-secured-api && npm install && cd ..
+npm install && cd ../cloudflare-fake-secured-api && npm install
 
 # Create a .env file with your Auth0 credentials
 cat <<EOF > .env
@@ -61,9 +61,9 @@ READ_PERMISSION=read:api
 EOF
 
 # Start the development server
-npm run dev:env &
+cd client && npm run dev:env &
 # Start the Cloudflare Worker
-npm run wrangler:env
+cd cloudflare-fake-secured-api && npm run wrangler:env
 
 ```
 
@@ -71,6 +71,7 @@ npm run wrangler:env
 
 - [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
   - [Star the project](#star-the-project)
+  - [Live demo](#live-demo)
   - [Features](#features)
   - [Technologies Used](#technologies-used)
   - [Quick Start](#quick-start)
@@ -92,11 +93,11 @@ npm run wrangler:env
     - [Lazy Loading](#lazy-loading)
     - [Summary](#summary)
   - [Project Structure](#project-structure)
-  - [Available Scripts](#available-scripts)
+  - [Available Scripts in the frontend application](#available-scripts-in-the-frontend-application)
   - [Deployment](#deployment)
   - [Tailwind CSS 4](#tailwind-css-4)
   - [How to Use](#how-to-use)
-    - [Manual chunk splitting](#manual-chunk-splitting)
+    - [Manual chunk splitting (frontend)](#manual-chunk-splitting-frontend)
     - [Install dependencies](#install-dependencies)
     - [Run the development server](#run-the-development-server)
     - [Run the Cloudflare Worker](#run-the-cloudflare-worker)
@@ -319,22 +320,25 @@ By following the steps above, you can easily add new languages and manage intern
 
 ## Project Structure
 
+This template follows a mono-repository structure with the frontend application and Cloudflare Worker in separate directories.
+
 ```text
 vite-react-heroui-auth0-template/
-├── public/                      # Static assets
-├── src/
-│   ├── components/              # Reusable UI components
-│   ├── config/                  # Configuration files
-│   ├── hooks/                   # Custom React hooks
-│   ├── layouts/                 # Page layout components
-│   ├── locales/                 # Translation files
-│   ├── pages/                   # Page components
-│   ├── styles/                  # Global styles
-│   ├── types/                   # TypeScript definitions
-│   ├── App.tsx                  # Main application component
-│   ├── i18n.ts                  # i18next configuration
-│   ├── main.tsx                 # Application entry point
-│   └── provider.tsx             # HeroUI provider setup
+├──client                        # Frontend application
+│   ├──public/                   # Static assets
+│   ├──src/
+│       ├── components/          # Reusable UI components
+│       ├── config/              # Configuration files
+│       ├── hooks/               # Custom React hooks
+│       ├── layouts/             # Page layout components
+│       ├── locales/             # Translation files
+│       ├── pages/               # Page components
+│       ├── styles/              # Global styles
+│       ├── types/               # TypeScript definitions
+│       ├── App.tsx              # Main application component
+│       ├── i18n.ts              # i18next configuration
+│       ├── main.tsx             # Application entry point
+│       └── provider.tsx         # HeroUI provider setup
 ├── cloudflare-fake-secured-api/ # Cloudflare Worker for testing
 ├── .github/                     # GitHub workflows and configuration
 ├── .vscode/                     # VS Code configuration
@@ -343,7 +347,7 @@ vite-react-heroui-auth0-template/
 └── update-heroui.ts             # Helper script to update HeroUI packages
 ```
 
-## Available Scripts
+## Available Scripts in the frontend application
 
 ```bash
 # Start the development server
@@ -393,7 +397,7 @@ To clone the project, run the following command:
 git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 ```
 
-### Manual chunk splitting
+### Manual chunk splitting (frontend)
 
 In the `vite.config.ts` file, all `@heroui` packages are manually split into a separate chunk. This is done to reduce the size of the main bundle. You can remove this configuration if you don't want to split the packages.
 
