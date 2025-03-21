@@ -50,7 +50,7 @@ cat <<EOF > .env
 AUTH0_CLIENT_ID=your-auth0-client-id
 AUTH0_CLIENT_SECRET=your-auth0-client-secret
 AUTH0_DOMAIN=your-auth0-domain
-AUTH0_SCOPE=read:api,write:api
+AUTH0_SCOPE="openid profile email read:api write:api"
 AUTH0_AUDIENCE=http://localhost:5173
 API_BASE_URL=http://localhost:8787/api
 CORS_ORIGIN=http://localhost:5173

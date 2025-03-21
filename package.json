@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:env": "export $(cat .env | xargs) && vite",
+    "dev:env": "set -a && source .env && set +a && vite",
     "build": "tsc && vite build",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "wrangler": "cd cloudflare-fake-secured-api && npm run dev:env",
