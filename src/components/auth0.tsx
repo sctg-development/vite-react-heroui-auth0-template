@@ -25,6 +25,7 @@ import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "@heroui/link";
 
 import { SiteLoading } from "./site-loading";
 
@@ -73,6 +74,55 @@ export const LoginButton: FC<{ text?: string }> = ({ text }) => {
   );
 };
 
+/**
+ * Renders a login link for Auth0 authentication.
+ * Only shows when the user is not authenticated.
+ * @param props - Component props
+ * @param [props.text] - Custom text for the link. Defaults to localized "log-in" text.
+ * @returns Login link or null if user is already authenticated
+ */
+export const LoginLink: FC<{
+  text?: string;
+  color?:
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
+}> = ({ text, color }) => {
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { t } = useTranslation();
+
+  if (!text) {
+    text = t("log-in");
+  }
+
+  return (
+    !isAuthenticated && (
+      <Link
+        color={color}
+        size="lg"
+        onPress={() => {
+          loginWithRedirect();
+        }}
+      >
+        {text}
+      </Link>
+    )
+  );
+};
+
+/**
+ * Gets the user's name from the Auth0 user object with a fallback to other properties.
+ * @returns the user's name, nickname, or sub property from the Auth0 user object
+ */
+export const getNameWithFailback = () => {
+  const { user } = useAuth0();
+
+  return user?.nickname || user?.name || user?.sub || "";
+};
+
 interface LogoutButtonProps {
   /**
    * Show the button even if the user is not authenticated
@@ -83,12 +133,6 @@ interface LogoutButtonProps {
    */
   text?: string;
 }
-
-export const getNameWithFailback = () => {
-  const { user } = useAuth0();
-
-  return user?.nickname || user?.name || user?.sub || "";
-};
 
 /**
  * Renders a logout button for Auth0 authentication.
@@ -138,6 +182,61 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
   );
 };
 
+interface LogoutLinkProps extends LogoutButtonProps {
+  /**
+   * Button color
+   */
+  color?:
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
+}
+/**
+ * Renders a logout link for Auth0 authentication.
+ * By default, only shows when the user is authenticated.
+ * @param props - Component props
+ * @param [props.text] - Custom text for the link. Defaults to localized "log-out-someone" text filled with user name or ID
+ * @returns Logout link or null based on authentication status
+ */
+export const LogoutLink: FC<LogoutLinkProps> = ({
+  showButtonIfNotAuthenticated: showButtonIfNotAuthenticated = false,
+  text,
+  color,
+}) => {
+  const { isAuthenticated, logout } = useAuth0();
+  const { t } = useTranslation();
+
+  if (!text) {
+    text = t("log-out-someone", {
+      name: getNameWithFailback(),
+    });
+  }
+
+  return isAuthenticated || showButtonIfNotAuthenticated ? (
+    <>
+      <Link
+        color={color}
+        size="lg"
+        onPress={() => {
+          logout({
+            logoutParams: {
+              returnTo: new URL(
+                import.meta.env.BASE_URL || "/",
+                window.location.origin,
+              ).toString(),
+            },
+          });
+        }}
+      >
+        {text}
+      </Link>
+    </>
+  ) : null;
+};
+
 /**
  * Conditionally renders either a login or logout button based on authentication status.
  * Provides a convenient way to toggle between auth actions in a single component.
@@ -156,6 +255,29 @@ export const LoginLogoutButton: FC<LogoutButtonProps> = ({
     />
   ) : (
     <LoginButton />
+  );
+};
+
+/**
+ * Conditionally renders either a login or logout link based on authentication status.
+ * Provides a convenient way to toggle between auth actions in a single component.
+ * @returns Either the LoginLink or LogoutLink component
+ */
+export const LoginLogoutLink: FC<LogoutLinkProps> = ({
+  showButtonIfNotAuthenticated: showButtonIfNotAuthenticated = false,
+  text,
+  color,
+}) => {
+  const { isAuthenticated } = useAuth0();
+
+  return isAuthenticated ? (
+    <LogoutLink
+      color={color}
+      showButtonIfNotAuthenticated={showButtonIfNotAuthenticated}
+      text={text}
+    />
+  ) : (
+    <LoginLink />
   );
 };
 

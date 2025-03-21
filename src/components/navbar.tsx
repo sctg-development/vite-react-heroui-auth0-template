@@ -16,7 +16,7 @@ import { clsx } from "@heroui/shared-utils";
 import { Trans, useTranslation } from "react-i18next";
 
 import { I18nIcon, LanguageSwitch } from "./language-switch";
-import { LoginLogoutButton } from "./auth0";
+import { LoginLogoutButton, LoginLogoutLink } from "./auth0";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -63,7 +63,7 @@ export const Navbar = () => {
             href="/"
           >
             <Logo />
-            <p className="font-bold text-inherit">ACME</p>
+            <p className="hidden sm:inline font-bold text-inherit">ACME</p>
           </Link>
         </NavbarBrand>
         <div className="hidden lg:flex gap-4 justify-start ml-2">
@@ -133,7 +133,6 @@ export const Navbar = () => {
           <GithubIcon className="text-default-500" />
         </Link>
         <ThemeSwitch />
-        <LoginLogoutButton />
         <NavbarMenuToggle />
       </NavbarContent>
 
@@ -154,13 +153,16 @@ export const Navbar = () => {
                       ? "danger"
                       : "foreground"
                 }
-                href="#"
+                href={item.href}
                 size="lg"
               >
                 {item.label}
               </Link>
             </NavbarMenuItem>
           ))}
+          <NavbarMenuItem key="login-logout">
+            <LoginLogoutLink color="primary" />
+          </NavbarMenuItem>
         </div>
       </NavbarMenu>
     </HeroUINavbar>
