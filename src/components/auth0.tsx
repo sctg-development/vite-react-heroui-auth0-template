@@ -126,10 +126,20 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
  * Provides a convenient way to toggle between auth actions in a single component.
  * @returns Either the LoginButton or LogoutButton component
  */
-export const LoginLogoutButton: FC = () => {
+export const LoginLogoutButton: FC<LogoutButtonProps> = ({
+  showButtonIfNotAuthenticated: showButtonIfNotAuthenticated = false,
+  text,
+}) => {
   const { isAuthenticated } = useAuth0();
 
-  return isAuthenticated ? <LogoutButton /> : <LoginButton />;
+  return isAuthenticated ? (
+    <LogoutButton
+      showButtonIfNotAuthenticated={showButtonIfNotAuthenticated}
+      text={text}
+    />
+  ) : (
+    <LoginButton />
+  );
 };
 
 /**
@@ -165,7 +175,7 @@ export type GetAccessTokenFunction = {
 /**
  * Fetches JSON data from a secured API endpoint using Auth0 token authentication.
  * Handles the token acquisition and authorization header setup automatically.
- * 
+ *
  * @param {string} url - The URL of the secured API endpoint to fetch data from
  * @param {GetAccessTokenFunction} getAccessTokenFunction - Function to retrieve an access token, typically Auth0's getAccessTokenSilently
  * @returns {Promise<any>} Promise resolving to the JSON response from the API
