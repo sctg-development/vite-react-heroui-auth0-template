@@ -1,0 +1,16 @@
+{
+  "folders": [
+     {
+       "name": "Cloudflare worker",
+       "path": "./cloudflare-fake-secured-api"
+     },
+     {
+       "name": "Client app",
+       "path": "./client",
+     },
+     {
+       "name": "GitHub Actions",
+       "path": "./.github/workflows"
+     }
+  ]
+}

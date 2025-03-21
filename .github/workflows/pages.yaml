@@ -38,11 +38,14 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          cd client
+          npm ci
 
       - name: Build project
         # You can change the base path to your repository name
         run: |
+          cd client
           export AUTH0_DOMAIN="${{ secrets.AUTH0_DOMAIN }}"
           export AUTH0_CLIENT_ID="${{ secrets.AUTH0_CLIENT_ID }}"
           export AUTH0_SCOPE="${{ secrets.AUTH0_SCOPE }}"
@@ -56,7 +59,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload docs directory
-          path: "dist"
+          path: "client/dist"
 
   deploy:
     environment:
