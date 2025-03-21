@@ -1,16 +1,20 @@
 {
   "folders": [
-     {
-       "name": "Cloudflare worker",
-       "path": "./cloudflare-fake-secured-api"
-     },
-     {
-       "name": "Client app",
-       "path": "./client",
-     },
-     {
-       "name": "GitHub Actions",
-       "path": "./.github/workflows"
-     }
-  ]
+    {
+      "name": "Cloudflare worker",
+      "path": "./cloudflare-fake-secured-api"
+    },
+    {
+      "name": "Client app",
+      "path": "./client",
+    },
+    {
+      "name": "GitHub Actions",
+      "path": "./.github/workflows"
+    }
+  ],
+  "settings": {
+    "i18n-ally.keystyle": "flat",
+    "i18n-ally.sourceLanguage": "en-US"
+  }
 }
