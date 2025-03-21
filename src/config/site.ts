@@ -51,9 +51,10 @@ export const siteConfig = () => ({
     },
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
+    github:
+      "https://sctg-development.github.io/vite-react-heroui-auth0-template/",
     twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
+    docs: "https://github.com/sctg-development/vite-react-heroui-auth0-template/blob/main/README.md",
     discord: "https://discord.gg/9b6yyZKmH4",
     sponsor: "https://github.com/sponsors/sctg-development",
   },
