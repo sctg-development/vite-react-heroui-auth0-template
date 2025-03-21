@@ -43,13 +43,13 @@ jobs:
       - name: Build project
         # You can change the base path to your repository name
         run: |
-          export AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
-          export AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
-          export AUTH0_SCOPE=${{ secrets.AUTH0_SCOPE }}
-          export AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
-          export API_BASE_URL=${{ secrets.API_BASE_URL }}
-          export CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
-          export READ_PERMISSION=${{ secrets.READ_PERMISSION }}
+          export AUTH0_DOMAIN="${{ secrets.AUTH0_DOMAIN }}"
+          export AUTH0_CLIENT_ID="${{ secrets.AUTH0_CLIENT_ID }}"
+          export AUTH0_SCOPE="${{ secrets.AUTH0_SCOPE }}"
+          export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
+          export API_BASE_URL="${{ secrets.API_BASE_URL }}"
+          export CORS_ORIGIN="${{ secrets.CORS_ORIGIN }}"
+          export READ_PERMISSION="${{ secrets.READ_PERMISSION }}"
           npx vite build --base=/${{ github.event.repository.name }}
 
       - name: Upload pages artifact
