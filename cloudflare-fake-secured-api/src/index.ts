@@ -46,7 +46,7 @@ export default {
 					const date = new Date();
 
 					return new Response(
-						JSON.stringify({ ...fakePayload, query: request.url, authenticatedUser: payload.sub, date: date.toISOString() }),
+						JSON.stringify({ ...fakePayload, query: request.url, authenticatedUser: payload.sub, bearer: token, date: date.toISOString() }),
 						{
 							headers: { ...corsHeaders(env), contentType: 'application/json' },
 						},
