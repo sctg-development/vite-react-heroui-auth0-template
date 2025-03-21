@@ -159,9 +159,9 @@ API_BASE_URL=https://myapi.example.com/api
 CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
 ```
+
 each secrets should be manually entered in Github like:
 <img width="815" alt="image" src="https://github.com/user-attachments/assets/5543905d-6645-4c78-bbf0-715a33a796dd" />
-
 
 ### Auth0 Route Guard
 
@@ -198,7 +198,7 @@ To enable secure API calls in your application:
 3. **Set Environment Variables:**
    Add the following to your `.env` file:
 
-   ```
+   ```env
    AUTH0_AUDIENCE=your-api-identifier
    AUTH0_SCOPE=read:api,write:api
    API_BASE_URL=http://your-api-url.com
@@ -315,27 +315,28 @@ By following the steps above, you can easily add new languages and manage intern
 
 ## Project Structure
 
-```
+```text
 vite-react-heroui-auth0-template/
-├── public/               # Static assets
+├── public/                      # Static assets
 ├── src/
-│   ├── components/       # Reusable UI components
-│   ├── config/           # Configuration files
-│   ├── hooks/            # Custom React hooks
-│   ├── layouts/          # Page layout components
-│   ├── locales/          # Translation files
-│   ├── pages/            # Page components
-│   ├── styles/           # Global styles
-│   ├── types/            # TypeScript definitions
-│   ├── App.tsx           # Main application component
-│   ├── i18n.ts           # i18next configuration
-│   ├── main.tsx          # Application entry point
-│   └── provider.tsx      # HeroUI provider setup
-├── .github/              # GitHub workflows and configuration
-├── .vscode/              # VS Code configuration
-├── tailwind.config.js    # Tailwind CSS configuration
-├── vite.config.ts        # Vite configuration
-└── update-heroui.ts      # Helper script to update HeroUI packages
+│   ├── components/              # Reusable UI components
+│   ├── config/                  # Configuration files
+│   ├── hooks/                   # Custom React hooks
+│   ├── layouts/                 # Page layout components
+│   ├── locales/                 # Translation files
+│   ├── pages/                   # Page components
+│   ├── styles/                  # Global styles
+│   ├── types/                   # TypeScript definitions
+│   ├── App.tsx                  # Main application component
+│   ├── i18n.ts                  # i18next configuration
+│   ├── main.tsx                 # Application entry point
+│   └── provider.tsx             # HeroUI provider setup
+├── cloudflare-fake-secured-api/ # Cloudflare Worker for testing
+├── .github/                     # GitHub workflows and configuration
+├── .vscode/                     # VS Code configuration
+├── tailwind.config.js           # Tailwind CSS configuration
+├── vite.config.ts               # Vite configuration
+└── update-heroui.ts             # Helper script to update HeroUI packages
 ```
 
 ## Available Scripts
