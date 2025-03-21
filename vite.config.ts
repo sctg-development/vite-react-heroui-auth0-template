@@ -101,6 +101,14 @@ export default defineConfig({
          * to optimize loading performance and avoid oversized chunks
          */
         manualChunks: {
+          react: [
+            "react",
+            "react-dom",
+            "react-router-dom",
+            "react-i18next",
+            "i18next",
+            "i18next-http-backend",
+          ],
           heroui: extractPerVendorDependencies(packageJson, "@heroui"),
           auth0: extractPerVendorDependencies(packageJson, "@auth0"),
         },
