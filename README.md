@@ -200,7 +200,7 @@ To enable secure API calls in your application:
 
    ```env
    AUTH0_AUDIENCE=your-api-identifier
-   AUTH0_SCOPE=read:api,write:api
+   AUTH0_SCOPE="openid profile email read:api write:api"
    API_BASE_URL=http://your-api-url.com
    ```
 
