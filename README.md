@@ -8,6 +8,9 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 
 **If you appreciate my work, please consider giving it a star! 🤩**
 
+## Live demo
+[<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
+
 ## Features
 
 - 🚀 Fast development with Vite 6
