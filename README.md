@@ -199,6 +199,7 @@ To enable secure API calls in your application:
    - Enable RBAC (Role-Based Access Control) if you need granular permission management
    - Define permissions (scopes) that represent specific actions (e.g., `read:api`, `write:api`)
    - Configure token settings as needed (expiration, etc.)
+   - Include permissions in the access token
 
 3. **Set Environment Variables:**
    Add the following to your `.env` file:
