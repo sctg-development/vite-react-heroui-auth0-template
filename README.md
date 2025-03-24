@@ -241,7 +241,7 @@ const apiData = await getJsonFromSecuredApi(
 ```tsx
 // POST request to a secured API endpoint
 const { getAccessTokenSilently } = useAuth0();
-const apiData = await c(
+const apiData = await postJsonToSecuredApi(
   `${import.meta.env.API_BASE_URL}/endpoint`,
   { data: "example" },
   getAccessTokenSilently
