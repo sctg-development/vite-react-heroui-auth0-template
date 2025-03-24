@@ -85,6 +85,8 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
       - [Making Secure API Calls](#making-secure-api-calls)
+        - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
+        - [postJsonToSecuredApi](#postjsontosecuredapi)
       - [Checking Permissions](#checking-permissions)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
@@ -217,7 +219,9 @@ To enable secure API calls in your application:
 
 #### Making Secure API Calls
 
-The template provides a utility function `getJsonFromSecuredApi` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+
+##### getJsonFromSecuredApi
 
 ```tsx
 // Example usage in a component
@@ -230,10 +234,14 @@ const apiData = await getJsonFromSecuredApi(
   `${import.meta.env.API_BASE_URL}/endpoint`,
   getAccessTokenSilently
 );
+```
 
+##### postJsonToSecuredApi
+
+```tsx
 // POST request to a secured API endpoint
 const { getAccessTokenSilently } = useAuth0();
-const apiData = await postJsonToSecuredApi(
+const apiData = await c(
   `${import.meta.env.API_BASE_URL}/endpoint`,
   { data: "example" },
   getAccessTokenSilently
