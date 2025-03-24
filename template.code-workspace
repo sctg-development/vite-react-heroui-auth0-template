@@ -10,7 +10,7 @@
     },
     {
       "name": "GitHub Actions",
-      "path": "./.github/workflows"
+      "path": "./.github"
     }
   ],
   "settings": {
