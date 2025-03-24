@@ -26,6 +26,7 @@ import { Tooltip } from "@heroui/tooltip";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "@heroui/link";
+import { createRemoteJWKSet, JWTPayload, jwtVerify } from "jose";
 
 import { SiteLoading } from "./site-loading";
 
@@ -343,6 +344,87 @@ export const getJsonFromSecuredApi = async (
     });
 
     return await apiResponse.json();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    throw error;
+  }
+};
+
+/**
+ * Posts JSON data to a secured API endpoint using Auth0 token authentication.
+ * Handles the token acquisition and authorization header setup automatically.
+ * @param {string} url - The URL of the secured API endpoint to post data to
+ * @param {any} data - The JSON data to post to the API
+ * @param {GetAccessTokenFunction} getAccessTokenFunction - Function to retrieve an access token, typically Auth0's getAccessTokenSilently
+ * @returns {Promise<any>} Promise resolving to the JSON response from the API
+ */
+export const postJsonToSecuredApi = async (
+  url: string,
+  data: any,
+  getAccessTokenFunction: GetAccessTokenFunction,
+) => {
+  try {
+    const accessToken = await getAccessTokenFunction({
+      authorizationParams: {
+        audience: import.meta.env.AUTH0_AUDIENCE,
+        scope: import.meta.env.AUTH0_SCOPE,
+      },
+    });
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    return await apiResponse.json();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+    throw error;
+  }
+};
+
+/**
+ * Checks if the user has a specific permission.
+ * @param permission - The permission to check for
+ * @param {GetAccessTokenFunction} getAccessTokenFunction - Function to retrieve an access token, typically Auth0's getAccessTokenSilently
+ * @returns {Promise<boolean>} Promise resolving to true if the user has the permission, false otherwise
+ * @throws {Error} If token acquisition fails or the API request fails
+ */
+export const userHasPermission = async (
+  permission: string,
+  getAccessTokenFunction: GetAccessTokenFunction,
+) => {
+  try {
+    const accessToken = await getAccessTokenFunction({
+      authorizationParams: {
+        audience: import.meta.env.AUTH0_AUDIENCE,
+        scope: import.meta.env.AUTH0_SCOPE,
+      },
+    });
+
+    if (!accessToken) {
+      return false;
+    }
+    const JWKS = createRemoteJWKSet(
+      new URL(`https://${import.meta.env.AUTH0_DOMAIN}/.well-known/jwks.json`),
+    );
+
+    const joseResult = await jwtVerify(accessToken, JWKS, {
+      issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
+      audience: import.meta.env.AUTH0_AUDIENCE,
+    });
+    const payload = joseResult.payload as JWTPayload;
+
+    if (payload.permissions instanceof Array) {
+      return payload.permissions.includes(permission);
+    } else {
+      return false;
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);

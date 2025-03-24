@@ -9,6 +9,7 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 **If you appreciate my work, please consider giving it a star! 🤩**
 
 ## Live demo
+
 [<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
 
 ## Features
@@ -84,6 +85,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
       - [Making Secure API Calls](#making-secure-api-calls)
+      - [Checking Permissions](#checking-permissions)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
   - [Internationalization](#internationalization)
@@ -222,9 +224,18 @@ The template provides a utility function `getJsonFromSecuredApi` in `src/compone
 import { getJsonFromSecuredApi } from "@/components/auth0";
 
 // Inside your component:
+// GET request to a secured API endpoint
 const { getAccessTokenSilently } = useAuth0();
 const apiData = await getJsonFromSecuredApi(
   `${import.meta.env.API_BASE_URL}/endpoint`,
+  getAccessTokenSilently
+);
+
+// POST request to a secured API endpoint
+const { getAccessTokenSilently } = useAuth0();
+const apiData = await postJsonToSecuredApi(
+  `${import.meta.env.API_BASE_URL}/endpoint`,
+  { data: "example" },
   getAccessTokenSilently
 );
 ```
@@ -235,6 +246,20 @@ This function automatically:
 - Attaches the token to the request header
 - Handles errors appropriately
 - Returns the JSON response
+
+#### Checking Permissions
+
+The template includes a `hasPermission` function in `src/components/auth0.tsx` that checks if the user has a specific permission in their token:
+
+```tsx
+// Example usage in a component
+import { userHasPermission } from "@/components/auth0";
+const { getAccessTokenSilently } = useAuth0();
+const hasPermission = await userHasPermission(
+  "read:api",
+  getAccessTokenSilently
+);
+```
 
 #### Testing with Cloudflare Workers
 
