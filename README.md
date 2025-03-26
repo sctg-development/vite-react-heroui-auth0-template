@@ -88,6 +88,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
         - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
         - [postJsonToSecuredApi](#postjsontosecuredapi)
       - [Checking Permissions](#checking-permissions)
+      - [Protect a Component with a needed permission](#protect-a-component-with-a-needed-permission)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
   - [Internationalization](#internationalization)
@@ -268,6 +269,16 @@ const hasPermission = await userHasPermission(
   getAccessTokenSilently
 );
 ```
+
+#### Protect a Component with a needed permission
+
+This template includes a `AuthenticationGuardWithPermission` component that wraps a component and checks if the user has the required permission:
+
+ ```tsx
+ <AuthenticationGuardWithPermission permission="read:api">
+   <ProtectedComponent />
+</AuthenticationGuardWithPermission>
+ ```
 
 #### Testing with Cloudflare Workers
 
