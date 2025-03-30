@@ -12,20 +12,21 @@
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.4",
-		"@cloudflare/workers-types": "^4.20250321.0",
-		"@types/node": "^22.13.12",
-		"@typescript-eslint/eslint-plugin": "^8.27.0",
-		"@typescript-eslint/parser": "^8.27.0",
+		"@cloudflare/vitest-pool-workers": "^0.8.8",
+		"@cloudflare/workers-types": "^4.20250327.0",
+		"@types/node": "^22.13.14",
+		"@typescript-eslint/eslint-plugin": "^8.28.0",
+		"@typescript-eslint/parser": "^8.28.0",
 		"eslint": "^9.23.0",
 		"eslint-config-prettier": "^10.1.1",
 		"eslint-plugin-import": "^2.31.0",
 		"eslint-plugin-node": "^11.1.0",
-		"eslint-plugin-prettier": "^5.2.4",
+		"eslint-plugin-prettier": "^5.2.5",
 		"eslint-plugin-unused-imports": "^4.1.4",
+		"jiti": "^2.4.2",
 		"typescript": "^5.8.2",
 		"vitest": "~3.0.9",
-		"wrangler": "^4.4.0"
+		"wrangler": "^4.6.0"
 	},
 	"dependencies": {
 		"jose": "^6.0.10"
