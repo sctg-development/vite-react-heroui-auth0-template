@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as jose from 'jose';
+import * as jose from "jose";
 
 /**
  * Verify a JWT token against the Auth0 JWKS
@@ -29,8 +29,13 @@ import * as jose from 'jose';
  * @param env the environment variables
  * @returns a promise that resolves to the payload of the JWT token
  */
-export const verifyToken = async (token: string, env: Env): Promise<jose.JWTPayload> => {
-	const JWKS = jose.createRemoteJWKSet(new URL(`https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`));
+export const verifyToken = async (
+	token: string,
+	env: Env,
+): Promise<jose.JWTPayload> => {
+	const JWKS = jose.createRemoteJWKSet(
+		new URL(`https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`),
+	);
 
 	const { payload } = await jose.jwtVerify(token, JWKS, {
 		issuer: `https://${env.AUTH0_DOMAIN}/`,
@@ -55,10 +60,12 @@ export const checkPermissions = async (
 	const payload = await verifyToken(token, env);
 	let access = false;
 
-	if (typeof permission === 'string') {
+	if (typeof permission === "string") {
 		access = (payload.permissions as string[]).includes(permission);
 	} else {
-		access = permission.some((p) => (payload.permissions as string[]).includes(p));
+		access = permission.some((p) =>
+			(payload.permissions as string[]).includes(p),
+		);
 	}
 
 	return { access, payload };
