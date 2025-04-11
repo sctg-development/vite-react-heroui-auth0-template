@@ -35,5 +35,10 @@
   "reload": "Recargar",
   "api": "API asegurada",
   "api-answer": "Respuesta de API asegurada",
-  "log-out-someone": "Iniciar sesión {{name}}"
+  "log-out-someone": "Iniciar sesión {{name}}",
+  "cookie-consent": "Utilizamos cookies en nuestro sitio web para brindarle la experiencia más relevante al recordar sus preferencias y repetir visitas. Al hacer clic",
+  "cookie-policy": "Política de cookies.",
+  "accept-all": "Aceptar todo",
+  "reject": "Rechazar",
+  "cookie-consent-title": "Política de cookies"
 }

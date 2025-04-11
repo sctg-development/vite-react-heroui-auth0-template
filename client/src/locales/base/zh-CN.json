@@ -35,5 +35,10 @@
   "reload": "重新加载",
   "api": "固定API",
   "api-answer": "安全的API答案",
-  "log-out-someone": "注销{{name}}"
+  "log-out-someone": "注销{{name}}",
+  "cookie-consent": "我们在网站上使用Cookie，通过记住您的偏好和重复访问来为您提供最相关的体验。\n通过单击",
+  "cookie-policy": "饼干政策。",
+  "accept-all": "接受全部",
+  "reject": "拒绝",
+  "cookie-consent-title": "Cookies政策"
 }

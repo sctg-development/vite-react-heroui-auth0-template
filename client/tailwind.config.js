@@ -10,7 +10,10 @@ module.exports = {
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {      
+      backgroundImage: {
+      'gradient-border-violet': 'linear-gradient(hsl(var(--heroui-background)), hsl(var(--heroui-background))), linear-gradient(83.87deg, #F54180, #9353D3)',
+    },},
   },
   darkMode: "class",
   plugins: [heroui()],

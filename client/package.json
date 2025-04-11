@@ -21,6 +21,7 @@
     "@heroui/input": "^2.4.17-beta.2",
     "@heroui/kbd": "^2.2.13-beta.1",
     "@heroui/link": "^2.2.14-beta.1",
+    "@heroui/modal": "^2.2.14-beta.2",
     "@heroui/navbar": "^2.2.15-beta.2",
     "@heroui/shared-utils": "^2.1.8-beta.1",
     "@heroui/snippet": "^2.2.18-beta.2",

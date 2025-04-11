@@ -20,6 +20,7 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 - 🌐 Internationalization with i18next (6 languages included)
 - 🌙 Dark/Light mode support
 - 📱 Responsive design
+- 🍪 Cookie consent management
 - 🧩 Type-safe with TypeScript
 - 🧹 Code quality with ESLint 9
 - 📦 Optimized build with manual chunk splitting
@@ -97,6 +98,12 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Example Usage](#example-usage)
     - [Lazy Loading](#lazy-loading)
     - [Summary](#summary)
+  - [Cookie Consent](#cookie-consent)
+    - [Features](#features-1)
+    - [Configuration](#configuration)
+    - [Implementation Details](#implementation-details)
+    - [Using Cookie Consent in Your Components](#using-cookie-consent-in-your-components)
+    - [Customization](#customization)
   - [Project Structure](#project-structure)
   - [Available Scripts in the frontend application](#available-scripts-in-the-frontend-application)
   - [Deployment](#deployment)
@@ -362,6 +369,71 @@ The default configuration uses the `i18next-http-backend` plugin for language la
 - **Language Switch:** `src/components/language-switch.tsx`
 
 By following the steps above, you can easily add new languages and manage internationalization for your application.
+
+## Cookie Consent
+
+This template includes a cookie consent management system to comply with privacy regulations like GDPR. The system displays a modal dialog asking users for consent to use cookies and stores their preference in the browser's localStorage.
+<img width="944" alt="Capture d’écran 2025-04-11 à 19 55 13" src="https://github.com/user-attachments/assets/8769525c-bef0-4705-9b2e-6664aa68a9e0" />
+
+
+### Features
+
+- Modern modal-based UI with blur backdrop
+- Internationalized content for all supported languages
+- Stores user preferences in localStorage
+- Provides a context API for checking consent status throughout the application
+- Supports both accepting and rejecting cookies
+
+### Configuration
+
+The cookie consent feature can be enabled or disabled through the site configuration:
+
+1. **Enable/Disable Cookie Consent:**
+   - Open the `src/config/site.ts` file
+   - Set the `needCookieConsent` property to `true` or `false`:
+
+```typescript
+export const siteConfig = () => ({
+  needCookieConsent: true, // Set to false if you don't need cookie consent
+  // ...other configuration
+});
+```
+
+### Implementation Details
+
+- **Context Provider:** `src/contexts/cookie-consent-context.tsx` - Provides a React context to manage consent state
+- **UI Component:** `src/components/cookie-consent.tsx` - Renders the consent modal using HeroUI components
+- **Consent Status:** The consent status can be one of three values:
+  - `pending`: Initial state, user hasn't made a decision yet
+  - `accepted`: User has accepted cookies
+  - `rejected`: User has rejected cookies
+
+### Using Cookie Consent in Your Components
+
+You can access the cookie consent status in any component using the `useCookieConsent` hook:
+
+```tsx
+import { useCookieConsent } from "@/contexts/cookie-consent-context";
+
+const MyComponent = () => {
+  const { cookieConsent, acceptCookies, rejectCookies, resetCookieConsent } = useCookieConsent();
+  
+  // Load analytics only if cookies are accepted
+  useEffect(() => {
+    if (cookieConsent === "accepted") {
+      // Initialize analytics, tracking scripts, etc.
+    }
+  }, [cookieConsent]);
+  
+  // ...rest of your component
+};
+```
+
+### Customization
+
+- Modify the appearance of the consent modal in `src/components/cookie-consent.tsx`
+- Add custom tracking or cookie management logic in the `acceptCookies` and `rejectCookies` functions in `src/contexts/cookie-consent-context.tsx`
+- Update the cookie policy text in the language files (e.g., `src/locales/base/en-US.json`)
 
 ## Project Structure
 
