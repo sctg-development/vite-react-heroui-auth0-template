@@ -13,8 +13,8 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.8.15",
-		"@cloudflare/workers-types": "^4.20250410.0",
-		"@types/node": "^22.14.0",
+		"@cloudflare/workers-types": "^4.20250412.0",
+		"@types/node": "^22.14.1",
 		"@typescript-eslint/eslint-plugin": "^8.29.1",
 		"@typescript-eslint/parser": "^8.29.1",
 		"eslint": "^9.24.0",
