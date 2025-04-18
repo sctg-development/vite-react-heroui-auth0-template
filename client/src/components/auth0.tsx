@@ -584,9 +584,72 @@ export const useSecuredApi = () => {
     }
   };
 
+  /**
+   * Returns a boolean indicating if the user has the specified permission
+   * This function uses the Auth0 access token to verify the user's permissions
+   * It fetches the JSON Web Key Set (JWKS) from Auth0 and verifies the token
+   * against the JWKS to extract the permissions from the token payload
+   * If the permissions are an array, it checks if the specified permission is included
+   * If the permissions are not an array, it returns false
+   * If any error occurs during the process, it logs the error and throws it
+   * This function is useful for checking if the user has the required permissions
+   * to access certain resources or perform certain actions in the application
+   * It can be used in conjunction with the getJson, postJson, and deleteJson functions
+   * to perform API requests with the appropriate authorization
+   * and permissions
+   * @param permission - The permission to check for
+   * @returns A promise that resolves to true if the user has the permission, false otherwise
+   * @throws {Error} If token acquisition fails or the API request fails
+   * @example
+   * ```tsx
+   * const { hasPermission } = useSecuredApi();
+   * const hasAccess = await hasPermission('read:api');
+   * if (hasAccess) {
+   *   // User has permission
+   * } else {
+   *   // User does not have permission
+   * }
+   * ```
+   */
+  const hasPermission = async (permission: string) => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.AUTH0_AUDIENCE,
+          scope: import.meta.env.AUTH0_SCOPE,
+        },
+      });
+
+      if (!accessToken) {
+        return false;
+      }
+      const JWKS = createRemoteJWKSet(
+        new URL(
+          `https://${import.meta.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+        ),
+      );
+      const joseResult = await jwtVerify(accessToken, JWKS, {
+        issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
+        audience: import.meta.env.AUTH0_AUDIENCE,
+      });
+      const payload = joseResult.payload as JWTPayload;
+
+      if (payload.permissions instanceof Array) {
+        return payload.permissions.includes(permission);
+      } else {
+        return false;
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      throw error;
+    }
+  };
+
   return {
     getJson,
     postJson,
     deleteJson,
+    hasPermission,
   };
 };
