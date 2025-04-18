@@ -8,11 +8,6 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 
 **If you appreciate my work, please consider giving it a star! 🤩**
 
-## With OAuth2 authentication ?
-
-If you are looking for a template with OAuth2 authentication, you can check out my other repository: [vite-react-heroui-auth0-template](https://github.com/sctg-development/vite-react-heroui-auth0-template) 
-which is the same template with an OAuth2 authentication layer implemented via a free tier on [Auth0](https://auth0.com).
-
 ## Live demo
 
 [<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
@@ -78,7 +73,6 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
 
 - [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
   - [Star the project](#star-the-project)
-  - [With OAuth2 authentication ?](#with-oauth2-authentication-)
   - [Live demo](#live-demo)
   - [Features](#features)
   - [Technologies Used](#technologies-used)
