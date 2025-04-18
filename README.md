@@ -85,8 +85,8 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Auth0 Route Guard](#auth0-route-guard)
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
-      - [Making Secure API Calls without Hooks](#making-secure-api-calls-without-hooks)
       - [Making Secure API Calls](#making-secure-api-calls)
+      - [Making Secure API Calls without Hooks](#making-secure-api-calls-without-hooks)
         - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
         - [postJsonToSecuredApi](#postjsontosecuredapi)
       - [Checking Permissions](#checking-permissions)
@@ -226,10 +226,6 @@ To enable secure API calls in your application:
 4. **Sample Configuration:**
    For reference, view the [Auth0 API configuration](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-api.pdf) used in the demo deployment.
 
-#### Making Secure API Calls without Hooks
-
-The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
-
 #### Making Secure API Calls
 
 The template provides a hook `useSecuredApi` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
@@ -253,7 +249,11 @@ This function automatically:
 - Attaches the token to the request header
 - Handles errors appropriately
 - Returns the JSON response
-  
+
+#### Making Secure API Calls without Hooks
+
+The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+
 ##### getJsonFromSecuredApi
 
 ```tsx
