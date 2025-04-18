@@ -8,6 +8,11 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 
 **If you appreciate my work, please consider giving it a star! 🤩**
 
+## With OAuth2 authentication ?
+
+If you are looking for a template with OAuth2 authentication, you can check out my other repository: [vite-react-heroui-auth0-template](https://github.com/sctg-development/vite-react-heroui-auth0-template) 
+which is the same template with an OAuth2 authentication layer implemented via a free tier on [Auth0](https://auth0.com).
+
 ## Live demo
 
 [<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
@@ -73,6 +78,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
 
 - [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
   - [Star the project](#star-the-project)
+  - [With OAuth2 authentication ?](#with-oauth2-authentication-)
   - [Live demo](#live-demo)
   - [Features](#features)
   - [Technologies Used](#technologies-used)
@@ -86,10 +92,10 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
       - [Making Secure API Calls](#making-secure-api-calls)
-      - [Making Secure API Calls without Hooks](#making-secure-api-calls-without-hooks)
+      - [Making Secure API Calls without Hooks (useful outside of React components)](#making-secure-api-calls-without-hooks-useful-outside-of-react-components)
         - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
         - [postJsonToSecuredApi](#postjsontosecuredapi)
-      - [Checking Permissions](#checking-permissions)
+      - [Checking Permissions (with or without hooks)](#checking-permissions-with-or-without-hooks)
       - [Protect a Component with a needed permission](#protect-a-component-with-a-needed-permission)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
@@ -250,7 +256,7 @@ This function automatically:
 - Handles errors appropriately
 - Returns the JSON response
 
-#### Making Secure API Calls without Hooks
+#### Making Secure API Calls without Hooks (useful outside of React components)
 
 The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
 
@@ -288,9 +294,9 @@ This function automatically:
 - Handles errors appropriately
 - Returns the JSON response
 
-#### Checking Permissions
+#### Checking Permissions (with or without hooks)
 
-The template includes a `hasPermission` function in `src/components/auth0.tsx` that checks if the user has a specific permission in their token:
+The template includes a `userHasPermission` function in `src/components/auth0.tsx` that checks if the user has a specific permission in their token:
 
 ```tsx
 // Example usage in a component
@@ -300,6 +306,16 @@ const hasPermission = await userHasPermission(
   "read:api",
   getAccessTokenSilently
 );
+```
+This function checks the permissions in the token and returns `true` or `false` based on whether the user has the specified permission.
+
+You can also use the `useSecuredApi` hook to check permissions:
+
+```tsx
+import { useSecuredApi } from "@/components/auth0";
+// Inside your component:
+const { hasPermission } = useSecuredApi();
+const hasPermission = await hasPermission("read:api");
 ```
 
 #### Protect a Component with a needed permission
