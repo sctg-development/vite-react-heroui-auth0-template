@@ -85,6 +85,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Auth0 Route Guard](#auth0-route-guard)
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
+      - [Making Secure API Calls without Hooks](#making-secure-api-calls-without-hooks)
       - [Making Secure API Calls](#making-secure-api-calls)
         - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
         - [postJsonToSecuredApi](#postjsontosecuredapi)
@@ -225,10 +226,34 @@ To enable secure API calls in your application:
 4. **Sample Configuration:**
    For reference, view the [Auth0 API configuration](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-api.pdf) used in the demo deployment.
 
-#### Making Secure API Calls
+#### Making Secure API Calls without Hooks
 
 The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
 
+#### Making Secure API Calls
+
+The template provides a hook `useSecuredApi` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+
+```tsx
+import { useSecuredApi } from "@/components/auth0";
+
+// Inside your component:
+const { getJson, postJson, deleteJson } = useSecuredApi();
+// GET request to a secured API endpoint
+const apiData = await getJson(`${import.meta.env.API_BASE_URL}/endpoint`);
+// POST request to a secured API endpoint
+const apiData = await postJson(`${import.meta.env.API_BASE_URL}/endpoint`, { data: "example" });
+// DELETE request to a secured API endpoint
+const apiData = await deleteJson(`${import.meta.env.API_BASE_URL}/endpoint`);
+```
+
+This function automatically:
+
+- Requests the appropriate token with configured audience and scope
+- Attaches the token to the request header
+- Handles errors appropriately
+- Returns the JSON response
+  
 ##### getJsonFromSecuredApi
 
 ```tsx
@@ -374,7 +399,6 @@ By following the steps above, you can easily add new languages and manage intern
 
 This template includes a cookie consent management system to comply with privacy regulations like GDPR. The system displays a modal dialog asking users for consent to use cookies and stores their preference in the browser's localStorage.
 <img width="944" alt="Capture d’écran 2025-04-11 à 19 55 13" src="https://github.com/user-attachments/assets/8769525c-bef0-4705-9b2e-6664aa68a9e0" />
-
 
 ### Features
 

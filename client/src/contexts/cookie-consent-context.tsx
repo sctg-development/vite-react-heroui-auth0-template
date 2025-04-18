@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -28,7 +28,7 @@ export const CookieConsentProvider: FC<{ children: ReactNode }> = ({
   const [cookieConsent, setCookieConsent] =
     useState<CookieConsentStatus>("pending");
 
-  // Charger l'état des cookies depuis localStorage au démarrage
+  // Load the cookie consent status from localStorage
   useEffect(() => {
     const savedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
 

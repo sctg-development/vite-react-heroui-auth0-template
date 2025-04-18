@@ -5,20 +5,21 @@ import { Snippet } from "@heroui/snippet";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { getJsonFromSecuredApi } from "@/components/auth0";
+import { useSecuredApi } from "@/components/auth0";
+
 
 export default function ApiPage() {
   const { t } = useTranslation();
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { getJson} = useSecuredApi();
+  const { user, isAuthenticated } = useAuth0();
   const [apiResponse, setApiResponse] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       if (isAuthenticated) {
         try {
-          const response = await getJsonFromSecuredApi(
-            `${import.meta.env.API_BASE_URL}/get/${user?.sub}`,
-            getAccessTokenSilently,
+          const response = await getJson(
+            `${import.meta.env.API_BASE_URL}/get/${user?.sub}`
           );
 
           setApiResponse(response);

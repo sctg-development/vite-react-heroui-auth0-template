@@ -495,3 +495,98 @@ export const AuthenticationGuardWithPermission: FC<{
 
   return hasPermission ? <>{children}</> : <>{fallback}</>;
 };
+
+/**
+ * Custom hook that provides secured API fetching capabilities
+ * @returns Object with methods for secured API operations
+ * @example
+ * ```tsx
+ * const { getJson, postJson, deleteJson } = useSecuredApi();
+ * const data = await getJson('https://api.example.com/data');
+ * await postJson('https://api.example.com/data', { key: 'value' });
+ * await deleteJson('https://api.example.com/data/1');
+ * ```
+ */
+export const useSecuredApi = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const getJson = async (url: string) => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.AUTH0_AUDIENCE,
+          scope: import.meta.env.AUTH0_SCOPE,
+        },
+      });
+
+      const apiResponse = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      return await apiResponse.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const postJson = async (url: string, data: any) => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.AUTH0_AUDIENCE,
+          scope: import.meta.env.AUTH0_SCOPE,
+        },
+      });
+
+      const apiResponse = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await apiResponse.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const deleteJson = async (url: string) => {
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.AUTH0_AUDIENCE,
+          scope: import.meta.env.AUTH0_SCOPE,
+        },
+      });
+
+      const apiResponse = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      return await apiResponse.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      throw error;
+    }
+  };
+
+  return {
+    getJson,
+    postJson,
+    deleteJson,
+  };
+};
