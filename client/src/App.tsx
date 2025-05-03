@@ -13,6 +13,7 @@ import ApiPage from "@/pages/api";
 import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
+import { PageNotFound } from "./pages/404";
 
 function App() {
   const { isLoading, error } = useAuth0();
@@ -60,6 +61,7 @@ function App() {
           path="/blog"
         />
         <Route element={<AboutPage />} path="/about" />
+        <Route element={<PageNotFound />} path="*" />
       </Routes>
     </Suspense>
   );
