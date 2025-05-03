@@ -11,6 +11,7 @@
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "wrangler": "cd cloudflare-fake-secured-api && npm run dev:env",
     "preview": "vite preview",
+    "update:heroui:cli": "npx heroui-cli@latest upgrade --all --beta",
     "update:heroui": "node --no-warnings --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ./update-heroui.ts"
   },
   "dependencies": {
@@ -51,6 +52,7 @@
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
+    "@sctg/vite-plugin-github-pages-spa": "^0.1.1",
     "@tailwindcss/vite": "^4.1.4",
     "@types/node": "^22.14.1",
     "@types/react": "^19.1.2",

@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
+import { githubPagesSpa } from "@sctg/vite-plugin-github-pages-spa";
 
 import _package from "./package.json" with { type: "json" };
 
@@ -79,7 +80,7 @@ export default defineConfig({
     "import.meta.env.AUTH0_SCOPE": JSON.stringify(process.env.AUTH0_SCOPE),
     "import.meta.env.API_BASE_URL": JSON.stringify(process.env.API_BASE_URL),
   },
-  plugins: [react(), tsconfigPaths(), tailwindcss()],
+  plugins: [react(), tsconfigPaths(), tailwindcss(), githubPagesSpa()],
   build: {
     // Inline assets smaller than 1KB
     // This is for demonstration purposes only
