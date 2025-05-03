@@ -12,6 +12,10 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and an Au
 
 [<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
 
+## On Github Pages ?
+
+Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg-development/vite-plugin-github-pages-spa) Vite 6 plugin for handling the Github Pages limitations with SPA.  
+
 ## Features
 
 - 🚀 Fast development with Vite 6
@@ -74,6 +78,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
 - [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
   - [Star the project](#star-the-project)
   - [Live demo](#live-demo)
+  - [On Github Pages ?](#on-github-pages-)
   - [Features](#features)
   - [Technologies Used](#technologies-used)
   - [Quick Start](#quick-start)
