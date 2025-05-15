@@ -16,8 +16,8 @@ import { clsx } from "@heroui/shared-utils";
 import { Trans, useTranslation } from "react-i18next";
 
 import { I18nIcon, LanguageSwitch } from "./language-switch";
-import { LoginLogoutButton, LoginLogoutLink } from "./auth0";
 
+import { LoginLogoutButton, LoginLogoutLink } from "@/authentication";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {

@@ -40,5 +40,6 @@
   "cookie-policy": "Cookie Policy.",
   "accept-all": "Accept All",
   "reject": "Reject",
-  "cookie-consent-title": "Cookies policy"
+  "cookie-consent-title": "Cookies policy",
+  "error": "Error"
 }

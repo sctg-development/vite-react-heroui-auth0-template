@@ -1,6 +1,6 @@
-# Vite, Auth0 & HeroUI Template
+# Vite, OAuth & HeroUI Template
 
-This is a template for creating applications using Vite 6, HeroUI (v2) and an Auth0 authentication layer.
+This is a template for creating applications using Vite 6, HeroUI (v2) and a flexible authentication layer that supports multiple OAuth providers (Auth0, Dex, and more).
 
 [Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-auth0-template)
 
@@ -20,7 +20,7 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 
 - 🚀 Fast development with Vite 6
 - 🎨 Beautiful UI components from HeroUI v2
-- 🔐 Authentication with Auth0
+- 🔐 Flexible authentication with multiple OAuth providers (Auth0, Dex)
 - 🌐 Internationalization with i18next (6 languages included)
 - 🌙 Dark/Light mode support
 - 📱 Responsive design
@@ -38,6 +38,7 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - [React 19](https://reactjs.org)
 - [i18next](https://www.i18next.com)
 - [Auth0 React SDK](https://auth0.com/docs/quickstart/spa/react)
+- [OIDC Client TS](https://github.com/authts/oidc-client-ts) (For Dex and other OAuth providers)
 - [ESLint 9](https://eslint.org)
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
@@ -75,7 +76,7 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
 
 ## Table of Contents
 
-- [Vite, Auth0 \& HeroUI Template](#vite-auth0--heroui-template)
+- [Vite, OAuth \& HeroUI Template](#vite-oauth--heroui-template)
   - [Star the project](#star-the-project)
   - [Live demo](#live-demo)
   - [On Github Pages ?](#on-github-pages-)
@@ -83,18 +84,16 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
   - [Technologies Used](#technologies-used)
   - [Quick Start](#quick-start)
   - [Table of Contents](#table-of-contents)
-  - [Authentication with Auth0](#authentication-with-auth0)
+  - [Authentication](#authentication)
     - [Setting Up Auth0](#setting-up-auth0)
     - [Environment Variables](#environment-variables)
     - [GitHub secrets](#github-secrets)
-    - [Auth0 Route Guard](#auth0-route-guard)
+    - [Authentication Route Guard](#authentication-route-guard)
     - [Secure API Calls](#secure-api-calls)
       - [Auth0 API Configuration](#auth0-api-configuration)
       - [Making Secure API Calls](#making-secure-api-calls)
-      - [Making Secure API Calls without Hooks (useful outside of React components)](#making-secure-api-calls-without-hooks-useful-outside-of-react-components)
-        - [getJsonFromSecuredApi](#getjsonfromsecuredapi)
-        - [postJsonToSecuredApi](#postjsontosecuredapi)
-      - [Checking Permissions (with or without hooks)](#checking-permissions-with-or-without-hooks)
+      - [Using the Authentication API Directly](#using-the-authentication-api-directly)
+      - [Checking Permissions](#checking-permissions)
       - [Protect a Component with a needed permission](#protect-a-component-with-a-needed-permission)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
@@ -122,10 +121,21 @@ cd cloudflare-fake-secured-api && npm run wrangler:env
     - [Setup pnpm (optional)](#setup-pnpm-optional)
   - [Contributing](#contributing)
   - [License](#license)
+  - [Authentication Architecture](#authentication-architecture)
+    - [Authentication Provider Interface](#authentication-provider-interface)
+    - [Setting Up the Authentication Provider](#setting-up-the-authentication-provider)
+    - [Auth0 Configuration](#auth0-configuration)
+    - [Dex Configuration](#dex-configuration)
+    - [Adding New Providers](#adding-new-providers)
 
-## Authentication with Auth0
+## Authentication
 
-This template uses the Auth0 React SDK to provide an authentication layer. Below are the steps to set up and configure Auth0 for this project.
+This template provides a flexible authentication system with support for multiple OAuth providers. The architecture uses an abstraction layer that allows you to easily switch between different providers while maintaining a consistent API. Currently, the template supports:
+
+- **Auth0** (Default) - Using the Auth0 React SDK
+- **Dex** - Using the OIDC Client TS library
+
+The authentication system can be extended to support other OAuth providers like Azure AD, Okta, or any OAuth 2.0 compliant service by implementing the provider interface.
 
 ### Setting Up Auth0
 
@@ -186,12 +196,12 @@ READ_PERMISSION=read:api
 each secrets should be manually entered in Github like:
 <img width="815" alt="image" src="https://github.com/user-attachments/assets/5543905d-6645-4c78-bbf0-715a33a796dd" />
 
-### Auth0 Route Guard
+### Authentication Route Guard
 
-You can use the `AuthenticationGuard` component to protect routes that require authentication. This component will redirect users to the login page if they are not authenticated.
+You can use the `AuthenticationGuard` component to protect routes that require authentication. This component works with any configured provider and will redirect users to the login page if they are not authenticated.
 
 ```tsx
-import { AuthenticationGuard } from "./components/auth0";
+import { AuthenticationGuard } from "./authentication";
 <Route
           element={<AuthenticationGuard component={DocsPage} />}
           path="/docs"
@@ -233,10 +243,10 @@ To enable secure API calls in your application:
 
 #### Making Secure API Calls
 
-The template provides a hook `useSecuredApi` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
+The template provides a hook `useSecuredApi` that handles token acquisition and authenticated requests for any configured provider:
 
 ```tsx
-import { useSecuredApi } from "@/components/auth0";
+import { useSecuredApi } from "@/authentication";
 
 // Inside your component:
 const { getJson, postJson, deleteJson } = useSecuredApi();
@@ -255,35 +265,30 @@ This function automatically:
 - Handles errors appropriately
 - Returns the JSON response
 
-#### Making Secure API Calls without Hooks (useful outside of React components)
+#### Using the Authentication API Directly
 
-The template provides a utility function `getJsonFromSecuredApi` and `const { getAccessTokenSilently } = useAuth0();` in `src/components/auth0.tsx` that handles token acquisition and authenticated requests:
-
-##### getJsonFromSecuredApi
+For more control, you can use the authentication provider API directly:
 
 ```tsx
-// Example usage in a component
-import { getJsonFromSecuredApi } from "@/components/auth0";
+import { useAuth } from "@/authentication";
 
 // Inside your component:
-// GET request to a secured API endpoint
-const { getAccessTokenSilently } = useAuth0();
-const apiData = await getJsonFromSecuredApi(
-  `${import.meta.env.API_BASE_URL}/endpoint`,
-  getAccessTokenSilently
-);
-```
+const auth = useAuth();
 
-##### postJsonToSecuredApi
+// Access authentication state
+const isLoggedIn = auth.isAuthenticated;
+const userData = auth.user;
 
-```tsx
-// POST request to a secured API endpoint
-const { getAccessTokenSilently } = useAuth0();
-const apiData = await postJsonToSecuredApi(
-  `${import.meta.env.API_BASE_URL}/endpoint`,
-  { data: "example" },
-  getAccessTokenSilently
-);
+// Perform authentication actions
+await auth.login(); 
+await auth.logout();
+
+// Get tokens for API calls
+const token = await auth.getAccessToken();
+
+// Make API calls
+const data = await auth.getJson(`${import.meta.env.API_BASE_URL}/endpoint`);
+await auth.postJson(`${import.meta.env.API_BASE_URL}/endpoint`, { key: 'value' });
 ```
 
 This function automatically:
@@ -293,38 +298,36 @@ This function automatically:
 - Handles errors appropriately
 - Returns the JSON response
 
-#### Checking Permissions (with or without hooks)
+#### Checking Permissions
 
-The template includes a `userHasPermission` function in `src/components/auth0.tsx` that checks if the user has a specific permission in their token:
-
-```tsx
-// Example usage in a component
-import { userHasPermission } from "@/components/auth0";
-const { getAccessTokenSilently } = useAuth0();
-const hasPermission = await userHasPermission(
-  "read:api",
-  getAccessTokenSilently
-);
-```
-This function checks the permissions in the token and returns `true` or `false` based on whether the user has the specified permission.
-
-You can also use the `useSecuredApi` hook to check permissions:
+You can check user permissions with any configured authentication provider:
 
 ```tsx
-import { useSecuredApi } from "@/components/auth0";
+import { useAuth } from "@/authentication";
+
 // Inside your component:
+const auth = useAuth();
+const canReadData = await auth.hasPermission("read:api");
+
+// Or using the useSecuredApi hook
+import { useSecuredApi } from "@/authentication";
+
 const { hasPermission } = useSecuredApi();
-const hasPermission = await hasPermission("read:api");
+const canReadData = await hasPermission("read:api");
 ```
+
+The permission system works across different providers, with each implementation handling the specific token format of that provider.
 
 #### Protect a Component with a needed permission
 
-This template includes a `AuthenticationGuardWithPermission` component that wraps a component and checks if the user has the required permission:
+This template includes a `AuthenticationGuardWithPermission` component that works with any configured provider and wraps a component to check if the user has the required permission:
 
  ```tsx
+ import { AuthenticationGuardWithPermission } from "@/authentication";
+ 
  <AuthenticationGuardWithPermission permission="read:api">
    <ProtectedComponent />
-</AuthenticationGuardWithPermission>
+ </AuthenticationGuardWithPermission>
  ```
 
 #### Testing with Cloudflare Workers
@@ -483,6 +486,15 @@ vite-react-heroui-auth0-template/
 ├──client                        # Frontend application
 │   ├──public/                   # Static assets
 │   ├──src/
+│       ├── authentication/      # Authentication system
+│       │   ├── auth-components.tsx # Authentication UI components
+│       │   ├── auth-root.tsx    # Root authentication provider
+│       │   ├── index.ts         # Exports
+│       │   └── providers/       # Provider implementations
+│       │       ├── auth-provider.ts  # Provider interface
+│       │       ├── auth0-provider.tsx # Auth0 implementation
+│       │       ├── dex-provider.tsx   # Dex implementation
+│       │       └── use-auth.tsx       # Auth context and hooks
 │       ├── components/          # Reusable UI components
 │       ├── config/              # Configuration files
 │       ├── hooks/               # Custom React hooks
@@ -596,3 +608,158 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 This template is primarily licensed under the [MIT license](https://github.com/sctg-development/vite-react-heroui-auth0-template/blob/main/LICENSE).
 
 **Exception:** Four specific files (`site-loading.tsx`, `language-switch.tsx`, `vite.config.ts`, and `auth0.tsx`) are licensed under the AGPL-3.0 license as they contain code originating from my other repositories.
+
+## Authentication Architecture
+
+The authentication system uses a provider-based architecture that allows you to easily switch between different OAuth providers:
+
+### Authentication Provider Interface
+
+All authentication providers implement a common interface that defines standard authentication methods:
+
+```typescript
+export interface AuthProvider {
+  // Authentication state
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: AuthUser | null;
+
+  // Core authentication methods
+  login(options?: LoginOptions): Promise<void>;
+  logout(options?: LogoutOptions): Promise<void>;
+  getAccessToken(options?: TokenOptions): Promise<string | null>;
+  
+  // Permission handling
+  hasPermission(permission: string): Promise<boolean>;
+  
+  // API interaction helpers
+  getJson(url: string): Promise<any>;
+  postJson(url: string, data: any): Promise<any>;
+  deleteJson(url: string): Promise<any>;
+}
+```
+
+### Setting Up the Authentication Provider
+
+To use the authentication system in your application, wrap your components with the `AuthenticationProvider`:
+
+```tsx
+import { AuthenticationProvider } from "./authentication";
+
+// For Auth0 (default)
+<AuthenticationProvider providerType="auth0">
+  <App />
+</AuthenticationProvider>
+
+// For Dex
+<AuthenticationProvider 
+  providerType="dex" 
+  config={{
+    authority: "https://your-dex-server.com",
+    clientId: "your-client-id",
+    redirectUri: window.location.origin,
+    // Other provider-specific options
+  }}
+>
+  <App />
+</AuthenticationProvider>
+```
+
+### Auth0 Configuration
+
+To use Auth0, follow these steps:
+
+1. **Create an Auth0 Account:**
+   - Go to [Auth0](https://auth0.com) and sign up for a free account.
+
+2. **Create a New Application:**
+   - In the Auth0 dashboard, navigate to the "Applications" section.
+   - Click on "Create Application".
+   - Choose a name for your application.
+   - Select "Single Page Web Applications" as the application type.
+   - Click "Create".
+
+3. **Configure Application Settings:**
+   - In the application settings, you will find your `Client ID` and `Domain`.
+   - Set the "Allowed Callback URLs" to `http://localhost:5173` (or your development URL).
+   - Set the "Allowed Logout URLs" to `http://localhost:5173` (or your development URL).
+   - Set the "Allowed Web Origins" to `http://localhost:5173` (or your development URL).
+  
+4. **Sample settings:**
+   - The settings used by the demo deployment on GitHub Pages are:
+     - Allowed Callback URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
+     - Allowed Logout URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
+     - Allowed Web Origins: `https://sctg-development.github.io`
+     - On Github repository settings, the `AUTH0_CLIENT_ID` secret is set to the Auth0 client ID and the `AUTH0_DOMAIN` secret is set to the Auth0 domain.
+     - The full Auth0 configuration screenshot is available [here](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-settings.pdf).
+
+5. **Configure API in Auth0:**
+   - Navigate to "APIs" section in the Auth0 dashboard
+   - Click "Create API"
+   - Provide a descriptive name (e.g., "My Application API")
+   - Set the identifier (audience) - typically a URL or URI (e.g., `https://api.myapp.com`)
+   - Configure the signing algorithm (RS256 recommended)
+
+6. **Configure API Settings:**
+   - Enable RBAC (Role-Based Access Control) if you need granular permission management
+   - Define permissions (scopes) that represent specific actions (e.g., `read:api`, `write:api`)
+   - Configure token settings as needed (expiration, etc.)
+   - Include permissions in the access token
+
+7. **Set Environment Variables:**
+   Add the following to your `.env` file:
+
+   ```env
+   AUTHENTICATION_PROVIDER_TYPE=auth0
+   AUTH0_AUDIENCE=your-api-identifier
+   AUTH0_SCOPE="openid profile email read:api write:api"
+   API_BASE_URL=http://your-api-url.com
+   ```
+
+8. **Sample Configuration:**
+   For reference, view the [Auth0 API configuration](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-api.pdf) used in the demo deployment.
+
+### Dex Configuration
+
+[Dex](https://dexidp.io/) is an identity service that uses OpenID Connect to drive authentication for other apps. To use Dex as your authentication provider:
+
+1. **Setup a Dex Server:**
+   - Install and configure a Dex server following the [official documentation](https://dexidp.io/docs/getting-started/)
+   - Configure Dex to support the OAuth 2.0 authorization code flow
+
+2. **Register your Application in Dex:**
+   - Add your application to the Dex configuration
+   - Set the redirect URI to your application's callback URL (e.g., `http://localhost:5173`)
+
+3. **Configure the Dex Provider:**
+   - Create a `.env` file with your Dex configuration:
+   ```env
+   AUTHENTICATION_PROVIDER_TYPE=dex
+   DEX_AUTHORITY=https://your-dex-server.com
+   DEX_CLIENT_ID=your-dex-client-id
+   DEX_SCOPE="openid profile email"
+   DEX_AUDIENCE=https://your-api.com
+   DEX_JWKS_ENDPOINT=https://your-dex-server.com/dex/keys
+   ```
+
+4. **Initialize the Dex Provider:**
+   ```tsx
+   import { AuthenticationProvider } from "./authentication";
+
+   <AuthenticationProvider
+     providerType="dex"
+   >
+     <App />
+   </AuthenticationProvider>
+   ```
+
+### Adding New Providers
+
+To add support for additional OAuth providers:
+
+1. Create a new provider implementation file in `src/authentication/providers/`
+2. Implement the `AuthProvider` interface
+3. Add the new provider to the `AuthProviderWrapper` in `src/authentication/providers/use-auth.tsx`
+4. Add configuration in `src/authentication/auth-root.tsx`
+
+The modular design makes it easy to extend the authentication system with new providers while maintaining a consistent API throughout your application.

@@ -70,6 +70,11 @@ console.warn(
 );
 export default defineConfig({
   define: {
+    // Get the AUthentication provider type from environment variables
+    "import.meta.env.AUTHENTICATION_PROVIDER_TYPE": JSON.stringify(
+      process.env.AUTHENTICATION_PROVIDER_TYPE || "auth0",
+    ),
+    // Auth0 environment variables
     "import.meta.env.AUTH0_DOMAIN": JSON.stringify(process.env.AUTH0_DOMAIN),
     "import.meta.env.AUTH0_CLIENT_ID": JSON.stringify(
       process.env.AUTH0_CLIENT_ID,
@@ -79,6 +84,21 @@ export default defineConfig({
     ),
     "import.meta.env.AUTH0_SCOPE": JSON.stringify(process.env.AUTH0_SCOPE),
     "import.meta.env.API_BASE_URL": JSON.stringify(process.env.API_BASE_URL),
+    // Dex environment variables
+    "import.meta.env.DEX_AUTHORITY": JSON.stringify(process.env.DEX_AUTHORITY),
+    "import.meta.env.DEX_CLIENT_ID": JSON.stringify(process.env.DEX_CLIENT_ID),
+    "import.meta.env.DEX_REDIRECT_URI": JSON.stringify(
+      process.env.DEX_REDIRECT_URI,
+    ),
+    "import.meta.env.DEX_SCOPE": JSON.stringify(process.env.DEX_SCOPE),
+    "import.meta.env.DEX_AUDIENCE": JSON.stringify(process.env.DEX_AUDIENCE),
+    "import.meta.env.DEX_TOKEN_ISSUER": JSON.stringify(
+      process.env.DEX_TOKEN_ISSUER,
+    ),
+    "import.meta.env.DEX_JWKS_ENDPOINT": JSON.stringify(
+      process.env.DEX_JWKS_ENDPOINT,
+    ),
+    "import.meta.env.DEX_DOMAIN": JSON.stringify(process.env.DEX_DOMAIN),
   },
   plugins: [react(), tsconfigPaths(), tailwindcss(), githubPagesSpa()],
   build: {

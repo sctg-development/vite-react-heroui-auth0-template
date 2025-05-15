@@ -40,5 +40,6 @@
   "cookie-policy": "饼干政策。",
   "accept-all": "接受全部",
   "reject": "拒绝",
-  "cookie-consent-title": "Cookies政策"
+  "cookie-consent-title": "Cookies政策",
+  "error": "错误"
 }

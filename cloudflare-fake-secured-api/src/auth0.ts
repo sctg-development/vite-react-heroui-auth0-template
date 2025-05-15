@@ -33,8 +33,20 @@ export const verifyToken = async (
 	token: string,
 	env: Env,
 ): Promise<jose.JWTPayload> => {
+	let jwksUrl = "";
+	// If provider is Auth0 we use the AUTH0_DOMAIN for creating the JWKS URL
+	if (env.AUTHENTICATION_PROVIDER_TYPE === "auth0") {
+		jwksUrl = `https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`;
+	} else if (env.AUTHENTICATION_PROVIDER_TYPE === "dex") {
+		// If provider is Dex we use the DEX_JWKS_ENDPOINT for creating the JWKS URL
+		jwksUrl = env.DEX_JWKS_ENDPOINT;
+	} else {
+		throw new Error(
+			`Unsupported authentication provider: ${env.AUTHENTICATION_PROVIDER_TYPE}`,
+		);
+	}
 	const JWKS = jose.createRemoteJWKSet(
-		new URL(`https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`),
+		new URL(jwksUrl),
 	);
 
 	const { payload } = await jose.jwtVerify(token, JWKS, {

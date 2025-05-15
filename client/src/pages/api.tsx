@@ -5,12 +5,11 @@ import { Snippet } from "@heroui/snippet";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { useSecuredApi } from "@/components/auth0";
-
+import { useSecuredApi } from "@/authentication";
 
 export default function ApiPage() {
   const { t } = useTranslation();
-  const { getJson} = useSecuredApi();
+  const { getJson } = useSecuredApi();
   const { user, isAuthenticated } = useAuth0();
   const [apiResponse, setApiResponse] = useState("");
 
@@ -19,7 +18,7 @@ export default function ApiPage() {
       if (isAuthenticated) {
         try {
           const response = await getJson(
-            `${import.meta.env.API_BASE_URL}/get/${user?.sub}`
+            `${import.meta.env.API_BASE_URL}/get/${user?.sub}`,
           );
 
           setApiResponse(response);
