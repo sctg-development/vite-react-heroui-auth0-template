@@ -40,6 +40,10 @@ export const useAuth0Provider = (): AuthProvider => {
     try {
       const token = await getAccessTokenSilently({
         authorizationParams: {
+          redirect_uri: new URL(
+            import.meta.env.BASE_URL || "/",
+            window.location.origin,
+          ).toString(),
           audience: options?.audience || import.meta.env.AUTH0_AUDIENCE,
           scope: options?.scope || import.meta.env.AUTH0_SCOPE,
         },

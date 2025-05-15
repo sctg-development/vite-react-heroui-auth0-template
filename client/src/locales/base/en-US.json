@@ -41,5 +41,6 @@
   "accept-all": "Accept All",
   "reject": "Reject",
   "cookie-consent-title": "Cookies policy",
-  "error": "Error"
+  "error": "Error",
+  "authentication_error": "authentication error"
 }

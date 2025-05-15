@@ -41,5 +41,6 @@
   "accept-all": "قبول كل شيء",
   "reject": "يرفض",
   "cookie-consent-title": "سياسة ملفات تعريف الارتباط",
-  "error": "خطأ"
+  "error": "خطأ",
+  "authentication_error": "خطأ المصادقة"
 }

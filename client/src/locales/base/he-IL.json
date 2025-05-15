@@ -41,5 +41,6 @@
   "accept-all": "קבל את הכל",
   "reject": "לִדחוֹת",
   "cookie-consent-title": "מדיניות עוגיות",
-  "error": "שְׁגִיאָה"
+  "error": "שְׁגִיאָה",
+  "authentication_error": "שגיאת אימות"
 }
