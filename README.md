@@ -654,12 +654,6 @@ import { AuthenticationProvider } from "./authentication";
 // For Dex
 <AuthenticationProvider 
   providerType="dex" 
-  config={{
-    authority: "https://your-dex-server.com",
-    clientId: "your-client-id",
-    redirectUri: window.location.origin,
-    // Other provider-specific options
-  }}
 >
   <App />
 </AuthenticationProvider>
