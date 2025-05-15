@@ -38,12 +38,15 @@ export const useAuth0Provider = (): AuthProvider => {
     options?: TokenOptions,
   ): Promise<string | null> => {
     try {
+      const redirectUri = new URL(
+        import.meta.env.BASE_URL || "/",
+        window.location.origin,
+      ).toString();
+      // eslint-disable-next-line padding-line-between-statements
+      console.log("Redirect URI:", redirectUri);
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          redirect_uri: new URL(
-            import.meta.env.BASE_URL || "/",
-            window.location.origin,
-          ).toString(),
+          redirect_uri: redirectUri,
           audience: options?.audience || import.meta.env.AUTH0_AUDIENCE,
           scope: options?.scope || import.meta.env.AUTH0_SCOPE,
         },
