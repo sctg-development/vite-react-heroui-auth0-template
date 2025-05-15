@@ -42,7 +42,8 @@ export const useAuth0Provider = (): AuthProvider => {
         import.meta.env.BASE_URL || "/",
         window.location.origin,
       ).toString();
-      // eslint-disable-next-line padding-line-between-statements
+
+      // eslint-disable-next-line no-console
       console.log("Redirect URI:", redirectUri);
       const token = await getAccessTokenSilently({
         authorizationParams: {
