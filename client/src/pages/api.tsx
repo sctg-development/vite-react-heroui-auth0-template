@@ -1,16 +1,16 @@
 import { Trans, useTranslation } from "react-i18next";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { useEffect, useState } from "react";
 import { Snippet } from "@heroui/snippet";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { useSecuredApi } from "@/authentication";
+import { useAuth, useSecuredApi } from "@/authentication";
 
 export default function ApiPage() {
   const { t } = useTranslation();
   const { getJson } = useSecuredApi();
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated } = useAuth();
   const [apiResponse, setApiResponse] = useState("");
 
   useEffect(() => {
