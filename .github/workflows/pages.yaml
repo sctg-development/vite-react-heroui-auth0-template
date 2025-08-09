@@ -36,23 +36,27 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version 4.9.2
-          yarn install
+          yarn install --immutable
+
+      - name: Create .env file
+        run: |
+          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > .env
+          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> .env
+          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
+          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
+          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> .env
+          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
+          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> .env
+          echo "WRITE_PERMISSION=${{ secrets.WRITE_PERMISSION }}" >> .env
+          echo "ADMIN_PERMISSION=${{ secrets.ADMIN_PERMISSION }}" >> .env
+          echo "VITE_BASE_PATH=${{ github.event.repository.name }}" >> .env
 
       - name: Build project
         # You can change the base path to your repository name
         run: |
-          cd apps/client
-          export AUTH0_DOMAIN="${{ secrets.AUTH0_DOMAIN }}"
-          export AUTH0_CLIENT_ID="${{ secrets.AUTH0_CLIENT_ID }}"
-          export AUTH0_SCOPE="${{ secrets.AUTH0_SCOPE }}"
-          export AUTH0_AUDIENCE="${{ secrets.AUTH0_AUDIENCE }}"
-          export API_BASE_URL="${{ secrets.API_BASE_URL }}"
-          export CORS_ORIGIN="${{ secrets.CORS_ORIGIN }}"
-          export READ_PERMISSION="${{ secrets.READ_PERMISSION }}"
-          export WRITE_PERMISSION="${{ secrets.WRITE_PERMISSION }}"
-          export ADMIN_PERMISSION="${{ secrets.ADMIN_PERMISSION }}"
-          npx vite build --base=/${{ github.event.repository.name }}
+          yarn build:client:env
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3

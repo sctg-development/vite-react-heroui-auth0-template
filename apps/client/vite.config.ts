@@ -69,6 +69,7 @@ console.warn(
   `Launching Vite with\nAUTH0_DOMAIN: ${process.env.AUTH0_DOMAIN}\nAUTH0_CLIENT_ID: ${process.env.AUTH0_CLIENT_ID}\nAUTH0_AUDIENCE: ${process.env.AUTH0_AUDIENCE}\nAUTH0_SCOPE: ${process.env.AUTH0_SCOPE}\nAPI_BASE_URL: ${process.env.API_BASE_URL}`,
 );
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || "/",
   define: {
     // Get the AUthentication provider type from environment variables
     "import.meta.env.AUTHENTICATION_PROVIDER_TYPE": JSON.stringify(

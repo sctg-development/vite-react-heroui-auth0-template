@@ -32,8 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn set version 4.9.2
-          yarn install
+          yarn install --immutable
 
       - name: Create .env file
         run: |
