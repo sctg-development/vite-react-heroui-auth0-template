@@ -186,6 +186,8 @@ AUTH0_AUDIENCE=https://myapi.example.com
 API_BASE_URL=https://myapi.example.com/api
 CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
+WRITE_PERMISSION=write:api
+ADMIN_PERMISSION=admin:api
 ```
 
 ### GitHub secrets
@@ -201,6 +203,8 @@ AUTH0_AUDIENCE=https://myapi.example.com
 API_BASE_URL=https://myapi.example.com/api
 CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
+WRITE_PERMISSION=write:api
+ADMIN_PERMISSION=admin:api
 ```
 
 each secrets should be manually entered in Github like:
@@ -627,7 +631,7 @@ This template includes a GitHub Actions workflow to automatically deploy your ap
 ## Tailwind CSS 4
 
 This template uses Tailwind CSS 4, which is a utility-first CSS framework. You can customize the styles by modifying the `tailwind.config.js` file.  
-Currently HeroUI uses Tailwind CSS 3, but [@winchesHe](https://github.com/winchesHe) create a port of HeroUI to Tailwind CSS 4, you can find it [here](https://github.com/heroui-inc/heroui/pull/4656), HeroUI packages are available at <https://github.com/heroui-inc/heroui/pull/4656#issuecomment-2651218074>.
+HeroUI supports Tailwind CSS 4 out of the box starting from version 2.8.
 
 ## How to Use
 
