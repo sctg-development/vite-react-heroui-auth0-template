@@ -12,6 +12,7 @@
     "build:env": "turbo run build:env",
     "dev": "turbo run dev",
     "dev:env": "turbo run dev:env",
+    "preview:env": "turbo run preview:env",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "type-check": "turbo run type-check",

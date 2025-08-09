@@ -22,7 +22,7 @@ export type PackageJson = {
     dev: string;
     build: string;
     lint: string;
-    preview: string;
+    "preview:env": string;
     [key: string]: string;
   };
   dependencies: {

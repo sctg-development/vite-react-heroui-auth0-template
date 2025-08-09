@@ -4443,7 +4443,7 @@ __metadata:
     react-dom: "npm:^19.1.1"
     react-i18next: "npm:^15.6.1"
     react-router-dom: "npm:^7.8.0"
-    tailwind-variants: "npm:^1.0.0"
+    tailwind-variants: "npm:2.1.0"
     tailwindcss: "npm:^4.1.11"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.2"
@@ -8129,13 +8129,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:3.0.2":
-  version: 3.0.2
-  resolution: "tailwind-merge@npm:3.0.2"
-  checksum: 10/f5142ddd670018f4816b8510b0464e703be369018544c35eeb8bbba48b9dc320b5f86561ed9c84602b66d367213ee1508cd28b7c9c572420cfa5ecfc848f28c7
-  languageName: node
-  linkType: hard
-
 "tailwind-merge@npm:3.3.1":
   version: 3.3.1
   resolution: "tailwind-merge@npm:3.3.1"
@@ -8156,14 +8149,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-variants@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "tailwind-variants@npm:1.0.0"
-  dependencies:
-    tailwind-merge: "npm:3.0.2"
+"tailwind-variants@npm:2.1.0":
+  version: 2.1.0
+  resolution: "tailwind-variants@npm:2.1.0"
   peerDependencies:
+    tailwind-merge: ">=3.0.0"
     tailwindcss: "*"
-  checksum: 10/67c70ef005a421d3acd5556fcdf78e9cde28f247c3b9a142affec2d739a4f42b33a4ac95b568639bbe747b6f31def5e83765909666e7907f480c891d68b37aed
+  peerDependenciesMeta:
+    tailwind-merge:
+      optional: true
+  checksum: 10/89ddab2554f657da232b0b8bb2fb04e855376868c8174d943eaf65aa0a6dfaf517b592b214d760aea3913a508dae2ce6361364e887034317069c083f942fc960
   languageName: node
   linkType: hard
 
