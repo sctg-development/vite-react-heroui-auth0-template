@@ -31,7 +31,7 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 
 ## Technologies Used
 
-- [Vite 6](https://vitejs.dev/guide/)
+- [Vite 7](https://vitejs.dev/guide/)
 - [HeroUI](https://heroui.com)
 - [Tailwind CSS 4](https://tailwindcss.com)
 - [Tailwind Variants](https://tailwind-variants.org)
@@ -57,14 +57,17 @@ npm install && cd ../cloudflare-fake-secured-api && npm install
 
 # Create a .env file with your Auth0 credentials
 cat <<EOF > .env
+AUTHENTICATION_PROVIDER_TYPE=auth0
 AUTH0_CLIENT_ID=your-auth0-client-id
 AUTH0_CLIENT_SECRET=your-auth0-client-secret
 AUTH0_DOMAIN=your-auth0-domain
-AUTH0_SCOPE="openid profile email read:api write:api"
+AUTH0_SCOPE="openid profile email read:api write:api admin:api"
 AUTH0_AUDIENCE=http://localhost:5173
 API_BASE_URL=http://localhost:8787/api
 CORS_ORIGIN=http://localhost:5173
 READ_PERMISSION=read:api
+WRITE_PERMISSION=write:api
+ADMIN_PERMISSION=admin:api
 EOF
 
 # Start the development server

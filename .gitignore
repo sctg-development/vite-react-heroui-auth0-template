@@ -27,3 +27,4 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb.env
 .env
+_sensitive_datas/_sensitive_datas.tar.xz

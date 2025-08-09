@@ -1,0 +1,25 @@
+#!/bin/bash
+if [ ! -n "$WORKSPACE_ROOT" ]; then
+    echo "If you restore for a cloned repo you may declare a WORKSPACE_ROOT environment variable before running this"
+    exit 0
+fi
+echo "WORKSPACE_ROOT is set to '$WORKSPACE_ROOT'"
+read -p "Press any key to continue... " -n1 -s
+PWD=`pwd`
+cd ~
+#1-decrypt
+DECRYPT=""
+if [ -n "$CRYPTOKEN" ]; then
+    DECRYPT="-pass pass:$CRYPTOKEN"
+    echo "Decrypting with 'openssl aes-256-cbc -a -d -md sha256 $DECRYPT -in $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz.enc -out $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz'"
+else
+    DECRYPT=""
+fi
+openssl aes-256-cbc -a -d -md sha256 $DECRYPT -in $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz.enc -out $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz
+#2-show content
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "_sensitive_datas/_sensitive_datas.tar.xz contains:"
+tar -tvJf $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz
+#3 show help
+echo "if you want to restore enter:"
+echo "cd $WORKSPACE_ROOT && tar -xvJf $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz && rm $WORKSPACE_ROOT/_sensitive_datas/_sensitive_datas.tar.xz"
