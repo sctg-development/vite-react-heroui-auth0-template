@@ -31,12 +31,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install dependencies
         run: |
-          cd apps/client
-          npm ci
+          corepack enable
+          yarn set version 4.9.2
+          yarn install
 
       - name: Build project
         # You can change the base path to your repository name
@@ -49,6 +50,8 @@ jobs:
           export API_BASE_URL="${{ secrets.API_BASE_URL }}"
           export CORS_ORIGIN="${{ secrets.CORS_ORIGIN }}"
           export READ_PERMISSION="${{ secrets.READ_PERMISSION }}"
+          export WRITE_PERMISSION="${{ secrets.WRITE_PERMISSION }}"
+          export ADMIN_PERMISSION="${{ secrets.ADMIN_PERMISSION }}"
           npx vite build --base=/${{ github.event.repository.name }}
 
       - name: Upload pages artifact

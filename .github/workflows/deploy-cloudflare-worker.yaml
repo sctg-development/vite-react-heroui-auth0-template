@@ -31,24 +31,28 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd apps/cloudflare-worker
-          npm ci
+          corepack enable
+          yarn set version 4.9.2
+          yarn install
 
       - name: Create .env file
         run: |
-          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > cloudflare-fake-secured-api/.env
-          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> cloudflare-fake-secured-api/.env
-          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> cloudflare-fake-secured-api/.env
-          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> cloudflare-fake-secured-api/.env
-          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> cloudflare-fake-secured-api/.env
-          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> cloudflare-fake-secured-api/.env
-          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> cloudflare-fake-secured-api/.env
-          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> cloudflare-fake-secured-api/.env
-          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> cloudflare-fake-secured-api/.env
+          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > .env
+          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> .env
+          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
+          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
+          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> .env
+          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
+          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> .env
+          echo "WRITE_PERMISSION=${{ secrets.WRITE_PERMISSION }}" >> .env
+          echo "ADMIN_PERMISSION=${{ secrets.ADMIN_PERMISSION }}" >> .env
 
       - name: Replace "// vars.*" in wrangler.jsonc with a json string
         run: |
-          cd cloudflare-fake-secured-api
+          cp .env apps/cloudflare-worker/.env
+          cd apps/cloudflare-worker
           cp wrangler.jsonc wrangler.jsonc.bak
           set -a && source .env && set +a 
           cat .env
@@ -60,7 +64,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: cloudflare-fake-secured-api
+          workingDirectory: apps/cloudflare-worker
           vars: |
             AUTHENTICATION_PROVIDER_TYPE
             AUTH0_DOMAIN
@@ -70,6 +74,8 @@ jobs:
             API_BASE_URL
             CORS_ORIGIN
             READ_PERMISSION
+            WRITE_PERMISSION
+            ADMIN_PERMISSION
         env:
           AUTHENTICATION_PROVIDER_TYPE: ${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
@@ -79,3 +85,5 @@ jobs:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
           READ_PERMISSION: ${{ secrets.READ_PERMISSION }}
+          WRITE_PERMISSION: ${{ secrets.WRITE_PERMISSION }}
+          ADMIN_PERMISSION: ${{ secrets.ADMIN_PERMISSION }}
