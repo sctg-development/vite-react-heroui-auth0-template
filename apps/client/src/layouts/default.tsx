@@ -2,13 +2,18 @@ import type React from "react";
 
 import { Link } from "@heroui/link";
 import { Trans, useTranslation } from "react-i18next";
-
-import { Navbar } from "@/components/navbar";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/dropdown";
 import { Snippet } from "@heroui/snippet";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import { createRemoteJWKSet, JWTPayload, jwtVerify } from "jose";
+
+import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
   children,
@@ -57,7 +62,8 @@ export default function DefaultLayout({
             <Trans ns="base">powered-by</Trans>
           </span>
           <p className="text-primary">HeroUI</p>
-        </Link>&nbsp;
+        </Link>
+        &nbsp;
         <Dropdown>
           <DropdownTrigger>
             {isAuthenticated ? (

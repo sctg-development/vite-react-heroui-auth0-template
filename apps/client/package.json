@@ -1,16 +1,17 @@
 {
-  "name": "vite-template-with-auth",
+  "name": "client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:env": "set -a && source ../.env && set +a && vite",
+    "dev:env": "bash -c 'set -a && source ../../.env && set +a && vite'",
     "build": "tsc && vite build",
-    "build:env": "set -a && source ../.env && set +a && vite build",
+    "build:env": "bash -c 'set -a && source ../../.env && set +a && tsc && vite build'",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
-    "wrangler": "cd cloudflare-fake-secured-api && npm run dev:env",
+    "type-check": "tsc --noEmit",
     "preview": "vite preview",
+    "clean": "rm -rf dist .turbo node_modules/.vite",
     "update:heroui:cli": "npx heroui-cli@latest upgrade --all --beta",
     "update:heroui": "node --no-warnings --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ./update-heroui.ts"
   },

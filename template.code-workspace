@@ -1,12 +1,16 @@
 {
   "folders": [
     {
-      "name": "Cloudflare worker",
-      "path": "./cloudflare-fake-secured-api"
+      "name": "Root",
+      "path": "./"
     },
     {
-      "name": "Client app",
-      "path": "./client",
+      "name": "Client App",
+      "path": "./apps/client"
+    },
+    {
+      "name": "Cloudflare Worker",
+      "path": "./apps/cloudflare-worker"
     },
     {
       "name": "GitHub Actions",
@@ -24,7 +28,7 @@
         "path": "bash",
         "args": [
           "-c",
-          "if [ -f ${workspaceFolder}/../.env ]; then set -a && source ${workspaceFolder}/../.env && export WORKSPACE_ROOT=${workspaceFolder}/../ && set +a && echo '.env loaded successfully from ${workspaceFolder}/../.env'; else echo '.env file not found'; fi && exec bash -i"
+          "echo WORKSPACE_ROOT=${workspaceFolder};if [ -f ${workspaceFolder}/.env ]; then set -a && source ${workspaceFolder}/.env && export WORKSPACE_ROOT=${workspaceFolder}/ && set +a && echo '.env loaded successfully from ${workspaceFolder}/.env'; else echo '.env file not found'; fi && exec bash -i"
         ]
       }
     },
@@ -33,9 +37,23 @@
         "path": "zsh",
         "args": [
           "-c",
-          "if [ -f ${workspaceFolder}/../.env ]; then set -a && source ${workspaceFolder}/../.env  && export WORKSPACE_ROOT=${workspaceFolder}/../ && set +a && echo '.env loaded successfully from ${workspaceFolder}/../.env'; else echo '.env file not found'; fi && exec zsh -i"
+          "echo WORKSPACE_ROOT=${workspaceFolder}; if [ -f ${workspaceFolder}/.env ]; then set -a && source ${workspaceFolder}/.env && export WORKSPACE_ROOT=${workspaceFolder}/ && set +a && echo '.env loaded successfully from ${workspaceFolder}/.env'; else echo '.env file not found'; fi && exec zsh -i"
         ]
       }
-    }
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "typescript.workspaceSymbols.scope": "allOpenProjects",
+    "npm.packageManager": "yarn",
+    "turbo.useLocalTurbo": true,
+    "eslint.workingDirectories": ["apps/client", "apps/cloudflare-worker"]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-json",
+      "bierner.markdown-mermaid"
+    ]
   }
 }

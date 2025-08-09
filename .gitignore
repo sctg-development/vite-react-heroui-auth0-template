@@ -28,3 +28,22 @@ yarn.lock
 bun.lockb.env
 .env
 _sensitive_datas/_sensitive_datas.tar.xz
+
+# Yarn 2+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Local env files
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Turbo
+.turbo

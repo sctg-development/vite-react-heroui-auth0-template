@@ -1,0 +1,38 @@
+{
+  "name": "cloudflare-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dev:env": "bash -c 'cp ../../.env .dev.vars && wrangler dev'",
+    "start": "wrangler dev",
+    "build": "echo 'Cloudflare Worker does not require build step'",
+    "test": "vitest",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint ./src/**/*.{ts,tsx} --fix",
+    "clean": "rm -rf .wrangler .dev.vars .turbo",
+    "cf-typegen": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.61",
+    "@cloudflare/workers-types": "^4.20250809.0",
+    "@types/node": "22.17.1",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "jiti": "^2.5.1",
+    "typescript": "^5.9.2",
+    "vitest": "~3.2.4",
+    "wrangler": "^4.28.1"
+  },
+  "dependencies": {
+    "jose": "^6.0.12"
+  }
+}

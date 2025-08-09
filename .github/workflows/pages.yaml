@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - client/**
-      
-#   release:
-#     types: [published]
-#   schedule:
-#     - cron: '0 0 * * 0' # every Sunday at midnight
+      - apps/client/**
+
+  #   release:
+  #     types: [published]
+  #   schedule:
+  #     - cron: '0 0 * * 0' # every Sunday at midnight
   workflow_dispatch:
 
 permissions:
@@ -35,13 +35,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd client
+          cd apps/client
           npm ci
 
       - name: Build project
         # You can change the base path to your repository name
         run: |
-          cd client
+          cd apps/client
           export AUTH0_DOMAIN="${{ secrets.AUTH0_DOMAIN }}"
           export AUTH0_CLIENT_ID="${{ secrets.AUTH0_CLIENT_ID }}"
           export AUTH0_SCOPE="${{ secrets.AUTH0_SCOPE }}"
@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload docs directory
-          path: "client/dist"
+          path: "apps/client/dist"
 
   deploy:
     environment:

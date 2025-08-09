@@ -1,0 +1,38 @@
+{
+  "name": "vite-react-heroui-auth0-template",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "yarn@4.9.2",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "build:env": "turbo run build:env",
+    "dev": "turbo run dev",
+    "dev:env": "turbo run dev:env",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean",
+    "dev:client": "turbo run dev --filter=client",
+    "dev:worker": "turbo run dev --filter=cloudflare-worker",
+    "dev:client:env": "turbo run dev:env --filter=client",
+    "dev:worker:env": "turbo run dev:env --filter=cloudflare-worker",
+    "build:client": "turbo run build --filter=client",
+    "build:worker": "turbo run build --filter=cloudflare-worker",
+    "build:client:env": "turbo run build:env --filter=client",
+    "build:worker:env": "turbo run build:env --filter=cloudflare-worker",
+    "deploy:worker": "turbo run deploy --filter=cloudflare-worker"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "turbo": "^2.2.0",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=4.0.0"
+  }
+}

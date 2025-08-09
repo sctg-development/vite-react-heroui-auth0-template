@@ -1,6 +1,6 @@
 # Vite, OAuth & HeroUI Template
 
-This is a template for creating applications using Vite 6, HeroUI (v2) and a flexible authentication layer that supports multiple OAuth providers (Auth0, Dex, and more).
+This is a monorepo template for creating applications using Vite 7, HeroUI (v2) and a flexible authentication layer that supports multiple OAuth providers (Auth0, Dex, and more). Built with Turborepo and Yarn 4 workspaces for optimal developer experience and performance.
 
 [Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-auth0-template)
 
@@ -14,11 +14,11 @@ This is a template for creating applications using Vite 6, HeroUI (v2) and a fle
 
 ## On Github Pages ?
 
-Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg-development/vite-plugin-github-pages-spa) Vite 6 plugin for handling the Github Pages limitations with SPA.  
+Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg-development/vite-plugin-github-pages-spa) Vite 6 plugin for handling the Github Pages limitations with SPA.
 
 ## Features
 
-- 🚀 Fast development with Vite 6
+- 🚀 Fast development with Vite 7
 - 🎨 Beautiful UI components from HeroUI v2
 - 🔐 Flexible authentication with multiple OAuth providers (Auth0, Dex)
 - 🌐 Internationalization with i18next (6 languages included)
@@ -28,6 +28,8 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - 🧩 Type-safe with TypeScript
 - 🧹 Code quality with ESLint 9
 - 📦 Optimized build with manual chunk splitting
+- ⚡ Turborepo for intelligent caching and parallel builds
+- 🧶 Yarn 4 workspaces for efficient dependency management
 
 ## Technologies Used
 
@@ -42,6 +44,8 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - [ESLint 9](https://eslint.org)
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
+- [Turborepo](https://turbo.build/) (Monorepo build system)
+- [Yarn 4](https://yarnpkg.com/) (Package manager with workspaces)
 
 ## Quick Start
 
@@ -50,10 +54,14 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 
 # Change directory
-cd vite-react-heroui-auth0-template/client
+cd vite-react-heroui-auth0-template
 
-# Install dependencies
-npm install && cd ../cloudflare-fake-secured-api && npm install
+# Install Yarn 4 (if not already installed)
+corepack enable
+yarn set version 4.9.2
+
+# Install all dependencies (uses Yarn workspaces)
+yarn install
 
 # Create a .env file with your Auth0 credentials
 cat <<EOF > .env
@@ -70,12 +78,11 @@ WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
 EOF
 
-# Start the development server
-cd client && npm run dev:env &
-# Start the Cloudflare Worker
-cd cloudflare-fake-secured-api && npm run wrangler:env
-
+# Start both applications with environment variables
+yarn dev:env
 ```
+
+For more detailed commands, see the [Turborepo Guide](./TURBOREPO-GUIDE.md).
 
 ## Table of Contents
 
@@ -157,7 +164,7 @@ The authentication system can be extended to support other OAuth providers like 
    - Set the "Allowed Callback URLs" to `http://localhost:5173` (or your development URL).
    - Set the "Allowed Logout URLs" to `http://localhost:5173` (or your development URL).
    - Set the "Allowed Web Origins" to `http://localhost:5173` (or your development URL).
-  
+
 4. **Sample settings:**
    - The settings used by the demo deployment on GitHub Pages are:
      - Allowed Callback URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
@@ -205,10 +212,7 @@ You can use the `AuthenticationGuard` component to protect routes that require a
 
 ```tsx
 import { AuthenticationGuard } from "./authentication";
-<Route
-          element={<AuthenticationGuard component={DocsPage} />}
-          path="/docs"
-        />
+<Route element={<AuthenticationGuard component={DocsPage} />} path="/docs" />;
 ```
 
 ### Secure API Calls
@@ -256,7 +260,9 @@ const { getJson, postJson, deleteJson } = useSecuredApi();
 // GET request to a secured API endpoint
 const apiData = await getJson(`${import.meta.env.API_BASE_URL}/endpoint`);
 // POST request to a secured API endpoint
-const apiData = await postJson(`${import.meta.env.API_BASE_URL}/endpoint`, { data: "example" });
+const apiData = await postJson(`${import.meta.env.API_BASE_URL}/endpoint`, {
+  data: "example",
+});
 // DELETE request to a secured API endpoint
 const apiData = await deleteJson(`${import.meta.env.API_BASE_URL}/endpoint`);
 ```
@@ -283,7 +289,7 @@ const isLoggedIn = auth.isAuthenticated;
 const userData = auth.user;
 
 // Perform authentication actions
-await auth.login(); 
+await auth.login();
 await auth.logout();
 
 // Get tokens for API calls
@@ -291,7 +297,9 @@ const token = await auth.getAccessToken();
 
 // Make API calls
 const data = await auth.getJson(`${import.meta.env.API_BASE_URL}/endpoint`);
-await auth.postJson(`${import.meta.env.API_BASE_URL}/endpoint`, { key: 'value' });
+await auth.postJson(`${import.meta.env.API_BASE_URL}/endpoint`, {
+  key: "value",
+});
 ```
 
 This function automatically:
@@ -325,28 +333,26 @@ The permission system works across different providers, with each implementation
 
 This template includes a `AuthenticationGuardWithPermission` component that works with any configured provider and wraps a component to check if the user has the required permission:
 
- ```tsx
- import { AuthenticationGuardWithPermission } from "@/authentication";
- 
- <AuthenticationGuardWithPermission permission="read:api">
-   <ProtectedComponent />
- </AuthenticationGuardWithPermission>
- ```
+```tsx
+import { AuthenticationGuardWithPermission } from "@/authentication";
+
+<AuthenticationGuardWithPermission permission="read:api">
+  <ProtectedComponent />
+</AuthenticationGuardWithPermission>;
+```
 
 #### Testing with Cloudflare Workers
 
 For demonstration purposes, the template includes a Cloudflare Worker that acts as a secured backend API:
 
-1. **Deploy the Worker:**
+1. **Start the Worker with environment variables:**
 
 ```bash
-cd cloudflare-fake-secured-api
-npm install
-cd ..
-npm run wrangler
+# From the root directory
+yarn dev:worker:env
 ```
 
-3. **Test API Integration:**
+2. **Test API Integration:**
    With both your application and the worker running, navigate to the `/api` route in your application to see the secure API call in action.
 
 #### Understanding Token Flow
@@ -392,14 +398,19 @@ The `LanguageSwitch` component allows users to switch between the available lang
 To use the `LanguageSwitch` component in your application, simply include it in your JSX:
 
 ```tsx
-<LanguageSwitch availableLanguages={[{ code: "en-US", nativeName: "English", isRTL: false, isDefault: true },{ code: "fr-FR", nativeName: "Français", isRTL: false }]} />
+<LanguageSwitch
+  availableLanguages={[
+    { code: "en-US", nativeName: "English", isRTL: false, isDefault: true },
+    { code: "fr-FR", nativeName: "Français", isRTL: false },
+  ]}
+/>
 ```
 
 or more simply using the `availableLanguages` array defined in the `src/i18n.ts` file:
 
 ```tsx
 import { availableLanguages } from "@/i18n";
-<LanguageSwitch availableLanguages={availableLanguages} />
+<LanguageSwitch availableLanguages={availableLanguages} />;
 ```
 
 This component will render a dropdown menu with the available languages, allowing users to switch languages easily.
@@ -461,15 +472,16 @@ You can access the cookie consent status in any component using the `useCookieCo
 import { useCookieConsent } from "@/contexts/cookie-consent-context";
 
 const MyComponent = () => {
-  const { cookieConsent, acceptCookies, rejectCookies, resetCookieConsent } = useCookieConsent();
-  
+  const { cookieConsent, acceptCookies, rejectCookies, resetCookieConsent } =
+    useCookieConsent();
+
   // Load analytics only if cookies are accepted
   useEffect(() => {
     if (cookieConsent === "accepted") {
       // Initialize analytics, tracking scripts, etc.
     }
   }, [cookieConsent]);
-  
+
   // ...rest of your component
 };
 ```
@@ -482,66 +494,123 @@ const MyComponent = () => {
 
 ## Project Structure
 
-This template follows a mono-repository structure with the frontend application and Cloudflare Worker in separate directories.
+This template follows a monorepo structure managed by Turborepo with Yarn 4 workspaces, containing the frontend application and Cloudflare Worker.
 
 ```text
 vite-react-heroui-auth0-template/
-├──client                        # Frontend application
-│   ├──public/                   # Static assets
-│   ├──src/
-│       ├── authentication/      # Authentication system
-│       │   ├── auth-components.tsx # Authentication UI components
-│       │   ├── auth-root.tsx    # Root authentication provider
-│       │   ├── index.ts         # Exports
-│       │   └── providers/       # Provider implementations
-│       │       ├── auth-provider.ts  # Provider interface
-│       │       ├── auth0-provider.tsx # Auth0 implementation
-│       │       ├── dex-provider.tsx   # Dex implementation
-│       │       └── use-auth.tsx       # Auth context and hooks
-│       ├── components/          # Reusable UI components
-│       ├── config/              # Configuration files
-│       ├── hooks/               # Custom React hooks
-│       ├── layouts/             # Page layout components
-│       ├── locales/             # Translation files
-│       ├── pages/               # Page components
-│       ├── styles/              # Global styles
-│       ├── types/               # TypeScript definitions
-│       ├── App.tsx              # Main application component
-│       ├── i18n.ts              # i18next configuration
-│       ├── main.tsx             # Application entry point
-│       └── provider.tsx         # HeroUI provider setup
-├── cloudflare-fake-secured-api/ # Cloudflare Worker for testing
+├── package.json                 # Root package.json with Turborepo + workspaces
+├── turbo.json                   # Turborepo configuration
+├── .yarnrc.yml                  # Yarn 4 configuration
+├── yarn.lock                    # Unified lockfile for all packages
+├── TURBOREPO-GUIDE.md          # Turborepo usage guide
+├── apps/
+│   ├── client/                  # Frontend application
+│   │   ├── public/              # Static assets
+│   │   ├── src/
+│   │   │   ├── authentication/  # Authentication system
+│   │   │   │   ├── auth-components.tsx # Authentication UI components
+│   │   │   │   ├── auth-root.tsx    # Root authentication provider
+│   │   │   │   ├── index.ts         # Exports
+│   │   │   │   └── providers/       # Provider implementations
+│   │   │   │       ├── auth-provider.ts  # Provider interface
+│   │   │   │       ├── auth0-provider.tsx # Auth0 implementation
+│   │   │   │       ├── dex-provider.tsx   # Dex implementation
+│   │   │   │       └── use-auth.tsx       # Auth context and hooks
+│   │   │   ├── components/      # Reusable UI components
+│   │   │   ├── config/          # Configuration files
+│   │   │   ├── hooks/           # Custom React hooks
+│   │   │   ├── layouts/         # Page layout components
+│   │   │   ├── locales/         # Translation files
+│   │   │   ├── pages/           # Page components
+│   │   │   ├── styles/          # Global styles
+│   │   │   ├── types/           # TypeScript definitions
+│   │   │   ├── App.tsx          # Main application component
+│   │   │   ├── i18n.ts          # i18next configuration
+│   │   │   ├── main.tsx         # Application entry point
+│   │   │   └── provider.tsx     # HeroUI provider setup
+│   │   ├── tailwind.config.js   # Tailwind CSS configuration
+│   │   ├── vite.config.ts       # Vite configuration
+│   │   └── update-heroui.ts     # Helper script to update HeroUI packages
+│   └── cloudflare-worker/       # Cloudflare Worker for testing API
+│       ├── src/
+│       ├── wrangler.jsonc       # Cloudflare Worker configuration
+│       └── package.json         # Worker dependencies
 ├── .github/                     # GitHub workflows and configuration
 ├── .vscode/                     # VS Code configuration
-├── tailwind.config.js           # Tailwind CSS configuration
-├── vite.config.ts               # Vite configuration
-└── update-heroui.ts             # Helper script to update HeroUI packages
+└── template.code-workspace      # VS Code workspace configuration
 ```
 
-## Available Scripts in the frontend application
+## Available Scripts
+
+This monorepo uses Turborepo for task orchestration. All scripts can be run from the root directory:
+
+### Development Commands
 
 ```bash
-# Start the development server
-npm run dev
+# Start all applications in development mode
+yarn dev
 
-# Start the development server with environment variables
-npm run dev:env
+# Start all applications with environment variables
+yarn dev:env
 
-# Run the Cloudflare Worker
-npm run wrangler
+# Start only the client application
+yarn dev:client
 
-# Build for production
-npm run build
+# Start only the client application with environment variables
+yarn dev:client:env
 
-# Run ESLint to check and fix code
-npm run lint
+# Start only the Cloudflare Worker
+yarn dev:worker
 
-# Preview production build locally
-npm run preview
-
-# Update HeroUI packages to the latest beta
-npm run update:heroui
+# Start only the Cloudflare Worker with environment variables
+yarn dev:worker:env
 ```
+
+### Build Commands
+
+```bash
+# Build all applications
+yarn build
+
+# Build all applications with environment variables
+yarn build:env
+
+# Build only the client application
+yarn build:client
+
+# Build only the client with environment variables
+yarn build:client:env
+
+# Build only the Cloudflare Worker
+yarn build:worker
+
+# Build only the Cloudflare Worker with environment variables
+yarn build:worker:env
+```
+
+### Other Commands
+
+```bash
+# Run ESLint on all packages
+yarn lint
+
+# Run type checking on all packages
+yarn type-check
+
+# Run tests on all packages
+yarn test
+
+# Clean all build artifacts and caches
+yarn clean
+
+# Deploy the Cloudflare Worker
+yarn deploy:worker
+
+# Update HeroUI packages (run from client directory)
+cd apps/client && yarn update:heroui
+```
+
+For more detailed information, see the [Turborepo Guide](./TURBOREPO-GUIDE.md).
 
 ## Deployment
 
@@ -558,7 +627,7 @@ This template includes a GitHub Actions workflow to automatically deploy your ap
 ## Tailwind CSS 4
 
 This template uses Tailwind CSS 4, which is a utility-first CSS framework. You can customize the styles by modifying the `tailwind.config.js` file.  
-Currently HeroUI uses Tailwind CSS 3, but [@winchesHe](https://github.com/winchesHe)  create a port of HeroUI to Tailwind CSS 4, you can find it [here](https://github.com/heroui-inc/heroui/pull/4656), HeroUI packages are available at <https://github.com/heroui-inc/heroui/pull/4656#issuecomment-2651218074>.
+Currently HeroUI uses Tailwind CSS 3, but [@winchesHe](https://github.com/winchesHe) create a port of HeroUI to Tailwind CSS 4, you can find it [here](https://github.com/heroui-inc/heroui/pull/4656), HeroUI packages are available at <https://github.com/heroui-inc/heroui/pull/4656#issuecomment-2651218074>.
 
 ## How to Use
 
@@ -568,39 +637,55 @@ To clone the project, run the following command:
 git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 ```
 
-### Manual chunk splitting (frontend)
-
-In the `vite.config.ts` file, all `@heroui` packages are manually split into a separate chunk. This is done to reduce the size of the main bundle. You can remove this configuration if you don't want to split the packages.
-
 ### Install dependencies
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+This project uses Yarn 4 with workspaces. Install all dependencies from the root:
 
 ```bash
-npm install
+# Enable Yarn 4 if not already done
+corepack enable
+yarn set version 4.9.2
+
+# Install all dependencies
+yarn install
 ```
 
 ### Run the development server
 
 ```bash
-npm run dev
+# Start all applications with environment variables
+yarn dev:env
+
+# Or start individual applications
+yarn dev:client:env  # Client only
+yarn dev:worker:env  # Cloudflare Worker only
 ```
 
-### Run the Cloudflare Worker
+### Turborepo Benefits
 
-```bash
-npm run wrangler
-```
+This template uses Turborepo which provides:
 
-### Setup pnpm (optional)
+- **Intelligent caching**: Build outputs are cached and shared across team members
+- **Parallel execution**: Tasks run in parallel when possible
+- **Dependency awareness**: Tasks run in the correct order based on dependencies
+- **Incremental builds**: Only rebuild what changed
+- **Remote caching**: Share build caches across your team (optional)
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+### Migration from npm to Turborepo
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
+If you're migrating from the previous npm-based setup, here's the command mapping:
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+| Old npm command                                       | New Yarn command                   |
+| ----------------------------------------------------- | ---------------------------------- |
+| `cd client && npm run dev:env`                        | `yarn dev:client:env`              |
+| `cd cloudflare-fake-secured-api && npm run dev:env`   | `yarn dev:worker:env`              |
+| `cd client && npm run build:env`                      | `yarn build:client:env`            |
+| `cd cloudflare-fake-secured-api && npm run build:env` | `yarn build:worker:env`            |
+| `cd client && npm run lint`                           | `yarn lint` (runs on all packages) |
+
+### Manual chunk splitting (frontend)
+
+In the `apps/client/vite.config.ts` file, all `@heroui` packages are manually split into a separate chunk. This is done to reduce the size of the main bundle. You can remove this configuration if you don't want to split the packages.
 
 ## Contributing
 
@@ -631,10 +716,10 @@ export interface AuthProvider {
   login(options?: LoginOptions): Promise<void>;
   logout(options?: LogoutOptions): Promise<void>;
   getAccessToken(options?: TokenOptions): Promise<string | null>;
-  
+
   // Permission handling
   hasPermission(permission: string): Promise<boolean>;
-  
+
   // API interaction helpers
   getJson(url: string): Promise<any>;
   postJson(url: string, data: any): Promise<any>;
@@ -655,8 +740,8 @@ import { AuthenticationProvider } from "./authentication";
 </AuthenticationProvider>
 
 // For Dex
-<AuthenticationProvider 
-  providerType="dex" 
+<AuthenticationProvider
+  providerType="dex"
 >
   <App />
 </AuthenticationProvider>
@@ -681,7 +766,7 @@ To use Auth0, follow these steps:
    - Set the "Allowed Callback URLs" to `http://localhost:5173` (or your development URL).
    - Set the "Allowed Logout URLs" to `http://localhost:5173` (or your development URL).
    - Set the "Allowed Web Origins" to `http://localhost:5173` (or your development URL).
-  
+
 4. **Sample settings:**
    - The settings used by the demo deployment on GitHub Pages are:
      - Allowed Callback URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
@@ -730,6 +815,7 @@ To use Auth0, follow these steps:
 
 3. **Configure the Dex Provider:**
    - Create a `.env` file with your Dex configuration:
+
    ```env
    AUTHENTICATION_PROVIDER_TYPE=dex
    DEX_AUTHORITY=https://your-dex-server.com
@@ -740,14 +826,13 @@ To use Auth0, follow these steps:
    ```
 
 4. **Initialize the Dex Provider:**
+
    ```tsx
    import { AuthenticationProvider } from "./authentication";
 
-   <AuthenticationProvider
-     providerType="dex"
-   >
+   <AuthenticationProvider providerType="dex">
      <App />
-   </AuthenticationProvider>
+   </AuthenticationProvider>;
    ```
 
 ### Adding New Providers

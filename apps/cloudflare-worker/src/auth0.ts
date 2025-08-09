@@ -34,6 +34,7 @@ export const verifyToken = async (
 	env: Env,
 ): Promise<jose.JWTPayload> => {
 	let jwksUrl = "";
+
 	// If provider is Auth0 we use the AUTH0_DOMAIN for creating the JWKS URL
 	if (env.AUTHENTICATION_PROVIDER_TYPE === "auth0") {
 		jwksUrl = `https://${env.AUTH0_DOMAIN}/.well-known/jwks.json`;
@@ -45,9 +46,7 @@ export const verifyToken = async (
 			`Unsupported authentication provider: ${env.AUTHENTICATION_PROVIDER_TYPE}`,
 		);
 	}
-	const JWKS = jose.createRemoteJWKSet(
-		new URL(jwksUrl),
-	);
+	const JWKS = jose.createRemoteJWKSet(new URL(jwksUrl));
 
 	const { payload } = await jose.jwtVerify(token, JWKS, {
 		issuer: `https://${env.AUTH0_DOMAIN}/`,

@@ -1,81 +1,81 @@
 name: CloudflareWorkerDeploy
 
 on:
-    push:
-      branches:
-        - main
-      paths:
-        - cloudflare-fake-secured-api/**
-        
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/cloudflare-worker/**
+
+  workflow_dispatch:
 
 permissions:
-    contents: write
-    pages: write
-    id-token: write
-    packages: write
-    attestations: write
+  contents: write
+  pages: write
+  id-token: write
+  packages: write
+  attestations: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: "22"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
-        - name: Install dependencies
-          run: |
-            cd cloudflare-fake-secured-api
-            npm ci
-        
-        - name: Create .env file
-          run: |
-            echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > cloudflare-fake-secured-api/.env
-            echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> cloudflare-fake-secured-api/.env
-            echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> cloudflare-fake-secured-api/.env
-            echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> cloudflare-fake-secured-api/.env
-            echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> cloudflare-fake-secured-api/.env
-            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> cloudflare-fake-secured-api/.env
-            echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> cloudflare-fake-secured-api/.env
-            echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> cloudflare-fake-secured-api/.env
-            echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> cloudflare-fake-secured-api/.env
+      - name: Install dependencies
+        run: |
+          cd apps/cloudflare-worker
+          npm ci
 
-        - name: Replace "// vars.*" in wrangler.jsonc with a json string
-          run: |
-            cd cloudflare-fake-secured-api
-            cp wrangler.jsonc wrangler.jsonc.bak
-            set -a && source .env && set +a 
-            cat .env
-            cat wrangler.jsonc.bak | sed 's|// "vars".*.|,"vars": { "AUTHENTICATION_PROVIDER_TYPE": "'"${AUTHENTICATION_PROVIDER_TYPE}"'", "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'" }|' > wrangler.jsonc.2
-            cat wrangler.jsonc.2 | sed 's|// "routes".*.|,"routes": [{ "pattern": "'"${DOMAIN_NAME}"'", "custom_domain": true }]|'  > wrangler.jsonc
-            cat wrangler.jsonc
-        - name: Deploy
-          uses: cloudflare/wrangler-action@v3
-          with:
-            apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-            accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-            workingDirectory: cloudflare-fake-secured-api
-            vars: |
-                AUTHENTICATION_PROVIDER_TYPE
-                AUTH0_DOMAIN
-                AUTH0_CLIENT_ID
-                AUTH0_SCOPE
-                AUTH0_AUDIENCE
-                API_BASE_URL
-                CORS_ORIGIN
-                READ_PERMISSION
-          env:
-            AUTHENTICATION_PROVIDER_TYPE: ${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}
-            AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-            AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-            AUTH0_SCOPE: ${{ secrets.AUTH0_SCOPE }}
-            AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
-            API_BASE_URL: ${{ secrets.API_BASE_URL }}
-            CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-            READ_PERMISSION: ${{ secrets.READ_PERMISSION }}
+      - name: Create .env file
+        run: |
+          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > cloudflare-fake-secured-api/.env
+          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> cloudflare-fake-secured-api/.env
+          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> cloudflare-fake-secured-api/.env
+          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> cloudflare-fake-secured-api/.env
+          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> cloudflare-fake-secured-api/.env
+          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> cloudflare-fake-secured-api/.env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> cloudflare-fake-secured-api/.env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> cloudflare-fake-secured-api/.env
+          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> cloudflare-fake-secured-api/.env
+
+      - name: Replace "// vars.*" in wrangler.jsonc with a json string
+        run: |
+          cd cloudflare-fake-secured-api
+          cp wrangler.jsonc wrangler.jsonc.bak
+          set -a && source .env && set +a 
+          cat .env
+          cat wrangler.jsonc.bak | sed 's|// "vars".*.|,"vars": { "AUTHENTICATION_PROVIDER_TYPE": "'"${AUTHENTICATION_PROVIDER_TYPE}"'", "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'" }|' > wrangler.jsonc.2
+          cat wrangler.jsonc.2 | sed 's|// "routes".*.|,"routes": [{ "pattern": "'"${DOMAIN_NAME}"'", "custom_domain": true }]|'  > wrangler.jsonc
+          cat wrangler.jsonc
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare-fake-secured-api
+          vars: |
+            AUTHENTICATION_PROVIDER_TYPE
+            AUTH0_DOMAIN
+            AUTH0_CLIENT_ID
+            AUTH0_SCOPE
+            AUTH0_AUDIENCE
+            API_BASE_URL
+            CORS_ORIGIN
+            READ_PERMISSION
+        env:
+          AUTHENTICATION_PROVIDER_TYPE: ${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+          AUTH0_SCOPE: ${{ secrets.AUTH0_SCOPE }}
+          AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          READ_PERMISSION: ${{ secrets.READ_PERMISSION }}

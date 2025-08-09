@@ -1,0 +1,50 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env", ".env"],
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local", ".env.production"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*"]
+    },
+    "build:env": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "../../.env", ".env", ".env.local", ".env.production"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*", "AUTH0_*", "CLOUDFLARE_*"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*", "AUTH0_*", "CLOUDFLARE_*"]
+    },
+    "dev:env": {
+      "cache": false,
+      "persistent": true,
+      "inputs": ["$TURBO_DEFAULT$", "../../.env"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*", "AUTH0_*", "CLOUDFLARE_*"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": ["$TURBO_DEFAULT$", "eslint.config.*", ".eslintrc*", "tsconfig.json"]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json", "tsconfig.*.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "jest.config.*", "playwright.config.*"]
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$", "wrangler.json*", ".env"],
+      "env": ["NODE_ENV", "CLOUDFLARE_*", "AUTH0_*"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}
