@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - apps/cloudflare-worker/**
+      - yarn.lock
+      - .github/workflows/deploy-cloudflare-worker.yaml
 
   workflow_dispatch:
 
