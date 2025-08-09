@@ -42,5 +42,10 @@
   "reject": "يرفض",
   "cookie-consent-title": "سياسة ملفات تعريف الارتباط",
   "error": "خطأ",
-  "authentication_error": "خطأ المصادقة"
+  "authentication_error": "خطأ المصادقة",
+  "expiration": "انتهاء",
+  "no-permissions": "لا أذونات",
+  "permissions": "أذونات",
+  "token": "رمز",
+  "user": "مستخدم"
 }

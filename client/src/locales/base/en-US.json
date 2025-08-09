@@ -42,5 +42,10 @@
   "reject": "Reject",
   "cookie-consent-title": "Cookies policy",
   "error": "Error",
-  "authentication_error": "authentication error"
+  "authentication_error": "authentication error",
+  "expiration": "expiration",
+  "permissions": "permissions",
+  "no-permissions": "no permissions",
+  "token": "token",
+  "user": "user"
 }

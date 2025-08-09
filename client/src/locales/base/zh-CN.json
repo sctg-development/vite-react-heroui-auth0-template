@@ -42,5 +42,10 @@
   "reject": "拒绝",
   "cookie-consent-title": "Cookies政策",
   "error": "错误",
-  "authentication_error": "身份验证错误"
+  "authentication_error": "身份验证错误",
+  "expiration": "到期",
+  "no-permissions": "无许可",
+  "permissions": "权限",
+  "token": "令牌",
+  "user": "用户"
 }

@@ -42,5 +42,10 @@
   "reject": "Rejeter",
   "cookie-consent-title": "Politique de cookies",
   "error": "Erreur",
-  "authentication_error": "erreur d'authentification"
+  "authentication_error": "erreur d'authentification",
+  "expiration": "expiration",
+  "no-permissions": "Aucune autorisation",
+  "permissions": "autorisation",
+  "token": "jeton",
+  "user": "utilisateur"
 }
