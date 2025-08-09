@@ -4,13 +4,13 @@
   "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "clean"],
       "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local", ".env.production"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
       "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*"]
     },
     "build:env": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "clean"],
       "inputs": ["$TURBO_DEFAULT$", "../../.env", ".env", ".env.local", ".env.production"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
       "env": ["NODE_ENV", "NEXT_PUBLIC_*", "PUBLIC_*", "VITE_*", "AUTH0_*", "CLOUDFLARE_*"]
