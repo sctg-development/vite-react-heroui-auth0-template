@@ -63,6 +63,7 @@ export interface AuthProvider {
   // API interaction helpers
   getJson(url: string): Promise<any>;
   postJson(url: string, data: any): Promise<any>;
+  putJson(url: string, data: any): Promise<any>;
   deleteJson(url: string): Promise<any>;
 }
 

@@ -193,8 +193,8 @@ export const useDexProvider = (
     return () => {
       userManager.events.removeUserLoaded(addUserSignedIn);
       userManager.events.removeUserUnloaded(addUserSignedOut);
-      userManager.events.removeAccessTokenExpiring(() => {});
-      userManager.events.removeAccessTokenExpired(() => {});
+      userManager.events.removeAccessTokenExpiring(() => { });
+      userManager.events.removeAccessTokenExpired(() => { });
     };
   }, [userManager]);
 
@@ -425,14 +425,44 @@ export const useDexProvider = (
     }
   };
 
+  const putJson = async (url: string, data: any): Promise<any> => {
+    try {
+      const accessToken = await getAccessToken();
+
+      if (!accessToken) {
+        throw new Error("Not authenticated");
+      }
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error ${response.status}: ${response.statusText}`,
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error putting JSON:", error);
+      throw error;
+    }
+  };
+
   // Map OIDC user to common AuthUser format
   const authUser: AuthUser | null = user
     ? {
-        name: user.profile.name,
-        nickname: user.profile.nickname || user.profile.preferred_username,
-        email: user.profile.email,
-        ...user.profile,
-      }
+      name: user.profile.name,
+      nickname: user.profile.nickname || user.profile.preferred_username,
+      email: user.profile.email,
+      ...user.profile,
+    }
     : null;
 
   return {
@@ -445,6 +475,7 @@ export const useDexProvider = (
     hasPermission,
     getJson,
     postJson,
+    putJson,
     deleteJson,
   };
 };
