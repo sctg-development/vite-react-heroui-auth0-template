@@ -1,3 +1,11 @@
 @import "tailwindcss";
+@layer theme, base, components, utilities;
 
-@config "./../../tailwind.config.js";
+/* Be careful with the paths turbo mono repos install heroui in the root */
+@source '../../../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@source '../../../../node_modules/@heroui/*/dist/**/*.{js,ts,jsx,tsx}';
+@plugin './heroui-plugin.ts';
+
+@theme {
+  --background-image-gradient-border-violet: linear-gradient(hsl(var(--heroui-background)), hsl(var(--heroui-background))), linear-gradient(83.87deg, #F54180, #9353D3);
+}

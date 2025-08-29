@@ -17,7 +17,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "type-check": "turbo run type-check",
-    "clean": "turbo run clean",
+    "clean": "turbo run clean && rm -rf node_modules",
     "dev:client": "turbo run dev --filter=client",
     "dev:worker": "turbo run dev --filter=cloudflare-worker",
     "dev:client:env": "turbo run dev:env --filter=client",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.18",
-    "turbo": "^2.2.0",
+    "turbo": "^2.5.6",
     "typescript": "^5.9.2"
   },
   "engines": {

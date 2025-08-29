@@ -35,18 +35,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Workaround for Heroui dependencies
-        run: |
-          mv package.json package.json.bak
-          mv yarn.lock yarn.lock.bak
-          cd apps/client
-          npm install
-          cd ../../apps/cloudflare-worker
-          npm install
-          cd ../../
-          mv package.json.bak package.json
-          mv yarn.lock.bak yarn.lock
-
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
         with:

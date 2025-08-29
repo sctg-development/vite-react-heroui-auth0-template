@@ -76,6 +76,7 @@ CORS_ORIGIN=http://localhost:5173
 READ_PERMISSION=read:api
 WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
+AUTHENTICATION_PROVIDER_TYPE=auth0
 EOF
 
 # Start both applications with environment variables
@@ -188,6 +189,7 @@ CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
 WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
+AUTHENTICATION_PROVIDER_TYPE=auth0
 ```
 
 ### GitHub secrets
@@ -205,6 +207,7 @@ CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
 WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
+AUTHENTICATION_PROVIDER_TYPE=auth0
 ```
 
 each secrets should be manually entered in Github like:
