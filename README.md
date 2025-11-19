@@ -1,3 +1,5 @@
+![](https://tokeisrv.sctg.eu.org/b1/github.com/sctg-development/vite-react-heroui-auth0-templat?type=TypeScript,TSX,html&category=code)
+![](https://tokeisrv.sctg.eu.org/b1/github.com/sctg-development/vite-react-heroui-auth0-templat?type=TypeScript,TSX,html&category=comments)
 # Vite, OAuth & HeroUI Template
 
 This is a monorepo template for creating applications using Vite 7, HeroUI (v2) and a flexible authentication layer that supports multiple OAuth providers (Auth0, Dex, and more). Built with Turborepo and Yarn 4 workspaces for optimal developer experience and performance.
