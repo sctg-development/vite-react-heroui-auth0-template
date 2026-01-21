@@ -31,7 +31,7 @@
     "jiti": "^2.5.1",
     "typescript": "^5.9.2",
     "vitest": "~3.2.4",
-    "wrangler": "^4.28.1"
+    "wrangler": "^4.59.1"
   },
   "dependencies": {
     "jose": "^6.0.12"
