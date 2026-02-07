@@ -28,12 +28,12 @@
     "deploy:worker": "turbo run deploy --filter=cloudflare-worker"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18",
-    "turbo": "^2.5.6",
+    "@types/node": "^24.10.11",
+    "turbo": "^2.8.3",
     "typescript": "^5.9.2"
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=24.0.0",
     "yarn": ">=4.0.0"
   }
 }
