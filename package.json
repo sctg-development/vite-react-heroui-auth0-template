@@ -10,7 +10,6 @@
   "scripts": {
     "build": "turbo run build",
     "build:env": "turbo run build:env",
-    "build:reproductible": "./build-reproductible-dev.sh",
     "dev": "turbo run dev",
     "dev:env": "turbo run dev:env",
     "preview:env": "turbo run preview:env",
