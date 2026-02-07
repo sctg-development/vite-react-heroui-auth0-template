@@ -44,6 +44,15 @@ fi
 # If .env is newer than an artifact, rebuild
 if [ -f "$ENV_FILE" ] && [ -f "dist/index.html" ]; then
   if [ "$ENV_FILE" -nt "dist/index.html" ]; then
+    echo "⚠️  $ENV_FILE is newer than dist/index.html — will rebuild."
+    need_build=1
+  fi
+fi
+
+# If any source/config files are newer than dist/index.html, rebuild
+if [ -f "dist/index.html" ]; then
+  if find src package.json vite.config.ts postcss.config.js tailwind.config.js -type f -newer dist/index.html -print -quit | grep -q .; then
+    echo "⚠️  Source files changed since last build — will rebuild."
     need_build=1
   fi
 fi
