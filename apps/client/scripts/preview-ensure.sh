@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2024-2025 Ronan LE MEILLAT
+# Copyright (c) 2024-2026 Ronan LE MEILLAT
 # License: AGPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify

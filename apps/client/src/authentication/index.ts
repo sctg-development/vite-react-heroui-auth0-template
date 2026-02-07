@@ -1,5 +1,5 @@
 /**
- * @copyright Copyright (c) 2024-2025 Ronan LE MEILLAT
+ * @copyright Copyright (c) 2024-2026 Ronan LE MEILLAT
  * @license AGPL-3.0-or-later
  */
 
