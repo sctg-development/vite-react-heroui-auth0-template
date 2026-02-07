@@ -3906,15 +3906,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.15.18":
-  version: 22.19.9
-  resolution: "@types/node@npm:22.19.9"
-  dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/32bcafba1de0eff44a3527568549ba03132a53f4e3d6270bb3148005338c81bed17b78d1f35f373164b6125718034d524b7f9f221103cc8649b9da52d6752497
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^24.10.11":
   version: 24.10.11
   resolution: "@types/node@npm:24.10.11"
@@ -8436,7 +8427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.5.6":
+"turbo@npm:^2.8.3":
   version: 2.8.3
   resolution: "turbo@npm:2.8.3"
   dependencies:
@@ -8556,13 +8547,6 @@ __metadata:
     has-symbols: "npm:^1.1.0"
     which-boxed-primitive: "npm:^1.1.1"
   checksum: 10/fadb347020f66b2c8aeacf8b9a79826fa34cc5e5457af4eb0bbc4e79bd87fed0fa795949825df534320f7c13f199259516ad30abc55a6e7b91d8d996ca069e50
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
   languageName: node
   linkType: hard
 
@@ -8703,8 +8687,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vite-react-heroui-auth0-template@workspace:."
   dependencies:
-    "@types/node": "npm:^22.15.18"
-    turbo: "npm:^2.5.6"
+    "@types/node": "npm:^24.10.11"
+    turbo: "npm:^2.8.3"
     typescript: "npm:^5.9.2"
   languageName: unknown
   linkType: soft
