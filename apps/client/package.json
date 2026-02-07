@@ -10,7 +10,7 @@
     "build:env": "bash -c 'yarn clean && set -a && source ../../.env && set +a && tsc && vite build'",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "type-check": "tsc --noEmit",
-    "preview:env": "bash -c 'set -a && source ../../.env && set +a && vite preview --port 5173'",
+    "preview:env": "bash ./scripts/preview-ensure.sh",
     "clean": "rm -rf dist .turbo node_modules/.vite node_modules/.cache",
     "update:heroui:cli": "npx heroui-cli@latest upgrade --all",
     "update:heroui": "node --no-warnings --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ./update-heroui.ts"
