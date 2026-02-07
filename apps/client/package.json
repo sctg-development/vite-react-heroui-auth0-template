@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:env": "bash -c 'set -a && source ../../.env && set +a && vite'",
     "build": "yarn clean && tsc && vite build",
-    "build:env": "bash -c 'yarn clean && set -a && source ../../.env && set +a && tsc && vite build'",
+    "build:env": "bash -c 'yarn clean && set -a && source ../../.env && set +a && tsc && vite build \"$@\"' --",
     "lint": "eslint ./src/**/**/*.{ts,tsx} --fix",
     "type-check": "tsc --noEmit",
     "preview:env": "bash ./scripts/preview-ensure.sh",

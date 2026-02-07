@@ -95,7 +95,7 @@ jobs:
       - name: Build project
         # You can change the base path to your repository name
         run: |
-          yarn build:client:env
+          yarn build:client:env -- --base="/${{ github.event.repository.name }}/"
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
