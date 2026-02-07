@@ -55,7 +55,7 @@
   "devDependencies": {
     "@sctg/vite-plugin-github-pages-spa": "^0.1.1",
     "@tailwindcss/vite": "^4.1.18",
-    "@types/node": "^22.15.18",
+    "@types/node": "^24.10.11",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.54.0",

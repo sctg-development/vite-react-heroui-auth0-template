@@ -3906,21 +3906,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:22.17.1":
-  version: 22.17.1
-  resolution: "@types/node@npm:22.17.1"
-  dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/775d3996693ce2e717267c810669a8122308676487130c91590022ded38a999fef63fd63b4631fdbbceeea9470f0ecf6a2333a3abbc4f917f40b404bbb57e9bc
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^22.15.18":
   version: 22.19.9
   resolution: "@types/node@npm:22.19.9"
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10/32bcafba1de0eff44a3527568549ba03132a53f4e3d6270bb3148005338c81bed17b78d1f35f373164b6125718034d524b7f9f221103cc8649b9da52d6752497
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.10.11":
+  version: 24.10.11
+  resolution: "@types/node@npm:24.10.11"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10/ff7124058917a0f658637ac0137a3906c83c1dc78928228d8045a06ae8b6a02c1f15bf1fbe86c8d6f1839ccdd6033f3d79d615493f196f54b9130c50a65a64fa
   languageName: node
   linkType: hard
 
@@ -4646,7 +4646,7 @@ __metadata:
     "@sctg/vite-plugin-github-pages-spa": "npm:^0.1.1"
     "@tailwindcss/postcss": "npm:^4.1.18"
     "@tailwindcss/vite": "npm:^4.1.18"
-    "@types/node": "npm:^22.15.18"
+    "@types/node": "npm:^24.10.11"
     "@types/react": "npm:^19.2.13"
     "@types/react-dom": "npm:^19.2.3"
     "@typescript-eslint/eslint-plugin": "npm:^8.54.0"
@@ -4689,7 +4689,7 @@ __metadata:
   dependencies:
     "@cloudflare/vitest-pool-workers": "npm:^0.12.10"
     "@cloudflare/workers-types": "npm:^4.20260207.0"
-    "@types/node": "npm:22.17.1"
+    "@types/node": "npm:^24.10.11"
     "@typescript-eslint/eslint-plugin": "npm:^8.54.0"
     "@typescript-eslint/parser": "npm:^8.54.0"
     eslint: "npm:^9.39.2"
@@ -8563,6 +8563,13 @@ __metadata:
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
   checksum: 10/ec8f41aa4359d50f9b59fa61fe3efce3477cc681908c8f84354d8567bb3701fafdddf36ef6bff307024d3feb42c837cf6f670314ba37fc8145e219560e473d14
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10/db43439f69c2d94cc29f75cbfe9de86df87061d6b0c577ebe9bb3255f49b22c50162a7d7eb413b0458b6510b8ca299ac7cff38c3a29fbd31af9f504bcf7fbc0d
   languageName: node
   linkType: hard
 
