@@ -778,11 +778,13 @@ To use Auth0, follow these steps:
 
 4. **Sample settings:**
    - The settings used by the demo deployment on GitHub Pages are:
-     - Allowed Callback URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
-     - Allowed Logout URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template`
+     - Allowed Callback URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template,https://sctg-development.github.io/vite-react-heroui-auth0-template/`
+     - Allowed Logout URLs: `https://sctg-development.github.io/vite-react-heroui-auth0-template,https://sctg-development.github.io/vite-react-heroui-auth0-template/`
      - Allowed Web Origins: `https://sctg-development.github.io`
      - On Github repository settings, the `AUTH0_CLIENT_ID` secret is set to the Auth0 client ID and the `AUTH0_DOMAIN` secret is set to the Auth0 domain.
      - The full Auth0 configuration screenshot is available [here](https://sctg-development.github.io/vite-react-heroui-auth0-template/auth0-settings.pdf).
+
+    ⚡ Small tip: Auth0 takes care of the final `/` in the URLs, so you may set it with and without the trailing slash.  
 
 5. **Configure API in Auth0:**
    - Navigate to "APIs" section in the Auth0 dashboard
