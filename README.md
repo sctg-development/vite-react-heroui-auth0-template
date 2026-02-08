@@ -823,6 +823,37 @@ const verified = await jwtVerify(token, JWKS, {
 
 _Tip_: increase the TTL in stable environments where the JWKS rarely changes; lower it if you expect frequent key rotations.
 
+---
+
+## Cloudflare Worker routing utility 🔧
+
+A small, reusable Router for Cloudflare Workers lives at `apps/cloudflare-worker/src/routes/router.ts`.
+
+Features:
+
+- Route registration helpers: `router.get`, `router.post`, `router.put`, `router.delete`.
+- Path parameters (e.g. `/api/items/:id`) are parsed and injected as `request.params` inside handlers.
+- Optional permission checks: pass a permission string (e.g. `env.READ_PERMISSION`) when registering a route; the router validates the `Authorization` header and uses the worker `checkPermissions()` helper (see `apps/cloudflare-worker/src/auth0.ts`).
+- Rate limiting support: if your Worker has a `RATE_LIMITER` binding the router will call `env.RATE_LIMITER.limit({ key })` and return HTTP 429 when the quota is exceeded.
+- Standard CORS handling and consistent JSON error responses.
+
+Quick example (see `apps/cloudflare-worker/src/routes/index.ts`):
+
+```ts
+import { Router } from "./routes/router";
+import { setupRoutes } from "./routes";
+
+export default {
+  async fetch(request: Request, env: Env) {
+    const router = new Router(env);
+    setupRoutes(router, env);
+    return await router.handleRequest(request, env);
+  }
+} as ExportedHandler<Env>;
+```
+
+Unit tests are present in `apps/cloudflare-worker/test/router.spec.ts` (Vitest). The router now supports Rocket-style paths like `/api/get/<user>` and catch-all patterns `/files/<path..>` which translate internally to `URLPattern` for reliable matching and parameter extraction.
+
 7. **Set Environment Variables:**
    Add the following to your `.env` file:
 

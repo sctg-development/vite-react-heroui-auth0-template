@@ -67,9 +67,14 @@ export const checkPermissions = async (
 	token: string,
 	permission: string | string[],
 	env: Env,
-): Promise<{ access: boolean; payload: jose.JWTPayload }> => {
+): Promise<{ access: boolean; payload: jose.JWTPayload; permissions: string[] }> => {
 	const payload = await verifyToken(token, env);
 	let access = false;
+	let permissions: string[] = [];
+
+	if (payload.permissions && Array.isArray(payload.permissions)) {
+		permissions = payload.permissions as string[];
+	}
 
 	if (typeof permission === "string") {
 		access = (payload.permissions as string[]).includes(permission);
@@ -79,5 +84,5 @@ export const checkPermissions = async (
 		);
 	}
 
-	return { access, payload };
+	return { access, payload, permissions };
 };
