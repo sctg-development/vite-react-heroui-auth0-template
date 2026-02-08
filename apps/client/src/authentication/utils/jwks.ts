@@ -1,3 +1,7 @@
+/**
+ * @copyright Copyright (c) 2024-2026 Ronan LE MEILLAT
+ * @license AGPL-3.0-or-later
+ */
 // JWKS cache utility for template
 import { createLocalJWKSet } from "jose";
 
