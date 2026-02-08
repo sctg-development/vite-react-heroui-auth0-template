@@ -92,7 +92,7 @@ describe("Router basic behavior", () => {
     });
 
     test("Protected route with valid token and permission returns 200", async () => {
-        ((checkPermissions as unknown) as vi.Mock).mockResolvedValue({ access: true, payload: { sub: "user|1234" }, permissions: ["read:api"] });
+        ((checkPermissions as unknown) as Mock).mockResolvedValue({ access: true, payload: { sub: "user|1234" }, permissions: ["read:api"] });
 
         const env = makeEnv();
         const router = new Router(env);
@@ -104,7 +104,7 @@ describe("Router basic behavior", () => {
 
         const req = makeRequest("GET", "https://example.test/private", { Authorization: "Bearer faketoken" });
         const res = await router.handleRequest(req, env);
-        const body = await res.json();
+        const body = await res.json() as any;
         expect(res.status).toBe(200);
         expect(body.ok).toBe(true);
         expect(body.user).toBe("user|1234");
@@ -123,7 +123,7 @@ describe("Router basic behavior", () => {
 
         const req = makeRequest("GET", "https://example.test/api/get/alice");
         const res = await router.handleRequest(req, env);
-        const body = await res.json();
+        const body = await res.json() as any;
         expect(res.status).toBe(200);
         expect(body.ok).toBe(true);
         expect(body.params).toEqual({ user: "alice" });
@@ -139,7 +139,7 @@ describe("Router basic behavior", () => {
 
         const req = makeRequest("GET", "https://example.test/files/a/b/c.txt");
         const res = await router.handleRequest(req, env);
-        const body = await res.json();
+        const body = await res.json() as any;
         expect(res.status).toBe(200);
         expect(body.ok).toBe(true);
         // catch-all returns joined path
@@ -148,7 +148,7 @@ describe("Router basic behavior", () => {
 
     test("checkPermissions returns permissions array and router stores it", async () => {
         // Simulate checkPermissions returning permissions
-        ((checkPermissions as unknown) as vi.Mock).mockResolvedValue({ access: true, payload: { sub: "user|5678" }, permissions: ["read:api"] });
+        ((checkPermissions as unknown) as Mock).mockResolvedValue({ access: true, payload: { sub: "user|5678" }, permissions: ["read:api"] });
 
         const env = makeEnv();
         const router = new Router(env);
@@ -160,7 +160,7 @@ describe("Router basic behavior", () => {
 
         const req = makeRequest("GET", "https://example.test/private2", { Authorization: "Bearer faketoken2" });
         const res = await router.handleRequest(req, env);
-        const body = await res.json();
+        const body = await res.json() as any;
         expect(res.status).toBe(200);
         expect(body.ok).toBe(true);
         expect(body.user).toBe("user|5678");

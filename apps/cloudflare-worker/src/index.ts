@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { checkPermissions } from "./auth0";
 import { Router } from "./routes/router";
 import { setupRoutes } from "./routes";
 
@@ -30,6 +29,7 @@ import { setupRoutes } from "./routes";
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const router = new Router(env);
+
 		setupRoutes(router, env);
 
 		return await router.handleRequest(request, env);

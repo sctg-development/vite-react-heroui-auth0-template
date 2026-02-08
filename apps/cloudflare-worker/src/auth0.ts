@@ -67,7 +67,11 @@ export const checkPermissions = async (
 	token: string,
 	permission: string | string[],
 	env: Env,
-): Promise<{ access: boolean; payload: jose.JWTPayload; permissions: string[] }> => {
+): Promise<{
+	access: boolean;
+	payload: jose.JWTPayload;
+	permissions: string[];
+}> => {
 	const payload = await verifyToken(token, env);
 	let access = false;
 	let permissions: string[] = [];
