@@ -799,6 +799,30 @@ To use Auth0, follow these steps:
    - Configure token settings as needed (expiration, etc.)
    - Include permissions in the access token
 
+
+### JWKS caching (token verification) 🔒
+
+The client includes a small JWKS caching utility at `apps/client/src/authentication/utils/jwks.ts`. It provides `getLocalJwkSet(domain)`, which:
+
+- Fetches the JWKS from `https://<domain>/.well-known/jwks.json` and builds a verifier using `jose.createLocalJWKSet`
+- Caches the result in-memory and in `sessionStorage` to reduce network calls
+- Stores a timestamp (`uat`) with the stored JWKS and honors a TTL to expire the cache
+- Deduplicates concurrent fetches (so parallel callers only trigger one network request)
+- Is resilient to `sessionStorage` errors (read/write failures are silently ignored)
+
+The cache TTL defaults to 300 seconds but can be changed with the environment variable `AUTH0_CACHE_DURATION_S` (set it in your `.env` file). In code you can use it like this:
+
+```ts
+import { getLocalJwkSet } from "@/authentication/utils/jwks";
+const JWKS = await getLocalJwkSet(import.meta.env.AUTH0_DOMAIN);
+const verified = await jwtVerify(token, JWKS, {
+  issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
+  audience: import.meta.env.AUTH0_AUDIENCE,
+});
+```
+
+_Tip_: increase the TTL in stable environments where the JWKS rarely changes; lower it if you expect frequent key rotations.
+
 7. **Set Environment Variables:**
    Add the following to your `.env` file:
 
