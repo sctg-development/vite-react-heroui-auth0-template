@@ -345,7 +345,7 @@ export const AuthenticationGuardWithPermission: FC<{
  * @returns Object with methods for secured API operations
  * @example
  * ```tsx
- * const { getJson, postJson, deleteJson, hasPermission } = useSecuredApi();
+ * const { getJson, postJson, deleteJson, hasPermission, putJson } = useSecuredApi();
  * const data = await getJson('https://api.example.com/data');
  * await postJson('https://api.example.com/data', { key: 'value' });
  * await deleteJson('https://api.example.com/data/1');
