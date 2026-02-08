@@ -72,12 +72,12 @@ export const LoginButton: FC<{ text?: string }> = ({ text }) => {
 export const LoginLink: FC<{
   text?: string;
   color?:
-  | "primary"
-  | "foreground"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "danger";
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
 }> = ({ text, color }) => {
   const { isAuthenticated, login } = useAuth();
   const { t } = useTranslation();
@@ -165,12 +165,12 @@ interface LogoutLinkProps extends LogoutButtonProps {
    * Button color
    */
   color?:
-  | "primary"
-  | "foreground"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "danger";
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
 }
 
 /**

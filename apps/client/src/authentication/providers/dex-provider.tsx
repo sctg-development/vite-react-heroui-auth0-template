@@ -3,6 +3,8 @@
  * @license AGPL-3.0-or-later
  */
 
+/* eslint-disable no-console */
+
 import { UserManager, User, WebStorageStateStore, Log } from "oidc-client-ts";
 import { useEffect, useState } from "react";
 import { JWTPayload, jwtVerify, createRemoteJWKSet } from "jose";
@@ -193,8 +195,8 @@ export const useDexProvider = (
     return () => {
       userManager.events.removeUserLoaded(addUserSignedIn);
       userManager.events.removeUserUnloaded(addUserSignedOut);
-      userManager.events.removeAccessTokenExpiring(() => { });
-      userManager.events.removeAccessTokenExpired(() => { });
+      userManager.events.removeAccessTokenExpiring(() => {});
+      userManager.events.removeAccessTokenExpired(() => {});
     };
   }, [userManager]);
 
@@ -458,11 +460,11 @@ export const useDexProvider = (
   // Map OIDC user to common AuthUser format
   const authUser: AuthUser | null = user
     ? {
-      name: user.profile.name,
-      nickname: user.profile.nickname || user.profile.preferred_username,
-      email: user.profile.email,
-      ...user.profile,
-    }
+        name: user.profile.name,
+        nickname: user.profile.nickname || user.profile.preferred_username,
+        email: user.profile.email,
+        ...user.profile,
+      }
     : null;
 
   return {

@@ -11,7 +11,6 @@ import {
 } from "@auth0/auth0-react";
 import React, { JSX, useCallback, useMemo, useRef } from "react";
 import { JWTPayload, jwtVerify } from "jose";
-import { getLocalJwkSet } from "@/authentication/utils/jwks";
 
 import {
   AuthProvider,
@@ -21,6 +20,8 @@ import {
   LoginOptions,
   AuthGuardProps,
 } from "./auth-provider";
+
+import { getLocalJwkSet } from "@/authentication/utils/jwks";
 
 /**
  * Auth0 implementation of the AuthProvider interface
@@ -82,169 +83,194 @@ export const useAuth0Provider = (): AuthProvider => {
   // In-memory cache for permission checks keyed by `${permission}:${accessToken}`
   const permissionCheckCache = useMemo(() => new Map<string, boolean>(), []);
 
-  const hasPermission = useCallback(async (permission: string): Promise<boolean> => {
-    try {
-      const accessToken = await getAccessToken();
+  const hasPermission = useCallback(
+    async (permission: string): Promise<boolean> => {
+      try {
+        const accessToken = await getAccessToken();
 
-      if (!accessToken) {
+        if (!accessToken) {
+          return false;
+        }
+
+        const cacheKey = `${permission}:${accessToken}`;
+
+        if (permissionCheckCache.has(cacheKey)) {
+          return permissionCheckCache.get(cacheKey) as boolean;
+        }
+
+        const localSet = await getLocalJwkSet(import.meta.env.AUTH0_DOMAIN);
+
+        const joseResult = await jwtVerify(accessToken, localSet, {
+          issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
+          audience: import.meta.env.AUTH0_AUDIENCE,
+        });
+
+        const payload = joseResult.payload as JWTPayload;
+        const result =
+          Array.isArray(payload.permissions) &&
+          payload.permissions.includes(permission);
+
+        permissionCheckCache.set(cacheKey, result);
+
+        return result;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error checking permission:", error);
+
         return false;
       }
-
-      const cacheKey = `${permission}:${accessToken}`;
-      if (permissionCheckCache.has(cacheKey)) {
-        return permissionCheckCache.get(cacheKey) as boolean;
-      }
-
-      const localSet = await getLocalJwkSet(import.meta.env.AUTH0_DOMAIN);
-
-      const joseResult = await jwtVerify(accessToken, localSet, {
-        issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
-        audience: import.meta.env.AUTH0_AUDIENCE,
-      });
-
-      const payload = joseResult.payload as JWTPayload;
-      const result = Array.isArray(payload.permissions) && payload.permissions.includes(permission);
-
-      permissionCheckCache.set(cacheKey, result);
-
-      return result;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error checking permission:", error);
-
-      return false;
-    }
-  }, [getAccessToken, permissionCheckCache]);
+    },
+    [getAccessToken, permissionCheckCache],
+  );
 
   // Simple in-memory request cache to dedupe identical requests while active
   const requestCacheRef = useRef<Map<string, Promise<any>>>(new Map());
 
-  const getJson = useCallback(async (url: string): Promise<any> => {
-    try {
-      const accessToken = await getAccessToken();
+  const getJson = useCallback(
+    async (url: string): Promise<any> => {
+      try {
+        const accessToken = await getAccessToken();
 
-      const cacheKey = `${accessToken}:${url}`;
-      if (requestCacheRef.current.has(cacheKey)) {
-        return await requestCacheRef.current.get(cacheKey)!;
+        const cacheKey = `${accessToken}:${url}`;
+
+        if (requestCacheRef.current.has(cacheKey)) {
+          return await requestCacheRef.current.get(cacheKey)!;
+        }
+
+        const promise = (async () => {
+          const apiResponse = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          return await apiResponse.json();
+        })();
+
+        // store the in-flight promise to dedupe concurrent calls
+        requestCacheRef.current.set(cacheKey, promise);
+
+        try {
+          const data = await promise;
+
+          // keep the resolved promise in cache (could also replace by data)
+          requestCacheRef.current.set(cacheKey, Promise.resolve(data));
+
+          return data;
+        } catch (err) {
+          // remove failed promise from cache
+          requestCacheRef.current.delete(cacheKey);
+          throw err;
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching JSON:", error);
+        throw error;
       }
+    },
+    [getAccessToken],
+  );
 
-      const promise = (async () => {
+  const postJson = useCallback(
+    async (url: string, data: any): Promise<any> => {
+      try {
+        const accessToken = await getAccessToken();
+
         const apiResponse = await fetch(url, {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        return await apiResponse.json();
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error posting JSON:", error);
+        throw error;
+      }
+    },
+    [getAccessToken],
+  );
+
+  const deleteJson = useCallback(
+    async (url: string): Promise<any> => {
+      try {
+        const accessToken = await getAccessToken();
+
+        const apiResponse = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
           },
         });
 
         return await apiResponse.json();
-      })();
-
-      // store the in-flight promise to dedupe concurrent calls
-      requestCacheRef.current.set(cacheKey, promise);
-
-      try {
-        const data = await promise;
-        // keep the resolved promise in cache (could also replace by data)
-        requestCacheRef.current.set(cacheKey, Promise.resolve(data));
-        return data;
-      } catch (err) {
-        // remove failed promise from cache
-        requestCacheRef.current.delete(cacheKey);
-        throw err;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error deleting JSON:", error);
+        throw error;
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error fetching JSON:", error);
-      throw error;
-    }
-  }, [getAccessToken]);
+    },
+    [getAccessToken],
+  );
 
-  const postJson = useCallback(async (url: string, data: any): Promise<any> => {
-    try {
-      const accessToken = await getAccessToken();
+  const putJson = useCallback(
+    async (url: string, data: any): Promise<any> => {
+      try {
+        const accessToken = await getAccessToken();
 
-      const apiResponse = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+        const apiResponse = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-      return await apiResponse.json();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error posting JSON:", error);
-      throw error;
-    }
-  }, [getAccessToken]);
+        return await apiResponse.json();
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error putting JSON:", error);
+        throw error;
+      }
+    },
+    [getAccessToken],
+  );
 
-  const deleteJson = useCallback(async (url: string): Promise<any> => {
-    try {
-      const accessToken = await getAccessToken();
-
-      const apiResponse = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      return await apiResponse.json();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error deleting JSON:", error);
-      throw error;
-    }
-  }, [getAccessToken]);
-
-  const putJson = useCallback(async (url: string, data: any): Promise<any> => {
-    try {
-      const accessToken = await getAccessToken();
-
-      const apiResponse = await fetch(url, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      return await apiResponse.json();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error putting JSON:", error);
-      throw error;
-    }
-  }, [getAccessToken]);
   // Memoize the returned API surface so consumers receive stable function identities
-  return useMemo(() => ({
-    isAuthenticated,
-    isLoading,
-    user: user as AuthUser,
-    login,
-    logout,
-    getAccessToken,
-    hasPermission,
-    getJson,
-    postJson,
-    putJson,
-    deleteJson,
-  }), [
-    isAuthenticated,
-    isLoading,
-    user,
-    login,
-    logout,
-    getAccessToken,
-    hasPermission,
-    getJson,
-    postJson,
-    putJson,
-    deleteJson,
-  ]);
+  return useMemo(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      user: user as AuthUser,
+      login,
+      logout,
+      getAccessToken,
+      hasPermission,
+      getJson,
+      postJson,
+      putJson,
+      deleteJson,
+    }),
+    [
+      isAuthenticated,
+      isLoading,
+      user,
+      login,
+      logout,
+      getAccessToken,
+      hasPermission,
+      getJson,
+      postJson,
+      putJson,
+      deleteJson,
+    ],
+  );
 };
 
 /**

@@ -30,8 +30,8 @@ import { Snippet } from "@heroui/snippet";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState, useRef } from "react";
 import { JWTPayload, jwtVerify } from "jose";
-import { getLocalJwkSet } from "@/authentication/utils/jwks";
 
+import { getLocalJwkSet } from "@/authentication/utils/jwks";
 import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
@@ -54,12 +54,14 @@ export default function DefaultLayout({
     const loadToken = async () => {
       try {
         const token = await getAccessTokenSilently();
+
         if (!isMounted) return;
 
         setAccessToken(token);
 
         if (decodedTokenCacheRef.current.has(token)) {
           setDecodedToken(decodedTokenCacheRef.current.get(token) || null);
+
           return;
         }
 
@@ -71,6 +73,7 @@ export default function DefaultLayout({
         });
 
         const payload = verified.payload as JWTPayload;
+
         decodedTokenCacheRef.current.set(token, payload);
 
         if (isMounted) setDecodedToken(payload);
