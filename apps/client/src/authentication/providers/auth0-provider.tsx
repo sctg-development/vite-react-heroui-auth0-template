@@ -9,8 +9,9 @@ import {
   LogoutOptions as Auth0LogoutOptions,
   RedirectLoginOptions,
 } from "@auth0/auth0-react";
-import React, { JSX } from "react";
-import { createRemoteJWKSet, JWTPayload, jwtVerify } from "jose";
+import React, { JSX, useCallback, useMemo, useRef } from "react";
+import { JWTPayload, jwtVerify } from "jose";
+import { getLocalJwkSet } from "@/authentication/utils/jwks";
 
 import {
   AuthProvider,
@@ -78,7 +79,10 @@ export const useAuth0Provider = (): AuthProvider => {
     return Promise.resolve();
   };
 
-  const hasPermission = async (permission: string): Promise<boolean> => {
+  // In-memory cache for permission checks keyed by `${permission}:${accessToken}`
+  const permissionCheckCache = useMemo(() => new Map<string, boolean>(), []);
+
+  const hasPermission = useCallback(async (permission: string): Promise<boolean> => {
     try {
       const accessToken = await getAccessToken();
 
@@ -86,51 +90,75 @@ export const useAuth0Provider = (): AuthProvider => {
         return false;
       }
 
-      const JWKS = createRemoteJWKSet(
-        new URL(
-          `https://${import.meta.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
-        ),
-      );
+      const cacheKey = `${permission}:${accessToken}`;
+      if (permissionCheckCache.has(cacheKey)) {
+        return permissionCheckCache.get(cacheKey) as boolean;
+      }
 
-      const joseResult = await jwtVerify(accessToken, JWKS, {
+      const localSet = await getLocalJwkSet(import.meta.env.AUTH0_DOMAIN);
+
+      const joseResult = await jwtVerify(accessToken, localSet, {
         issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
         audience: import.meta.env.AUTH0_AUDIENCE,
       });
 
       const payload = joseResult.payload as JWTPayload;
+      const result = Array.isArray(payload.permissions) && payload.permissions.includes(permission);
 
-      if (payload.permissions instanceof Array) {
-        return payload.permissions.includes(permission);
-      } else {
-        return false;
-      }
+      permissionCheckCache.set(cacheKey, result);
+
+      return result;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Error checking permission:", error);
 
       return false;
     }
-  };
+  }, [getAccessToken, permissionCheckCache]);
 
-  const getJson = async (url: string): Promise<any> => {
+  // Simple in-memory request cache to dedupe identical requests while active
+  const requestCacheRef = useRef<Map<string, Promise<any>>>(new Map());
+
+  const getJson = useCallback(async (url: string): Promise<any> => {
     try {
       const accessToken = await getAccessToken();
 
-      const apiResponse = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const cacheKey = `${accessToken}:${url}`;
+      if (requestCacheRef.current.has(cacheKey)) {
+        return await requestCacheRef.current.get(cacheKey)!;
+      }
 
-      return await apiResponse.json();
+      const promise = (async () => {
+        const apiResponse = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        return await apiResponse.json();
+      })();
+
+      // store the in-flight promise to dedupe concurrent calls
+      requestCacheRef.current.set(cacheKey, promise);
+
+      try {
+        const data = await promise;
+        // keep the resolved promise in cache (could also replace by data)
+        requestCacheRef.current.set(cacheKey, Promise.resolve(data));
+        return data;
+      } catch (err) {
+        // remove failed promise from cache
+        requestCacheRef.current.delete(cacheKey);
+        throw err;
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Error fetching JSON:", error);
       throw error;
     }
-  };
+  }, [getAccessToken]);
 
-  const postJson = async (url: string, data: any): Promise<any> => {
+  const postJson = useCallback(async (url: string, data: any): Promise<any> => {
     try {
       const accessToken = await getAccessToken();
 
@@ -149,9 +177,9 @@ export const useAuth0Provider = (): AuthProvider => {
       console.error("Error posting JSON:", error);
       throw error;
     }
-  };
+  }, [getAccessToken]);
 
-  const deleteJson = async (url: string): Promise<any> => {
+  const deleteJson = useCallback(async (url: string): Promise<any> => {
     try {
       const accessToken = await getAccessToken();
 
@@ -169,9 +197,9 @@ export const useAuth0Provider = (): AuthProvider => {
       console.error("Error deleting JSON:", error);
       throw error;
     }
-  };
+  }, [getAccessToken]);
 
-  const putJson = async (url: string, data: any): Promise<any> => {
+  const putJson = useCallback(async (url: string, data: any): Promise<any> => {
     try {
       const accessToken = await getAccessToken();
 
@@ -190,9 +218,9 @@ export const useAuth0Provider = (): AuthProvider => {
       console.error("Error putting JSON:", error);
       throw error;
     }
-  };
-
-  return {
+  }, [getAccessToken]);
+  // Memoize the returned API surface so consumers receive stable function identities
+  return useMemo(() => ({
     isAuthenticated,
     isLoading,
     user: user as AuthUser,
@@ -204,7 +232,19 @@ export const useAuth0Provider = (): AuthProvider => {
     postJson,
     putJson,
     deleteJson,
-  };
+  }), [
+    isAuthenticated,
+    isLoading,
+    user,
+    login,
+    logout,
+    getAccessToken,
+    hasPermission,
+    getJson,
+    postJson,
+    putJson,
+    deleteJson,
+  ]);
 };
 
 /**

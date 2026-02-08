@@ -28,8 +28,9 @@ import {
 } from "@heroui/dropdown";
 import { Snippet } from "@heroui/snippet";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
-import { createRemoteJWKSet, JWTPayload, jwtVerify } from "jose";
+import { useEffect, useState, useRef } from "react";
+import { JWTPayload, jwtVerify } from "jose";
+import { getLocalJwkSet } from "@/authentication/utils/jwks";
 
 import { Navbar } from "@/components/navbar";
 
@@ -43,25 +44,48 @@ export default function DefaultLayout({
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [decodedToken, setDecodedToken] = useState<JWTPayload | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      getAccessTokenSilently().then((token) => {
-        setAccessToken(token);
-        const JWKS = createRemoteJWKSet(
-          new URL(
-            `https://${import.meta.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
-          ),
-        );
+  const decodedTokenCacheRef = useRef<Map<string, JWTPayload>>(new Map());
 
-        jwtVerify(token, JWKS, {
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let isMounted = true;
+
+    const loadToken = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (!isMounted) return;
+
+        setAccessToken(token);
+
+        if (decodedTokenCacheRef.current.has(token)) {
+          setDecodedToken(decodedTokenCacheRef.current.get(token) || null);
+          return;
+        }
+
+        const JWKS = await getLocalJwkSet(import.meta.env.AUTH0_DOMAIN);
+
+        const verified = await jwtVerify(token, JWKS, {
           issuer: `https://${import.meta.env.AUTH0_DOMAIN}/`,
           audience: import.meta.env.AUTH0_AUDIENCE,
-        }).then((jwt) => {
-          setDecodedToken(jwt.payload as JWTPayload);
         });
-      });
-    }
-  }, [isAuthenticated]);
+
+        const payload = verified.payload as JWTPayload;
+        decodedTokenCacheRef.current.set(token, payload);
+
+        if (isMounted) setDecodedToken(payload);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("Failed to decode access token:", err);
+      }
+    };
+
+    loadToken();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
     <div className="relative flex flex-col h-screen">
