@@ -349,15 +349,17 @@ export const AuthenticationGuardWithPermission: FC<{
  * const data = await getJson('https://api.example.com/data');
  * await postJson('https://api.example.com/data', { key: 'value' });
  * await deleteJson('https://api.example.com/data/1');
+ * await putJson('https://api.example.com/data/1', { key: 'newValue' });
  * ```
  */
 export const useSecuredApi = () => {
-  const { getJson, postJson, deleteJson, hasPermission } = useAuth();
+  const { getJson, postJson, deleteJson, hasPermission, putJson } = useAuth();
 
   return {
     getJson,
     postJson,
     deleteJson,
     hasPermission,
+    putJson,
   };
 };
