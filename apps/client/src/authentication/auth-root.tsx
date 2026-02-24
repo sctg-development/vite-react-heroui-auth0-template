@@ -46,6 +46,9 @@ export const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
         }}
         clientId={import.meta.env.AUTH0_CLIENT_ID}
         domain={import.meta.env.AUTH0_DOMAIN}
+        cacheLocation="localstorage"
+        useRefreshTokens={true}
+        useCookiesForTransactions={true}
       >
         <AuthProviderWrapper providerType={providerType}>
           {children}
