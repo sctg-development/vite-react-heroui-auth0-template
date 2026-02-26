@@ -8,7 +8,6 @@ import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import { Link } from "@heroui/link";
 import { useTranslation } from "react-i18next";
-import { Permission } from "@/types";
 import { SiteLoading } from "../components/site-loading";
 import type {
   Auth0ManagementTokenApiResponse,
