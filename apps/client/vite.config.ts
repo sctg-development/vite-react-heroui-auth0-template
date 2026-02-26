@@ -132,6 +132,9 @@ export default defineConfig({
     "import.meta.env.ADMIN_AUTH0_PERMISSION": JSON.stringify(
       process.env.ADMIN_AUTH0_PERMISSION || "auth0:admin:api",
     ),
+    "import.meta.env.PERMISSIONS": JSON.stringify([process.env.READ_PERMISSION || "read:api",
+    process.env.WRITE_PERMISSION || "write:api",
+    process.env.ADMIN_AUTH0_PERMISSION || "auth0:admin:api"])
   },
   plugins: [react(), tsconfigPaths(), tailwindcss(), githubPagesSpa()],
   build: {
