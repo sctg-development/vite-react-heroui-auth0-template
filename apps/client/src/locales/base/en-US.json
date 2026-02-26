@@ -47,5 +47,6 @@
   "permissions": "permissions",
   "no-permissions": "no permissions",
   "token": "token",
-  "user": "user"
+  "user": "user",
+  "vite-react-heroui-auth0-template": "SCTG React template"
 }

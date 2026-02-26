@@ -100,13 +100,13 @@ export default function DefaultLayout({
         <Link
           isExternal
           className="flex items-center gap-1 text-current"
-          href="https://heroui.com"
-          title={t("heroui-com-homepage")}
+          href="https://github.com/sctg-development/vite-react-heroui-auth0-template"
+          title={t("vite-react-heroui-auth0-template")}
         >
           <span className="text-default-600">
             <Trans ns="base">powered-by</Trans>
           </span>
-          <p className="text-primary">HeroUI</p>
+          <p className="text-primary">SCTG React template</p>
         </Link>
         &nbsp;
         <Dropdown>
