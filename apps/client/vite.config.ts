@@ -121,6 +121,17 @@ export default defineConfig({
     "import.meta.env.AUTH0_CACHE_DURATION_S": JSON.stringify(
       process.env.AUTH0_CACHE_DURATION_S || "300",
     ),
+    // Permissions
+    // Define permissions as environment variables for better flexibility
+    "import.meta.env.READ_PERMISSION": JSON.stringify(
+      process.env.READ_PERMISSION || "read:api",
+    ),
+    "import.meta.env.WRITE_PERMISSION": JSON.stringify(
+      process.env.WRITE_PERMISSION || "write:api",
+    ),
+    "import.meta.env.ADMIN_AUTH0_PERMISSION": JSON.stringify(
+      process.env.ADMIN_AUTH0_PERMISSION || "auth0:admin:api",
+    ),
   },
   plugins: [react(), tsconfigPaths(), tailwindcss(), githubPagesSpa()],
   build: {

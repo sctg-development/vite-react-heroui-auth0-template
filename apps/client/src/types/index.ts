@@ -21,3 +21,9 @@ import { SVGProps } from "react";
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
+
+export enum Permission {
+  READ = import.meta.env.READ_PERMISSION,
+  WRITE = import.meta.env.WRITE_PERMISSION,
+  ADMIN = import.meta.env.ADMIN_AUTH0_PERMISSION,
+}
