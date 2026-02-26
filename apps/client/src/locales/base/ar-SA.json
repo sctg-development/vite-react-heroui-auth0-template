@@ -47,5 +47,6 @@
   "no-permissions": "لا أذونات",
   "permissions": "أذونات",
   "token": "رمز",
-  "user": "مستخدم"
+  "user": "مستخدم",
+  "vite-react-heroui-auth0-template": "قالب رد فعل SCTG"
 }

@@ -47,5 +47,6 @@
   "no-permissions": "Aucune autorisation",
   "permissions": "autorisation",
   "token": "jeton",
-  "user": "utilisateur"
+  "user": "utilisateur",
+  "vite-react-heroui-auth0-template": "Modèle React SCTG"
 }

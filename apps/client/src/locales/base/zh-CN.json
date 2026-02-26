@@ -47,5 +47,6 @@
   "no-permissions": "无许可",
   "permissions": "权限",
   "token": "令牌",
-  "user": "用户"
+  "user": "用户",
+  "vite-react-heroui-auth0-template": "SCTG 反应模板"
 }

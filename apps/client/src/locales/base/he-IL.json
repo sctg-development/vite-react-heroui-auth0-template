@@ -47,5 +47,6 @@
   "no-permissions": "אין הרשאות",
   "permissions": "הרשאות",
   "token": "אֲסִימוֹן",
-  "user": "מִשׁתַמֵשׁ"
+  "user": "מִשׁתַמֵשׁ",
+  "vite-react-heroui-auth0-template": "תבנית SCTG React"
 }
