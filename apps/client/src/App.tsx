@@ -31,6 +31,7 @@ import ApiPage from "@/pages/api";
 import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
+import UsersAndPermissionsPage from "@/pages/admin/users-and-permissions";
 
 function App() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -85,6 +86,10 @@ function App() {
           path="/blog"
         />
         <Route element={<AboutPage />} path="/about" />
+        <Route
+          element={<AuthenticationGuard component={UsersAndPermissionsPage} />}
+          path="/admin/users"
+        />
         <Route element={<PageNotFound />} path="*" />
       </Routes>
     </Suspense>

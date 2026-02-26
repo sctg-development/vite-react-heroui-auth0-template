@@ -23,6 +23,8 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - 🚀 Fast development with Vite 7
 - 🎨 Beautiful UI components from HeroUI v2
 - 🔐 Flexible authentication with multiple OAuth providers (Auth0, Dex)
+- 🛠️ **Auth0 User & Permission Management**: Built-in administration panel to manage users and sync permissions.
+- 📊 **Localized Session Details**: Real-time technical information modal with JWT payload analysis.
 - 🌐 Internationalization with i18next (6 languages included)
 - 🌙 Dark/Light mode support
 - 📱 Responsive design
@@ -110,6 +112,8 @@ For more detailed commands, see the [Turborepo Guide](./TURBOREPO-GUIDE.md).
       - [Protect a Component with a needed permission](#protect-a-component-with-a-needed-permission)
       - [Testing with Cloudflare Workers](#testing-with-cloudflare-workers)
       - [Understanding Token Flow](#understanding-token-flow)
+  - [Administration & User Management](#administration--user-management)
+  - [Technical Information Modal](#technical-information-modal)
   - [Internationalization](#internationalization)
     - [Adding a New Language](#adding-a-new-language)
     - [Language Switch Component](#language-switch-component)
@@ -377,6 +381,32 @@ yarn dev:worker:env
 3. Your application includes this token in the Authorization header
 4. The backend API validates the token using Auth0's public key
 5. If valid, the API processes the request according to the permissions in the token
+
+## Administration & User Management
+
+This template includes a powerful administration interface for managing users and permissions directly via the Auth0 Management API.
+
+### User Management Page
+
+Accessible via `/admin/users`, the management page allows administrators to:
+- **List & Search Users**: View all users registered in the Auth0 tenant.
+- **Manage Permissions**: Assign or revoke specific API permissions to any user in real-time.
+- **Sync Auth0 Permissions**: Automatically synchronize local permission definitions with the Auth0 Resource Server (API) scopes.
+- **Delete Users**: Remove users directly from the application.
+
+> [!IMPORTANT]
+> To use these features, you must configure the Auth0 Management API credentials and set the `ADMIN_AUTH0_PERMISSION` in your environment variables.
+
+## Technical Information Modal
+
+The template provides a comprehensive technical modal for developers and power users to inspect their current session.
+
+- **JWT Analysis**: Decodes and displays the current Access Token payload.
+- **Localized Expiration**: Displays a real-time countdown in a human-readable "n days h:m:s" format, fully localized across all 6 supported languages.
+- **Permission Overview**: Lists all permissions associated with the current session.
+- **Quick Links**: Integrated "Admin Panel" shortcut for users with appropriate privileges.
+
+---
 
 ## Internationalization
 

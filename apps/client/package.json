@@ -18,6 +18,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.15.0",
     "@heroui/button": "^2.2.31",
+    "@heroui/chip": "^2.2.24",
     "@heroui/code": "^2.2.24",
     "@heroui/date-picker": "^2.3.32",
     "@heroui/dropdown": "^2.3.31",
@@ -29,6 +30,7 @@
     "@heroui/navbar": "^2.2.29",
     "@heroui/number-input": "^2.0.22",
     "@heroui/pagination": "^2.2.26",
+    "@heroui/scroll-shadow": "^2.3.19",
     "@heroui/shared-utils": "^2.1.12",
     "@heroui/snippet": "^2.2.32",
     "@heroui/switch": "^2.2.26",

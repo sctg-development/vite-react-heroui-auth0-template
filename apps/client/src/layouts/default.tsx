@@ -20,19 +20,14 @@ import type React from "react";
 
 import { Link } from "@heroui/link";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/dropdown";
-import { Snippet } from "@heroui/snippet";
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState, useRef } from "react";
 import { JWTPayload, jwtVerify } from "jose";
 
 import { getLocalJwkSet } from "@/authentication/utils/jwks";
 import { Navbar } from "@/components/navbar";
+import { UserTechnicalInfoModal } from "@/modals/user-technical-info"
 
 export default function DefaultLayout({
   children,
@@ -43,7 +38,7 @@ export default function DefaultLayout({
   const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [decodedToken, setDecodedToken] = useState<JWTPayload | null>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const decodedTokenCacheRef = useRef<Map<string, JWTPayload>>(new Map());
 
   useEffect(() => {
@@ -109,40 +104,24 @@ export default function DefaultLayout({
           <p className="text-primary">SCTG React template</p>
         </Link>
         &nbsp;
-        <Dropdown>
-          <DropdownTrigger>
-            {isAuthenticated ? (
-              <span>
-                {t("user")}: &nbsp;{user?.name}
-              </span>
-            ) : (
-              <></>
-            )}
-          </DropdownTrigger>
-          <DropdownMenu className="max-w-5xl">
-            <DropdownItem key="user-logged" textValue="user-logged">
-              <span className="text-default-600">{t("token")}:</span>
-              <br />
-              <Snippet className="max-w-4xl" symbol="" title="api-response">
-                <div className="max-w-2xs sm:max-w-sm md:max-w-md lg:max-w-3xl  whitespace-break-spaces  text-wrap break-words">
-                  {accessToken}
-                </div>
-              </Snippet>
-              <br />
-              <span className="text-default-600">
-                {t("expiration")}:{" "}
-                {new Date((decodedToken?.exp || 0) * 1000).toLocaleString()}
-              </span>
-              <br />
-              <span className="text-default-600">
-                {t("permissions")}:{" "}
-                {((decodedToken?.permissions as string[]) || []).join(", ") ||
-                  t("no-permissions")}
-              </span>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        {isAuthenticated ? (
+          <span onClick={() => setIsModalOpen(true)}>
+            {t("user")}: &nbsp;{user?.name}
+          </span>
+        ) : (
+          <></>
+        )}
       </footer>
+      {user ? (
+        <UserTechnicalInfoModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          user={user}
+          accessToken={accessToken}
+          tokenPayload={decodedToken}
+        />
+      ) : <></>
+      }
     </div>
   );
 }

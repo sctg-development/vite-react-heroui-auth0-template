@@ -373,7 +373,7 @@ export const useSecuredApi = () => {
           (import.meta as any).env?.API_BASE_URL
           ? (import.meta as any).env.API_BASE_URL
           : "";
-      const result = await postJson(`${apiBase}/api/__auth0/token`, {});
+      const result = await postJson(`${apiBase}/__auth0/token`, {});
       return result as Auth0ManagementTokenApiResponse;
     };
 

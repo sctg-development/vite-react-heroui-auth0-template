@@ -798,6 +798,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heroui/chip@npm:^2.2.24":
+  version: 2.2.24
+  resolution: "@heroui/chip@npm:2.2.24"
+  dependencies:
+    "@heroui/react-utils": "npm:2.1.14"
+    "@heroui/shared-icons": "npm:2.1.10"
+    "@heroui/shared-utils": "npm:2.1.12"
+    "@react-aria/focus": "npm:3.21.3"
+    "@react-aria/interactions": "npm:3.26.0"
+  peerDependencies:
+    "@heroui/system": ">=2.4.18"
+    "@heroui/theme": ">=2.4.24"
+    react: ">=18 || >=19.0.0-rc.0"
+    react-dom: ">=18 || >=19.0.0-rc.0"
+  checksum: 10/6b4b36c8ca69416692d179a6b317176d4091a0c6ed721ebe71de29dfa5012274b8c66766900e3a3a77529d5e92993d6dd6a6e61ee80feeccd27c48cff6144e7e
+  languageName: node
+  linkType: hard
+
 "@heroui/code@npm:^2.2.24":
   version: 2.2.24
   resolution: "@heroui/code@npm:2.2.24"
@@ -1213,6 +1231,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heroui/scroll-shadow@npm:^2.3.19":
+  version: 2.3.19
+  resolution: "@heroui/scroll-shadow@npm:2.3.19"
+  dependencies:
+    "@heroui/react-utils": "npm:2.1.14"
+    "@heroui/shared-utils": "npm:2.1.12"
+    "@heroui/use-data-scroll-overflow": "npm:2.2.13"
+  peerDependencies:
+    "@heroui/system": ">=2.4.18"
+    "@heroui/theme": ">=2.4.23"
+    react: ">=18 || >=19.0.0-rc.0"
+    react-dom: ">=18 || >=19.0.0-rc.0"
+  checksum: 10/8951906e23b97c1682c679152ea1ad8951778926782ad428d5d0bcbbb470d21f1733582e59282e358826d38b0e6f264a9df0acfa67676ee1cbc76ca2717d54c6
+  languageName: node
+  linkType: hard
+
 "@heroui/shared-icons@npm:2.1.10":
   version: 2.1.10
   resolution: "@heroui/shared-icons@npm:2.1.10"
@@ -1482,6 +1516,17 @@ __metadata:
   peerDependencies:
     react: ">=18 || >=19.0.0-rc.0"
   checksum: 10/54b54bce3bfb3b755bb1d9443f6dbc907ce7b853f2d8c224dbf3cfb9b2fbbea1d4c8d6e293da29982bdffc1fb07d1fc50beb751d53982cc1f98174b80e0df928
+  languageName: node
+  linkType: hard
+
+"@heroui/use-data-scroll-overflow@npm:2.2.13":
+  version: 2.2.13
+  resolution: "@heroui/use-data-scroll-overflow@npm:2.2.13"
+  dependencies:
+    "@heroui/shared-utils": "npm:2.1.12"
+  peerDependencies:
+    react: ">=18 || >=19.0.0-rc.0"
+  checksum: 10/3a353e0472068f7bad4e136c5bd86df224d406b7582ed54d5def07396158721269023022eb222c63d75ab2bda6c97b6baeaf14f749bb9c3b16c7348b1368b370
   languageName: node
   linkType: hard
 
@@ -4368,6 +4413,7 @@ __metadata:
   dependencies:
     "@auth0/auth0-react": "npm:^2.15.0"
     "@heroui/button": "npm:^2.2.31"
+    "@heroui/chip": "npm:^2.2.24"
     "@heroui/code": "npm:^2.2.24"
     "@heroui/date-picker": "npm:^2.3.32"
     "@heroui/dropdown": "npm:^2.3.31"
@@ -4379,6 +4425,7 @@ __metadata:
     "@heroui/navbar": "npm:^2.2.29"
     "@heroui/number-input": "npm:^2.0.22"
     "@heroui/pagination": "npm:^2.2.26"
+    "@heroui/scroll-shadow": "npm:^2.3.19"
     "@heroui/shared-utils": "npm:^2.1.12"
     "@heroui/snippet": "npm:^2.2.32"
     "@heroui/switch": "npm:^2.2.26"
@@ -7377,7 +7424,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.1.0, semver@npm:^6.3.1, semver@npm:^7.3.5, semver@npm:^7.7.3":
+"semver@npm:^6.1.0, semver@npm:^6.3.1":
+  version: 6.3.1
+  resolution: "semver@npm:6.3.1"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/1ef3a85bd02a760c6ef76a45b8c1ce18226de40831e02a00bad78485390b98b6ccaa31046245fc63bba4a47a6a592b6c7eedc65cc47126e60489f9cc1ce3ed7e
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.3.5, semver@npm:^7.7.3":
   version: 7.7.4
   resolution: "semver@npm:7.7.4"
   bin:
