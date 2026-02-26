@@ -183,6 +183,8 @@ To keep your Auth0 credentials secure, use environment variables. Create a `.env
 ```env
 AUTH0_CLIENT_ID=your-auth0-client-id
 AUTH0_CLIENT_SECRET=your-auth0-secret
+AUTH0_MANAGEMENT_API_CLIENT_ID="from Auth0 Management API (Test Application)"
+AUTH0_MANAGEMENT_API_CLIENT_SECRET="from Auth0 Management API (Test Application)"
 AUTH0_DOMAIN=your-auth0-domain
 AUTH0_SCOPE="openid profile email read:api write:api"
 AUTH0_AUDIENCE=https://myapi.example.com
@@ -191,6 +193,7 @@ CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
 WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
+ADMIN_AUTH0_PERMISSION="auth0:admin:api"
 AUTHENTICATION_PROVIDER_TYPE=auth0
 ```
 
@@ -201,6 +204,8 @@ For using the provided GitHub Actions workflows, you need to add the following s
 ```env
 AUTH0_CLIENT_ID=your-auth0-client-id
 AUTH0_CLIENT_SECRET=your-auth0-secret
+AUTH0_MANAGEMENT_API_CLIENT_ID="from Auth0 Management API (Test Application)"
+AUTH0_MANAGEMENT_API_CLIENT_SECRET="from Auth0 Management API (Test Application)"
 AUTH0_DOMAIN=your-auth0-domain
 AUTH0_SCOPE="openid profile email read:api write:api"
 AUTH0_AUDIENCE=https://myapi.example.com
@@ -209,6 +214,7 @@ CORS_ORIGIN=https://your-github-username.github.io
 READ_PERMISSION=read:api
 WRITE_PERMISSION=write:api
 ADMIN_PERMISSION=admin:api
+ADMIN_AUTH0_PERMISSION="auth0:admin:api"
 AUTHENTICATION_PROVIDER_TYPE=auth0
 ```
 
