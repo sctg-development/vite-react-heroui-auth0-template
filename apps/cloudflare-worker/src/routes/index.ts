@@ -27,7 +27,14 @@ import { Router } from "./router";
 import { getManagementToken, addPermissionsToUser } from "../auth0";
 
 export const setupRoutes = (router: Router, env: Env) => {
-	// Preserve the original root response for backwards compatibility
+	/**
+	 * GET /
+	 *
+	 * Root endpoint providing a simple greeting.
+	 * Maintained for backwards compatibility.
+	 *
+	 * @returns {Promise<Response>} A "Hello World!" text response.
+	 */
 	router.get("/", async () => {
 		return new Response("Hello World!", {
 			status: 200,
@@ -35,7 +42,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 		});
 	});
 
-	// Simple health check (public)
+	/**
+	 * GET /health
+	 *
+	 * Simple health check endpoint to verify worker availability.
+	 * This endpoint is public and does not require authentication.
+	 *
+	 * @returns {Promise<Response>} A JSON response indicating success.
+	 */
 	router.get("/health", async () => {
 		return new Response(JSON.stringify({ success: true, status: "ok" }), {
 			status: 200,
@@ -46,8 +60,10 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * POST /api/__auth0/token
 	 *
 	 * Requests an Auth0 Management API token via the client_credentials flow.
-	 * The token is cached in KV to limit calls to Auth0.
-	 * Requires the env.ADMIN_AUTH0_PERMISSION (auth0:admin:api) permission.
+	 * The token is cached in KV store to optimize performance and respect Auth0 rate limits.
+	 *
+	 * @requires env.ADMIN_AUTH0_PERMISSION (auth0:admin:api)
+	 * @returns {Promise<Response>} A JSON response containing the access token and expiration details.
 	 */
 	router.post(
 		"/api/__auth0/token",
@@ -92,8 +108,11 @@ export const setupRoutes = (router: Router, env: Env) => {
 	/**
 	 * POST /api/__auth0/autopermissions
 	 *
-	 * Automatically assigns permissions listed in AUTH0_AUTOMATIC_PERMISSIONS
-	 * if the user doesn't already have them.
+	 * Automatically assigns default permissions to the authenticated user if they are missing.
+	 * The permissions to be assigned are defined in `env.AUTH0_AUTOMATIC_PERMISSIONS`.
+	 *
+	 * @requires A valid JWT (authentication required, but no specific scope needed).
+	 * @returns {Promise<Response>} A JSON response indicating successfully added permissions or status.
 	 */
 	router.post(
 		"/api/__auth0/autopermissions",
@@ -146,7 +165,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 		 */
 		"",
 	);
-	// Protected ping (requires READ permission)
+	/**
+	 * GET /api/ping
+	 *
+	 * A protected test endpoint to verify authentication and basic connectivity.
+	 *
+	 * @requires env.READ_PERMISSION
+	 * @returns {Promise<Response>} A JSON response containing the user's sub claim.
+	 */
 	router.get(
 		"/api/ping",
 		async (_request) => {
@@ -164,7 +190,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 		env.READ_PERMISSION,
 	);
 
-	// Protected /api/get_users (requires READ permission)
+	/**
+	 * GET /api/get_users
+	 *
+	 * Retrieves the current authenticated user's ID.
+	 *
+	 * @requires env.READ_PERMISSION
+	 * @returns {Promise<Response>} A JSON response with the user's sub ID.
+	 */
 	router.get(
 		"/api/get_users",
 		async (_request) => {
@@ -178,7 +211,16 @@ export const setupRoutes = (router: Router, env: Env) => {
 		env.READ_PERMISSION,
 	);
 
-	// Protected /api/get/<user> (requires READ permission)
+	/**
+	 * GET /api/get/<user>
+	 *
+	 * A debug endpoint that returns comprehensive information about the request,
+	 * including URL parameters, user ID, permissions, and the raw JWT.
+	 *
+	 * @param {string} user - Dynamic user parameter from the URL.
+	 * @requires env.READ_PERMISSION
+	 * @returns {Promise<Response>} A JSON response with session and request details.
+	 */
 	router.get(
 		"/api/get/<user>",
 		async (request) => {

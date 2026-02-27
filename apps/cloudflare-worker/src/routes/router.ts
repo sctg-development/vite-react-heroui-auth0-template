@@ -27,11 +27,29 @@ import { JWTPayload } from "jose";
 
 import { checkPermissions } from "../auth0";
 
+/**
+ * Type definition for a route handler function.
+ *
+ * @callback RouteHandler
+ * @param {Request & { params: Record<string, string>; user?: any }} request - The extended Fetch Request object.
+ * @param {Env} env - The Cloudflare Worker environment variables and bindings.
+ * @returns {Promise<Response>} A promise that resolves to a Fetch Response.
+ */
 type RouteHandler = (
 	request: Request & { params: Record<string, string>; user?: any },
 	env: Env,
 ) => Promise<Response>;
 
+/**
+ * Interface representing a registered route.
+ *
+ * @interface Route
+ * @property {string} path - The URL path pattern.
+ * @property {string} method - The HTTP method (GET, POST, etc.).
+ * @property {RouteHandler} handler - The function to handle the request.
+ * @property {string} [permission] - Optional permission required to access the route.
+ * @property {URLPattern | null} [compiled] - Pre-compiled URLPattern for efficient matching.
+ */
 interface Route {
 	path: string;
 	method: string;
@@ -41,6 +59,10 @@ interface Route {
 	compiled?: URLPattern | null;
 }
 
+/**
+ * A simple router for Cloudflare Workers supporting middleware-like permission checks,
+ * Rocket-style path parameters, and CORS.
+ */
 export class Router {
 	jwtPayload: JWTPayload = {};
 	userPermissions: string[] = [];
@@ -56,6 +78,13 @@ export class Router {
 		};
 	}
 
+	/**
+	 * Registers a GET route.
+	 *
+	 * @param {string} path - The route path (supports <param> syntax).
+	 * @param {RouteHandler} handler - The handler function for this route.
+	 * @param {string} [permission] - Optional required permission.
+	 */
 	get(path: string, handler: RouteHandler, permission?: string) {
 		this.routes.push({
 			...this.compileRoute(path),
@@ -66,6 +95,13 @@ export class Router {
 		});
 	}
 
+	/**
+	 * Registers a POST route.
+	 *
+	 * @param {string} path - The route path.
+	 * @param {RouteHandler} handler - The handler function.
+	 * @param {string} [permission] - Optional required permission.
+	 */
 	post(path: string, handler: RouteHandler, permission?: string) {
 		this.routes.push({
 			...this.compileRoute(path),
@@ -76,6 +112,13 @@ export class Router {
 		});
 	}
 
+	/**
+	 * Registers a PUT route.
+	 *
+	 * @param {string} path - The route path.
+	 * @param {RouteHandler} handler - The handler function.
+	 * @param {string} [permission] - Optional required permission.
+	 */
 	put(path: string, handler: RouteHandler, permission?: string) {
 		this.routes.push({
 			...this.compileRoute(path),
@@ -86,6 +129,13 @@ export class Router {
 		});
 	}
 
+	/**
+	 * Registers a DELETE route.
+	 *
+	 * @param {string} path - The route path.
+	 * @param {RouteHandler} handler - The handler function.
+	 * @param {string} [permission] - Optional required permission.
+	 */
 	delete(path: string, handler: RouteHandler, permission?: string) {
 		this.routes.push({
 			...this.compileRoute(path),
@@ -97,11 +147,14 @@ export class Router {
 	}
 
 	/**
-	 * Compile a route path supporting Rocket-style parameters:
-	 * - <name> -> :name
-	 * - <name..> -> :name* (catch-all)
+	 * Compiles a route path into a URLPattern if it contains Rocket-style parameters.
+	 * Supported syntax:
+	 * - `<name>` -> `:name`
+	 * - `<name..>` -> `:name*` (catch-all)
 	 *
-	 * Returns an object with an optional URLPattern or null if not necessary.
+	 * @param {string} path - The raw route path.
+	 * @returns {{ compiled?: URLPattern | null }} An object containing the compiled pattern.
+	 * @private
 	 */
 	private compileRoute(path: string): { compiled?: URLPattern | null } {
 		// Quick detection: only compile if the route contains '<' and '>'
@@ -127,6 +180,11 @@ export class Router {
 		}
 	}
 
+	/**
+	 * Returns a standard 403 Forbidden response for unauthorized requests.
+	 *
+	 * @returns {Promise<Response>} A JSON response indicating unauthorized access.
+	 */
 	async handleUnauthorizedRequest(): Promise<Response> {
 		return new Response(
 			JSON.stringify({ success: false, error: "Unauthorized" }),
@@ -137,6 +195,14 @@ export class Router {
 		);
 	}
 
+	/**
+	 * The main entry point for processing incoming Fetch requests.
+	 * Handles CORS, rate limiting, authentication, and route dispatching.
+	 *
+	 * @param {Request} request - The incoming Fetch request.
+	 * @param {Env} env - The Cloudflare Worker environment.
+	 * @returns {Promise<Response>} The response from the matched handler or an error response.
+	 */
 	async handleRequest(request: Request, env: Env): Promise<Response> {
 		if (request.method === "OPTIONS") {
 			return new Response(null, {
@@ -306,6 +372,15 @@ export class Router {
 		);
 	}
 
+	/**
+	 * Legacy path matching logic for simple ":" prefixed parameters.
+	 * Used as a fallback if URLPattern is not used or fails.
+	 *
+	 * @param {string} routePath - The registered route path.
+	 * @param {string} pathname - The actual incoming request path.
+	 * @returns {Record<string, string> | null} An object with path parameters or null if no match.
+	 * @private
+	 */
 	private matchPath(
 		routePath: string,
 		pathname: string,
