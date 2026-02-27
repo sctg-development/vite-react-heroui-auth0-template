@@ -18,31 +18,39 @@
 
 import fs from "fs";
 import swaggerJsdoc from "swagger-jsdoc";
+import dotenv from "dotenv";
+import path from "path";
+
+const env = dotenv.config({
+    path: path.resolve(import.meta.dirname, '../../.env'),
+});
+
 
 export const API_VERSION = "1.0.0";
+const AUTH0_DOMAIN = env.parsed?.AUTH0_DOMAIN;
+if (!AUTH0_DOMAIN) {
+    throw new Error("AUTH0_DOMAIN is not defined");
+}
+const AUTH0_AUTHORIZATION_URL = `https://${AUTH0_DOMAIN}/authorize`;
+const AUTH0_TOKEN_URL = `https://${AUTH0_DOMAIN}/oauth/token`;
 
 const options = {
     encoding: "utf8",
     failOnErrors: false,
     format: "json",
     info: {
-        title: "KduFoot API",
+        title: "SCTG Vite React Heroui Auth0 Template API",
         version: API_VERSION,
     },
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "KduFoot API",
+            title: "SCTG Vite React Heroui Auth0 Template API",
             version: API_VERSION,
         },
     },
     apis: [
         "../cloudflare-worker/src/routes/index.ts",
-        "../cloudflare-worker/src/routes/clubs.ts",
-        "../cloudflare-worker/src/routes/exercises.ts",
-        "../cloudflare-worker/src/routes/matches.ts",
-        "../cloudflare-worker/src/routes/sessions.ts",
-        "../cloudflare-worker/src/routes/users.ts",
     ],
 };
 
@@ -54,10 +62,31 @@ openApi.components.securitySchemes = {
         scheme: "bearer",
         bearerFormat: "JWT",
     },
+    oauth2: {
+        type: "oauth2",
+        description: "Auth0 OAuth2 Authorization Code Flow",
+        flows: {
+            authorizationCode: {
+                authorizationUrl: AUTH0_AUTHORIZATION_URL,
+                tokenUrl: AUTH0_TOKEN_URL,
+                scopes: {
+                    "openid": "OpenID Connect",
+                    "profile": "Profile",
+                    "email": "Email",
+                    "read:api": "Read API",
+                    "write:api": "Write API",
+                    "auth0:admin:api": "Auth0 Admin API",
+                },
+            },
+        },
+    },
 };
 openApi.security = [
     {
         bearerAuth: [],
+    },
+    {
+        oauth2: [],
     },
 ];
 

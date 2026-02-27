@@ -176,10 +176,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * @openapi
 	 * /api/__auth0/token:
 	 *   post:
-	 *     summary: Get Auth0 Management Token
-	 *     description: Requests an Auth0 Management API token. Requires admin permissions.
+	 *     summary: Get Auth0 Management Token (auth0:admin:api)
+	 *     description: |
+	 *       Requests an Auth0 Management API token.
+	 *       
+	 *       **Required Permission**: `auth0:admin:api`
 	 *     security:
-	 *       - bearerAuth: []
+	 *       - bearerAuth: ["auth0:admin:api"]
+	 *       - oauth2: ["auth0:admin:api"]
 	 *     responses:
 	 *       200:
 	 *         description: Successfully retrieved token.
@@ -248,10 +252,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * @openapi
 	 * /api/__auth0/autopermissions:
 	 *   post:
-	 *     summary: Auto-assign permissions
-	 *     description: Assigns default permissions to the current user if missing.
+	 *     summary: Auto-assign permissions (JWT required)
+	 *     description: |
+	 *       Assigns default permissions to the current user if missing.
+	 *       
+	 *       **Requirements**: A valid JWT (authentication required, but no specific scope needed).
 	 *     security:
 	 *       - bearerAuth: []
+	 *       - oauth2: []
 	 *     responses:
 	 *       200:
 	 *         description: Success.
@@ -330,10 +338,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * @openapi
 	 * /api/ping:
 	 *   get:
-	 *     summary: Protected ping
-	 *     description: Verify authentication and basic connectivity.
+	 *     summary: Protected ping (read:api)
+	 *     description: |
+	 *       Verify authentication and basic connectivity.
+	 *       
+	 *       **Required Permission**: `read:api`
 	 *     security:
-	 *       - bearerAuth: []
+	 *       - bearerAuth: ["read:api"]
+	 *       - oauth2: ["read:api"]
 	 *     responses:
 	 *       200:
 	 *         description: Success.
@@ -365,17 +377,21 @@ export const setupRoutes = (router: Router, env: Env) => {
 	);
 
 	/**
-	 * GET /api/get_users
+	 * GET /api/get_user
 	 *
 	 * Retrieves the current authenticated user's ID.
 	 *
 	 * @openapi
-	 * /api/get_users:
+	 * /api/get_user:
 	 *   get:
-	 *     summary: Get user ID
-	 *     description: Returns the sub claim of the authenticated user.
+	 *     summary: Get user ID (read:api)
+	 *     description: |
+	 *       Returns the sub claim of the authenticated user.
+	 *       
+	 *       **Required Permission**: `read:api`
 	 *     security:
-	 *       - bearerAuth: []
+	 *       - bearerAuth: ["read:api"]
+	 *       - oauth2: ["read:api"]
 	 *     responses:
 	 *       200:
 	 *         description: Success.
@@ -388,7 +404,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * @returns {Promise<Response>} A JSON response with the user's sub ID.
 	 */
 	router.get(
-		"/api/get_users",
+		"/api/get_user",
 		async (_request) => {
 			const user = router.jwtPayload.sub || ""; // Attach the JWT payload to the request for use in the handler
 
@@ -409,10 +425,14 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * @openapi
 	 * /api/get/{user}:
 	 *   get:
-	 *     summary: Debug request info
-	 *     description: Returns detailed session and request info.
+	 *     summary: Debug request info (read:api)
+	 *     description: |
+	 *       Returns detailed session and request info.
+	 *       
+	 *       **Required Permission**: `read:api`
 	 *     security:
-	 *       - bearerAuth: []
+	 *       - bearerAuth: ["read:api"]
+	 *       - oauth2: ["read:api"]
 	 *     parameters:
 	 *       - in: path
 	 *         name: user

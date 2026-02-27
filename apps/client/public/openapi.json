@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "KduFoot API",
+    "title": "SCTG Vite React Heroui Auth0 Template API",
     "version": "1.0.0"
   },
   "paths": {
@@ -53,11 +53,18 @@
     },
     "/api/__auth0/token": {
       "post": {
-        "summary": "Get Auth0 Management Token",
-        "description": "Requests an Auth0 Management API token. Requires admin permissions.",
+        "summary": "Get Auth0 Management Token (auth0:admin:api)",
+        "description": "Requests an Auth0 Management API token.\n\n**Required Permission**: `auth0:admin:api`\n",
         "security": [
           {
-            "bearerAuth": []
+            "bearerAuth": [
+              "auth0:admin:api"
+            ]
+          },
+          {
+            "oauth2": [
+              "auth0:admin:api"
+            ]
           }
         ],
         "responses": {
@@ -89,11 +96,14 @@
     },
     "/api/__auth0/autopermissions": {
       "post": {
-        "summary": "Auto-assign permissions",
-        "description": "Assigns default permissions to the current user if missing.",
+        "summary": "Auto-assign permissions (JWT required)",
+        "description": "Assigns default permissions to the current user if missing.\n\n**Requirements**: A valid JWT (authentication required, but no specific scope needed).\n",
         "security": [
           {
             "bearerAuth": []
+          },
+          {
+            "oauth2": []
           }
         ],
         "responses": {
@@ -125,11 +135,18 @@
     },
     "/api/ping": {
       "get": {
-        "summary": "Protected ping",
-        "description": "Verify authentication and basic connectivity.",
+        "summary": "Protected ping (read:api)",
+        "description": "Verify authentication and basic connectivity.\n\n**Required Permission**: `read:api`\n",
         "security": [
           {
-            "bearerAuth": []
+            "bearerAuth": [
+              "read:api"
+            ]
+          },
+          {
+            "oauth2": [
+              "read:api"
+            ]
           }
         ],
         "responses": {
@@ -149,13 +166,20 @@
         }
       }
     },
-    "/api/get_users": {
+    "/api/get_user": {
       "get": {
-        "summary": "Get user ID",
-        "description": "Returns the sub claim of the authenticated user.",
+        "summary": "Get user ID (read:api)",
+        "description": "Returns the sub claim of the authenticated user.\n\n**Required Permission**: `read:api`\n",
         "security": [
           {
-            "bearerAuth": []
+            "bearerAuth": [
+              "read:api"
+            ]
+          },
+          {
+            "oauth2": [
+              "read:api"
+            ]
           }
         ],
         "responses": {
@@ -174,11 +198,18 @@
     },
     "/api/get/{user}": {
       "get": {
-        "summary": "Debug request info",
-        "description": "Returns detailed session and request info.",
+        "summary": "Debug request info (read:api)",
+        "description": "Returns detailed session and request info.\n\n**Required Permission**: `read:api`\n",
         "security": [
           {
-            "bearerAuth": []
+            "bearerAuth": [
+              "read:api"
+            ]
+          },
+          {
+            "oauth2": [
+              "read:api"
+            ]
           }
         ],
         "parameters": [
@@ -213,6 +244,24 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "description": "Auth0 OAuth2 Authorization Code Flow",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://sctg-development.eu.auth0.com/authorize",
+            "tokenUrl": "https://sctg-development.eu.auth0.com/oauth/token",
+            "scopes": {
+              "openid": "OpenID Connect",
+              "profile": "Profile",
+              "email": "Email",
+              "read:api": "Read API",
+              "write:api": "Write API",
+              "auth0:admin:api": "Auth0 Admin API"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -322,6 +371,9 @@
   "security": [
     {
       "bearerAuth": []
+    },
+    {
+      "oauth2": []
     }
   ]
 }

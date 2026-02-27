@@ -32,6 +32,7 @@ import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import UsersAndPermissionsPage from "@/pages/admin/users-and-permissions";
+import { OpenAPI } from "@/components/openapi";
 
 function App() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -89,6 +90,10 @@ function App() {
         <Route
           element={<AuthenticationGuard component={UsersAndPermissionsPage} />}
           path="/admin/users"
+        />
+        <Route
+          element={<AuthenticationGuard component={OpenAPI} />}
+          path="/openapi"
         />
         <Route element={<PageNotFound />} path="*" />
       </Routes>
