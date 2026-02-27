@@ -26,12 +26,104 @@ import { decodeJwt } from "jose";
 import { Router } from "./router";
 import { getManagementToken, addPermissionsToUser } from "../auth0";
 
+/**
+ * @openapi
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Auth0Token:
+ *       type: object
+ *       properties:
+ *         access_token:
+ *           type: string
+ *           description: The Auth0 Management API access token.
+ *         token_type:
+ *           type: string
+ *           example: Bearer
+ *         expires_in:
+ *           type: integer
+ *           description: Token lifetime in seconds.
+ *         from_cache:
+ *           type: boolean
+ *           description: Indicates if the token was retrieved from KV cache.
+ *     AutoPermissionsResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         added:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of permissions successfully added to the user.
+ *         message:
+ *           type: string
+ *           description: Optional status message.
+ *     PingResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         user:
+ *           type: string
+ *           nullable: true
+ *           description: The user's sub claim.
+ *     UserResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         user:
+ *           type: string
+ *           description: The user's sub ID.
+ *     DebugResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         user:
+ *           type: string
+ *         sub:
+ *           type: string
+ *         permissions:
+ *           type: array
+ *           items:
+ *             type: string
+ *         token:
+ *           type: string
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         error:
+ *           type: string
+ */
 export const setupRoutes = (router: Router, env: Env) => {
 	/**
 	 * GET /
 	 *
 	 * Root endpoint providing a simple greeting.
 	 * Maintained for backwards compatibility.
+	 *
+	 * @openapi
+	 * /:
+	 *   get:
+	 *     summary: Root endpoint
+	 *     description: Returns a simple greeting.
+	 *     responses:
+	 *       200:
+	 *         description: A simple greeting message.
+	 *         content:
+	 *           text/plain:
+	 *             schema:
+	 *               type: string
+	 *               example: Hello World!
 	 *
 	 * @returns {Promise<Response>} A "Hello World!" text response.
 	 */
@@ -48,6 +140,25 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 * Simple health check endpoint to verify worker availability.
 	 * This endpoint is public and does not require authentication.
 	 *
+	 * @openapi
+	 * /health:
+	 *   get:
+	 *     summary: Health check
+	 *     description: Verify if the worker is up and running.
+	 *     responses:
+	 *       200:
+	 *         description: Worker is healthy.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 success:
+	 *                   type: boolean
+	 *                 status:
+	 *                   type: string
+	 *                   example: ok
+	 *
 	 * @returns {Promise<Response>} A JSON response indicating success.
 	 */
 	router.get("/health", async () => {
@@ -61,6 +172,29 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * Requests an Auth0 Management API token via the client_credentials flow.
 	 * The token is cached in KV store to optimize performance and respect Auth0 rate limits.
+	 *
+	 * @openapi
+	 * /api/__auth0/token:
+	 *   post:
+	 *     summary: Get Auth0 Management Token
+	 *     description: Requests an Auth0 Management API token. Requires admin permissions.
+	 *     security:
+	 *       - bearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: Successfully retrieved token.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/Auth0Token'
+	 *       403:
+	 *         description: Forbidden.
+	 *       500:
+	 *         description: Internal server error.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/ErrorResponse'
 	 *
 	 * @requires env.ADMIN_AUTH0_PERMISSION (auth0:admin:api)
 	 * @returns {Promise<Response>} A JSON response containing the access token and expiration details.
@@ -110,6 +244,29 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * Automatically assigns default permissions to the authenticated user if they are missing.
 	 * The permissions to be assigned are defined in `env.AUTH0_AUTOMATIC_PERMISSIONS`.
+	 *
+	 * @openapi
+	 * /api/__auth0/autopermissions:
+	 *   post:
+	 *     summary: Auto-assign permissions
+	 *     description: Assigns default permissions to the current user if missing.
+	 *     security:
+	 *       - bearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: Success.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/AutoPermissionsResponse'
+	 *       401:
+	 *         description: Unauthorized.
+	 *       500:
+	 *         description: Error.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/ErrorResponse'
 	 *
 	 * @requires A valid JWT (authentication required, but no specific scope needed).
 	 * @returns {Promise<Response>} A JSON response indicating successfully added permissions or status.
@@ -170,6 +327,23 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * A protected test endpoint to verify authentication and basic connectivity.
 	 *
+	 * @openapi
+	 * /api/ping:
+	 *   get:
+	 *     summary: Protected ping
+	 *     description: Verify authentication and basic connectivity.
+	 *     security:
+	 *       - bearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: Success.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/PingResponse'
+	 *       403:
+	 *         description: Forbidden.
+	 *
 	 * @requires env.READ_PERMISSION
 	 * @returns {Promise<Response>} A JSON response containing the user's sub claim.
 	 */
@@ -195,6 +369,21 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * Retrieves the current authenticated user's ID.
 	 *
+	 * @openapi
+	 * /api/get_users:
+	 *   get:
+	 *     summary: Get user ID
+	 *     description: Returns the sub claim of the authenticated user.
+	 *     security:
+	 *       - bearerAuth: []
+	 *     responses:
+	 *       200:
+	 *         description: Success.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/UserResponse'
+	 *
 	 * @requires env.READ_PERMISSION
 	 * @returns {Promise<Response>} A JSON response with the user's sub ID.
 	 */
@@ -216,6 +405,28 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * A debug endpoint that returns comprehensive information about the request,
 	 * including URL parameters, user ID, permissions, and the raw JWT.
+	 *
+	 * @openapi
+	 * /api/get/{user}:
+	 *   get:
+	 *     summary: Debug request info
+	 *     description: Returns detailed session and request info.
+	 *     security:
+	 *       - bearerAuth: []
+	 *     parameters:
+	 *       - in: path
+	 *         name: user
+	 *         required: true
+	 *         schema:
+	 *           type: string
+	 *         description: Dynamic user parameter.
+	 *     responses:
+	 *       200:
+	 *         description: Success.
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               $ref: '#/components/schemas/DebugResponse'
 	 *
 	 * @param {string} user - Dynamic user parameter from the URL.
 	 * @requires env.READ_PERMISSION

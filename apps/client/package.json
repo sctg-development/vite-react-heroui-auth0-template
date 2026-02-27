@@ -13,7 +13,8 @@
     "preview:env": "bash ./scripts/preview-ensure.sh",
     "clean": "rm -rf dist .turbo node_modules/.vite node_modules/.cache",
     "update:heroui:cli": "npx heroui-cli@latest upgrade --all",
-    "update:heroui": "node --no-warnings --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ./update-heroui.ts"
+    "update:heroui": "node --no-warnings --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ./update-heroui.ts",
+    "openapi": "node --experimental-strip-types get-openapi.ts"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.15.0",
@@ -60,6 +61,7 @@
     "@types/node": "^24.10.11",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/swagger-jsdoc": "^6",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vitejs/plugin-react": "^5.1.4",
@@ -76,6 +78,7 @@
     "globals": "^17.3.0",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
+    "swagger-jsdoc": "^6.2.8",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
