@@ -52,6 +52,7 @@
     "react-dom": "19.2.4",
     "react-i18next": "^16.5.4",
     "react-router-dom": "^7.13.1",
+    "swagger-ui-react": "^5.32.0",
     "tailwind-variants": "3.2.2",
     "tailwindcss": "4.2.1"
   },
