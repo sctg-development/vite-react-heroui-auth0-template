@@ -144,6 +144,9 @@ For more detailed commands, see the [Turborepo Guide](./TURBOREPO-GUIDE.md).
     - [Auth0 Configuration](#auth0-configuration)
     - [Dex Configuration](#dex-configuration)
     - [Adding New Providers](#adding-new-providers)
+  - [Auth0 Automatic Permissions](#auth0-automatic-permissions)
+    - [Lifecycle & Design](#lifecycle--design)
+    - [Configuration](#configuration-1)
 
 ## Authentication
 
@@ -405,6 +408,33 @@ The template provides a comprehensive technical modal for developers and power u
 - **Localized Expiration**: Displays a real-time countdown in a human-readable "n days h:m:s" format, fully localized across all 6 supported languages.
 - **Permission Overview**: Lists all permissions associated with the current session.
 - **Quick Links**: Integrated "Admin Panel" shortcut for users with appropriate privileges.
+
+---
+
+## Auth0 Automatic Permissions
+
+This template includes an optional feature to automatically assign a set of predefined permissions to users upon their first login (or whenever permissions are missing). This is particularly useful for onboarding new users with a default set of "read" or "basic" access levels without manual administrator intervention.
+
+### Lifecycle & Design
+
+The automatic provisioning follows a robust 5-step lifecycle designed to be efficient and secure:
+
+1.  **Detection**: Immediately after a successful login, the `AutoPermissionProvisioner` component (client-side) checks the user's current scopes against the required `AUTH0_AUTOMATIC_PERMISSIONS` list.
+2.  **Provisioning Request**: If permissions are missing, the client calls the Cloudflare Worker's `/api/__auth0/autopermissions` endpoint.
+3.  **Server-Side Assignment**: The worker verifies the user's identity, obtains a Management API token (using a high-performance KV-cached mechanism), and calls the Auth0 Management API to assign the missing permissions.
+4.  **Token Refresh**: Upon success, the client triggers a **silent token refresh** with `cacheMode: "off"`. This forces the Auth0 SDK to bypass the local cache and fetch a fresh JWT containing the newly assigned scopes.
+5.  **Persistent Guard & Cleanup**: To prevent infinite refresh loops (e.g., during Auth0 propagation delays), a `sessionStorage` guard tracks the provisioning attempt for that specific user. Once the user is confirmed to have all required permissions, the flag is automatically cleaned up.
+
+### Configuration
+
+To enable this feature, configure the following variables:
+
+**Cloudflare Worker (Secrets/Env):**
+- `AUTH0_AUTOMATIC_PERMISSIONS`: Comma-separated list of scopes (e.g., `read:api,user:profile`).
+- `AUTH0_MANAGEMENT_API_CLIENT_ID` & `AUTH0_MANAGEMENT_API_CLIENT_SECRET`: Credentials for an Auth0 M2M application with `update:users` and `read:users` scopes.
+
+**Client (Vite Env):**
+- `AUTH0_AUTOMATIC_PERMISSIONS`: An array of strings mirroring the worker's configuration.
 
 ---
 

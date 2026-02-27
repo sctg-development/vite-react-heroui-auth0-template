@@ -7,6 +7,7 @@ import React from "react";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 import { AuthProviderWrapper } from "./providers/use-auth";
+import { AutoPermissionProvisioner } from "./auth-components";
 
 // Provider types we support
 export type AuthenticationType = "auth0" | "dex";
@@ -51,7 +52,9 @@ export const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
         useCookiesForTransactions={true}
       >
         <AuthProviderWrapper providerType={providerType}>
-          {children}
+          <AutoPermissionProvisioner>
+            {children}
+          </AutoPermissionProvisioner>
         </AuthProviderWrapper>
       </Auth0Provider>
     );

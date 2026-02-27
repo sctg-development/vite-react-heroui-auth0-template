@@ -689,3 +689,89 @@ export const useSecuredApi = () => {
     checkResourceServerScopesWithAudience,
   };
 };
+
+/**
+ * AutoPermissionProvisioner Component
+ *
+ * This component manages the automatic provisioning of permissions defined in
+ * `import.meta.env.AUTH0_AUTOMATIC_PERMISSIONS`.
+ *
+ * It follows a robust lifecycle to ensure that users get the necessary permissions
+ * without manual intervention, while protecting the app from infinite reload loops.
+ *
+ * Lifecycle:
+ * 1. Wait for Auth0 to finish loading and ensure the user is authenticated.
+ * 2. Check the user's current permissions (from the JWT) against the target list.
+ * 3. If any are missing, check `sessionStorage` for a persistent "attempted" flag.
+ * 4. If not attempted, call the worker's `/api/__auth0/autopermissions` endpoint.
+ * 5. On success, force a token refresh (`cacheMode: "off"`) and reload the page.
+ * 6. The `sessionStorage` flag is cleaned up ONLY once the user is confirmed to have all permissions.
+ */
+export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading, user, hasPermission, postJson, getAccessToken } = useAuth();
+  const [isProvisioning, setIsProvisioning] = useState(false);
+
+  useEffect(() => {
+    // 1. Loading/Auth Guard: Don't act while Auth0 is still initializing
+    if (isLoading || !isAuthenticated || isProvisioning) return;
+
+    const userId = user?.sub;
+    if (!userId) return;
+
+    // 2. Configuration: Retrieve the list of target permissions from environment
+    const autoPerms = (import.meta as any).env.AUTH0_AUTOMATIC_PERMISSIONS;
+    if (!autoPerms || !Array.isArray(autoPerms) || autoPerms.length === 0) return;
+
+    const checkAndProvision = async () => {
+      // 3. Permission Detection: Check which target permissions are currently missing
+      const missingPerms: string[] = [];
+      for (const p of autoPerms) {
+        const has = await hasPermission(p);
+        if (!has) missingPerms.push(p);
+      }
+
+      const storageKey = `autoperm_attempted_${userId}`;
+
+      if (missingPerms.length === 0) {
+        // Clear flag if we have all permissions (either initially or after provisioning)
+        if (sessionStorage.getItem(storageKey)) {
+          sessionStorage.removeItem(storageKey);
+        }
+        return;
+      }
+
+      // If missing permissions, check if we already tried in this session
+      if (sessionStorage.getItem(storageKey) === "true") return;
+
+      setIsProvisioning(true);
+      sessionStorage.setItem(storageKey, "true");
+      try {
+        const apiBase = (import.meta as any).env.API_BASE_URL || "";
+        const result = await postJson(`${apiBase}/__auth0/autopermissions`, {});
+
+        if (result.success) {
+          // 6. Token Refresh: Bypass local cache to get the new JWT from Auth0 servers.
+          // Note: "off" is the correct cacheMode for Auth0 SDK to force a network request.
+          await getAccessToken({ cacheMode: "off" });
+
+          // Force a full reload to ensure all application components/providers
+          // receive the updated authentication state and permissions.
+          window.location.reload();
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Auto-provisioning failed:", error);
+      } finally {
+        setIsProvisioning(false);
+      }
+    };
+
+    checkAndProvision();
+  }, [isAuthenticated, isLoading, user, hasPermission, postJson, getAccessToken, isProvisioning]);
+
+  if (isProvisioning) {
+    return <SiteLoading />;
+  }
+
+  return <>{children}</>;
+};

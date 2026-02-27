@@ -134,7 +134,8 @@ export default defineConfig({
     ),
     "import.meta.env.PERMISSIONS": JSON.stringify([process.env.READ_PERMISSION || "read:api",
     process.env.WRITE_PERMISSION || "write:api",
-    process.env.ADMIN_AUTH0_PERMISSION || "auth0:admin:api"])
+    process.env.ADMIN_AUTH0_PERMISSION || "auth0:admin:api"]),
+    "import.meta.env.AUTH0_AUTOMATIC_PERMISSIONS": JSON.stringify(process.env.AUTH0_AUTOMATIC_PERMISSIONS?.split(",") || []),
   },
   plugins: [react(), tsconfigPaths(), tailwindcss(), githubPagesSpa()],
   build: {

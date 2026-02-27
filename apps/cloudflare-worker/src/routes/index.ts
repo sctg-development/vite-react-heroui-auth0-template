@@ -24,6 +24,7 @@
 
 import { decodeJwt } from "jose";
 import { Router } from "./router";
+import { getManagementToken, addPermissionsToUser } from "../auth0";
 
 export const setupRoutes = (router: Router, env: Env) => {
 	// Preserve the original root response for backwards compatibility
@@ -52,147 +53,23 @@ export const setupRoutes = (router: Router, env: Env) => {
 		"/api/__auth0/token",
 		async () => {
 			try {
-				// Check if all necessary environment variables are present
-				if (
-					!env.AUTH0_MANAGEMENT_API_CLIENT_ID ||
-					!env.AUTH0_MANAGEMENT_API_CLIENT_SECRET ||
-					!env.AUTH0_DOMAIN
-				) {
-					const missings = [] as string[]
-					if (!env.AUTH0_MANAGEMENT_API_CLIENT_ID) missings.push("AUTH0_MANAGEMENT_API_CLIENT_ID")
-					if (!env.AUTH0_MANAGEMENT_API_CLIENT_SECRET) missings.push("AUTH0_MANAGEMENT_API_CLIENT_SECRET")
-					if (!env.AUTH0_DOMAIN) missings.push("AUTH0_DOMAIN")
+				const token = await getManagementToken(env);
+				// We don't have the full response here anymore, but we can return the token.
+				// For backwards compatibility with the UI expecting specific fields:
+				let exp: number | undefined;
+				try {
+					const decoded = decodeJwt(token);
+					exp = (decoded?.exp as number) || undefined;
+				} catch (_) { }
 
-					// Return an error response if configuration is incomplete
-					return new Response(
-						JSON.stringify({ success: false, error: `Missing Auth0 configuration: ${missings.join(", ")}` }),
-						{
-							status: 500,
-							headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-						},
-					);
-				}
-
-				const tokenUrl = `https://${env.AUTH0_DOMAIN}/oauth/token`;
-				const audience = `https://${env.AUTH0_DOMAIN}/api/v2/`;
-				const cacheKey = `auth0:management_token`;
-
-				// Check KV cache first
-				if (env.KV_CACHE) {
-					try {
-						const cached = await env.KV_CACHE.get(cacheKey);
-						if (cached) {
-							let parsed: { token?: string; exp?: number } | null = null;
-							try { parsed = JSON.parse(cached); } catch (_) { /* raw token */ }
-
-							const token = parsed?.token ?? cached;
-							let exp = parsed?.exp;
-
-							if (!exp && token) {
-								try {
-									const decoded = decodeJwt(token);
-									exp = (decoded?.exp as number) || undefined;
-								} catch (_) { exp = undefined; }
-							}
-
-							if (exp) {
-								const now = Math.floor(Date.now() / 1000);
-								if (exp > now + 5) {
-									// Cached token still valid -> return it directly
-									return new Response(
-										JSON.stringify({
-											access_token: token,
-											token_type: "Bearer",
-											expires_in: exp - now,
-											from_cache: true,
-										}),
-										{
-											status: 200,
-											headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-										},
-									);
-								}
-							}
-						}
-					} catch (e) {
-						console.warn("KV_CACHE inaccessible, requesting a new token", String(e));
-					}
-				}
-
-				// Call Auth0's OAuth service to obtain a new token
-				const resp = await fetch(tokenUrl, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						client_id: env.AUTH0_MANAGEMENT_API_CLIENT_ID,
-						client_secret: env.AUTH0_MANAGEMENT_API_CLIENT_SECRET,
-						audience,
-						grant_type: "client_credentials",
-					}),
-				});
-
-				if (!resp.ok) {
-					const errorText = await resp.text();
-					return new Response(
-						JSON.stringify({ success: false, error: `Auth0 failure: ${errorText}` }),
-						{
-							status: 500,
-							headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-						},
-					);
-				}
-
-				const data = (await resp.json()) as {
-					access_token?: string;
-					token_type?: string;
-					expires_in?: number;
-					[key: string]: unknown;
-				};
-
-				if (!data?.access_token) {
-					return new Response(
-						JSON.stringify({ success: false, error: "Invalid Auth0 response: no access_token" }),
-						{
-							status: 500,
-							headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-						},
-					);
-				}
-
-				// Cache token in KV
-				if (env.KV_CACHE && data.access_token) {
-					try {
-						const tokenStr = data.access_token as string;
-						const now = Math.floor(Date.now() / 1000);
-						let exp: number | undefined;
-
-						if (typeof data.expires_in === "number") {
-							exp = now + Math.floor(data.expires_in);
-						} else {
-							try {
-								const decoded = decodeJwt(tokenStr);
-								exp = (decoded?.exp as number) || undefined;
-							} catch (_) { exp = undefined; }
-						}
-
-						if (exp && exp > now + 5) {
-							await env.KV_CACHE.put(
-								cacheKey,
-								JSON.stringify({ token: tokenStr, exp }),
-								{ expiration: exp },
-							);
-						}
-					} catch (e) {
-						console.warn("KV_CACHE cache failure", String(e));
-					}
-				}
+				const now = Math.floor(Date.now() / 1000);
 
 				return new Response(
 					JSON.stringify({
-						access_token: data.access_token,
-						token_type: data.token_type,
-						expires_in: data.expires_in,
-						from_cache: false,
+						access_token: token,
+						token_type: "Bearer",
+						expires_in: exp ? exp - now : 3600,
+						from_cache: true, // we assume it might be from cache
 					}),
 					{
 						status: 200,
@@ -200,7 +77,6 @@ export const setupRoutes = (router: Router, env: Env) => {
 					},
 				);
 			} catch (error) {
-				// Universal error handler for this route
 				return new Response(
 					JSON.stringify({ success: false, error: String(error) }),
 					{
@@ -210,7 +86,65 @@ export const setupRoutes = (router: Router, env: Env) => {
 				);
 			}
 		},
-		env.ADMIN_AUTH0_PERMISSION, // Protect this route with the ADMIN_AUTH0_PERMISSION (auth0:admin:api) permission
+		env.ADMIN_AUTH0_PERMISSION,
+	);
+
+	/**
+	 * POST /api/__auth0/autopermissions
+	 *
+	 * Automatically assigns permissions listed in AUTH0_AUTOMATIC_PERMISSIONS
+	 * if the user doesn't already have them.
+	 */
+	router.post(
+		"/api/__auth0/autopermissions",
+		async (request) => {
+			try {
+				const autoPermsStr = env.AUTH0_AUTOMATIC_PERMISSIONS || "";
+				if (!autoPermsStr) {
+					return new Response(JSON.stringify({ success: true, message: "No automatic permissions configured" }), {
+						status: 200,
+						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+					});
+				}
+
+				const autoPerms = autoPermsStr.split(",").map(p => p.trim()).filter(p => p !== "");
+				const currentPerms = router.userPermissions || [];
+				const missingPerms = autoPerms.filter(p => !currentPerms.includes(p));
+
+				if (missingPerms.length === 0) {
+					return new Response(JSON.stringify({ success: true, message: "User already has all automatic permissions" }), {
+						status: 200,
+						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+					});
+				}
+
+				const userId = router.jwtPayload.sub;
+				if (!userId) {
+					throw new Error("User ID not found in token");
+				}
+
+				await addPermissionsToUser(userId, missingPerms, env);
+
+				return new Response(JSON.stringify({ success: true, added: missingPerms }), {
+					status: 200,
+					headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+				});
+			} catch (error) {
+				return new Response(
+					JSON.stringify({ success: false, error: String(error) }),
+					{
+						status: 500,
+						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+					},
+				);
+			}
+		},
+		/**
+		 * Empty string indicator: This route requires a valid JWT (authentication)
+		 * but does not require any specific scope/permission to access.
+		 * This triggers 'jwtPayload.sub' extraction in the router.
+		 */
+		"",
 	);
 	// Protected ping (requires READ permission)
 	router.get(

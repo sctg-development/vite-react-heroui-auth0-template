@@ -90,6 +90,7 @@ jobs:
           echo "WRITE_PERMISSION=${{ secrets.WRITE_PERMISSION }}" >> .env
           echo "ADMIN_PERMISSION=${{ secrets.ADMIN_PERMISSION }}" >> .env
           echo "ADMIN_AUTH0_PERMISSION=${{ secrets.ADMIN_AUTH0_PERMISSION }}" >> .env
+          echo "AUTH0_AUTOMATIC_PERMISSIONS=${{ secrets.AUTH0_AUTOMATIC_PERMISSIONS }}" >> .env
 
       - name: Replace "// vars.*" in wrangler.jsonc with a json string
         run: |
@@ -98,7 +99,7 @@ jobs:
           cp wrangler.jsonc wrangler.jsonc.bak
           set -a && source .env && set +a 
           cat .env
-          cat wrangler.jsonc.bak | sed 's|// "vars".*.|,"vars": { "AUTHENTICATION_PROVIDER_TYPE": "'"${AUTHENTICATION_PROVIDER_TYPE}"'", "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'","AUTH0_CLIENT_SECRET": "'"${AUTH0_CLIENT_SECRET}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'", "ADMIN_AUTH0_PERMISSION": "'"${ADMIN_AUTH0_PERMISSION}"'","AUTH0_MANAGEMENT_API_CLIENT_ID": "'"${AUTH0_MANAGEMENT_API_CLIENT_ID}"'", "AUTH0_MANAGEMENT_API_CLIENT_SECRET": "'"${AUTH0_MANAGEMENT_API_CLIENT_SECRET}"'" }|' > wrangler.jsonc.2
+          cat wrangler.jsonc.bak | sed 's|// "vars".*.|,"vars": { "AUTHENTICATION_PROVIDER_TYPE": "'"${AUTHENTICATION_PROVIDER_TYPE}"'", "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'","AUTH0_CLIENT_SECRET": "'"${AUTH0_CLIENT_SECRET}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'", "ADMIN_AUTH0_PERMISSION": "'"${ADMIN_AUTH0_PERMISSION}"'","AUTH0_MANAGEMENT_API_CLIENT_ID": "'"${AUTH0_MANAGEMENT_API_CLIENT_ID}"'", "AUTH0_MANAGEMENT_API_CLIENT_SECRET": "'"${AUTH0_MANAGEMENT_API_CLIENT_SECRET}"'", "AUTH0_AUTOMATIC_PERMISSIONS": "'"${AUTH0_AUTOMATIC_PERMISSIONS}"'" }|' > wrangler.jsonc.2
           cat wrangler.jsonc.2 | sed 's|// "routes".*.|,"routes": [{ "pattern": "'"${DOMAIN_NAME}"'", "custom_domain": true }]|'  > wrangler.jsonc
           cat wrangler.jsonc
       - name: Deploy
@@ -114,6 +115,7 @@ jobs:
             AUTH0_CLIENT_SECRET
             AUTH0_MANAGEMENT_API_CLIENT_ID
             AUTH0_MANAGEMENT_API_CLIENT_SECRET
+            AUTH0_AUTOMATIC_PERMISSIONS
             AUTH0_SCOPE
             AUTH0_AUDIENCE
             API_BASE_URL
@@ -129,6 +131,7 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
           AUTH0_MANAGEMENT_API_CLIENT_ID: ${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_ID }}
           AUTH0_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_SECRET }}
+          AUTH0_AUTOMATIC_PERMISSIONS: ${{ secrets.AUTH0_AUTOMATIC_PERMISSIONS }}
           AUTH0_SCOPE: ${{ secrets.AUTH0_SCOPE }}
           AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}

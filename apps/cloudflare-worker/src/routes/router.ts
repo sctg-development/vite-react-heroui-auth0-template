@@ -216,7 +216,10 @@ export class Router {
 
 			if (!match) continue;
 
-			if (route.permission) {
+			// 4. Permission & Authentication Check
+			// If route.permission is undefined, the route is public.
+			// If route.permission is defined (even as ""), authentication is required.
+			if (route.permission !== undefined) {
 				if (!request.headers.has("Authorization")) {
 					return new Response(
 						JSON.stringify({
@@ -245,6 +248,9 @@ export class Router {
 					);
 				}
 
+				// Verify token identity and permissions.
+				// Note: if route.permission is "", this still decodes and validates the sub claim
+				// without requiring a specific scope to be present in the token.
 				const { access, payload, permissions } = await checkPermissions(
 					token,
 					route.permission,
