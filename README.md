@@ -414,6 +414,7 @@ The template provides a comprehensive technical modal for developers and power u
 ## Auth0 Automatic Permissions
 
 This template includes an optional feature to automatically assign a set of predefined permissions to users upon their first login (or whenever permissions are missing). This is particularly useful for onboarding new users with a default set of "read" or "basic" access levels without manual administrator intervention.
+<img width="412" height="550" alt="image" src="https://github.com/user-attachments/assets/6c952627-1678-4c1b-a2aa-73fb0feab632" />
 
 ### Lifecycle & Design
 
