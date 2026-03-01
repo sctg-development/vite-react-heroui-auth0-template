@@ -102,7 +102,7 @@ export const checkPermissions = async (
 
 /**
  * Retrieves a valid Auth0 Management API access token.
- * 
+ *
  * To optimize performance and respect Auth0 rate limits, this function:
  * 1. Checks Cloudflare KV (KV_CACHE) for an existing unexpired token.
  * 2. If no valid token is found, requests a new one from Auth0 using client_credentials.
@@ -119,10 +119,15 @@ export const getManagementToken = async (env: Env): Promise<string> => {
 		!env.AUTH0_DOMAIN
 	) {
 		const missings = [];
-		if (!env.AUTH0_MANAGEMENT_API_CLIENT_ID) missings.push("AUTH0_MANAGEMENT_API_CLIENT_ID");
-		if (!env.AUTH0_MANAGEMENT_API_CLIENT_SECRET) missings.push("AUTH0_MANAGEMENT_API_CLIENT_SECRET");
+
+		if (!env.AUTH0_MANAGEMENT_API_CLIENT_ID)
+			missings.push("AUTH0_MANAGEMENT_API_CLIENT_ID");
+		if (!env.AUTH0_MANAGEMENT_API_CLIENT_SECRET)
+			missings.push("AUTH0_MANAGEMENT_API_CLIENT_SECRET");
 		if (!env.AUTH0_DOMAIN) missings.push("AUTH0_DOMAIN");
-		throw new Error(`Missing Auth0 Management API configuration: ${missings.join(", ")}`);
+		throw new Error(
+			`Missing Auth0 Management API configuration: ${missings.join(", ")}`,
+		);
 	}
 
 	const cacheKey = `auth0:management_token`;
@@ -130,10 +135,12 @@ export const getManagementToken = async (env: Env): Promise<string> => {
 	// Step 1: Check KV cache for an existing token
 	if (env.KV_CACHE) {
 		const cached = await env.KV_CACHE.get(cacheKey);
+
 		if (cached) {
 			try {
 				const parsed = JSON.parse(cached) as { token: string; exp: number };
 				const now = Math.floor(Date.now() / 1000);
+
 				// We return the cached token only if it has at least 10 seconds of TTL remaining
 				if (parsed.exp > now + 10) {
 					return parsed.token;
@@ -168,6 +175,7 @@ export const getManagementToken = async (env: Env): Promise<string> => {
 	if (env.KV_CACHE && data.access_token) {
 		const now = Math.floor(Date.now() / 1000);
 		const exp = now + data.expires_in;
+
 		await env.KV_CACHE.put(
 			cacheKey,
 			JSON.stringify({ token: data.access_token, exp }),

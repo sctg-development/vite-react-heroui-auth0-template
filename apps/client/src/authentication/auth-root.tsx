@@ -45,16 +45,14 @@ export const AuthenticationProvider: React.FC<AuthenticationProviderProps> = ({
           audience: import.meta.env.AUTH0_AUDIENCE,
           scope: import.meta.env.AUTH0_SCOPE,
         }}
+        cacheLocation="localstorage"
         clientId={import.meta.env.AUTH0_CLIENT_ID}
         domain={import.meta.env.AUTH0_DOMAIN}
-        cacheLocation="localstorage"
-        useRefreshTokens={true}
         useCookiesForTransactions={true}
+        useRefreshTokens={true}
       >
         <AuthProviderWrapper providerType={providerType}>
-          <AutoPermissionProvisioner>
-            {children}
-          </AutoPermissionProvisioner>
+          <AutoPermissionProvisioner>{children}</AutoPermissionProvisioner>
         </AuthProviderWrapper>
       </Auth0Provider>
     );

@@ -1,8 +1,9 @@
-import DefaultLayout from "@/layouts/default";
-import { OpenAPI } from "@/components/openapi";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+
+import { OpenAPI } from "@/components/openapi";
+import DefaultLayout from "@/layouts/default";
 
 export function SwaggerPage() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export function SwaggerPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       setBearer(undefined);
+
       return;
     }
 
@@ -32,7 +34,7 @@ export function SwaggerPage() {
   const dataServers = [
     (import.meta.env.API_BASE_URL as string).endsWith("/api")
       ? (import.meta.env.API_BASE_URL as string).split("/api")[0]
-      : ( import.meta.env.API_BASE_URL as string),
+      : (import.meta.env.API_BASE_URL as string),
   ];
 
   const description = t("api-server");
@@ -41,10 +43,10 @@ export function SwaggerPage() {
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <OpenAPI
-          source={source}
+          bearer={bearer}
           dataServers={dataServers}
           description={description}
-          bearer={bearer}
+          source={source}
         />
       </section>
     </DefaultLayout>

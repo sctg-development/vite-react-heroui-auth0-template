@@ -3,17 +3,19 @@
  * @license AGPL-3.0-or-later
  */
 
-import { FC, ReactNode, useEffect, useState } from "react";
-import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
-import { Link } from "@heroui/link";
-import { useTranslation } from "react-i18next";
-import { SiteLoading } from "../components/site-loading";
 import type {
   Auth0ManagementTokenApiResponse,
   Auth0User,
   Auth0Permission,
 } from "../types/auth0.types";
+
+import { FC, ReactNode, useEffect, useState } from "react";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
+import { Link } from "@heroui/link";
+import { useTranslation } from "react-i18next";
+
+import { SiteLoading } from "../components/site-loading";
 
 import {
   useAuth,
@@ -76,12 +78,12 @@ export const LoginButton: FC<{ text?: string }> = ({ text }) => {
 export const LoginLink: FC<{
   text?: string;
   color?:
-  | "primary"
-  | "foreground"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "danger";
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
 }> = ({ text, color }) => {
   const { isAuthenticated, login } = useAuth();
   const { t } = useTranslation();
@@ -169,12 +171,12 @@ interface LogoutLinkProps extends LogoutButtonProps {
    * Button color
    */
   color?:
-  | "primary"
-  | "foreground"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "danger";
+    | "primary"
+    | "foreground"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "danger";
 }
 
 /**
@@ -369,18 +371,19 @@ export const useSecuredApi = () => {
     async (): Promise<Auth0ManagementTokenApiResponse> => {
       const apiBase =
         typeof import.meta !== "undefined" &&
-          (import.meta as any).env?.API_BASE_URL
+        (import.meta as any).env?.API_BASE_URL
           ? (import.meta as any).env.API_BASE_URL
           : "";
       const result = await postJson(`${apiBase}/__auth0/token`, {});
+
       return result as Auth0ManagementTokenApiResponse;
     };
 
   const auth0Domain =
     typeof import.meta !== "undefined" &&
-      (import.meta as any).env?.VITE_AUTH0_DOMAIN
+    (import.meta as any).env?.VITE_AUTH0_DOMAIN
       ? (import.meta as any).env.VITE_AUTH0_DOMAIN
-      : (import.meta as any)?.env?.AUTH0_DOMAIN ?? "";
+      : ((import.meta as any)?.env?.AUTH0_DOMAIN ?? "");
 
   /**
    * Liste tous les utilisateurs depuis Auth0 Management API.
@@ -396,7 +399,9 @@ export const useSecuredApi = () => {
         },
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
+
     return resp.json();
   };
 
@@ -419,7 +424,9 @@ export const useSecuredApi = () => {
         },
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
+
     return resp.json();
   };
 
@@ -436,7 +443,7 @@ export const useSecuredApi = () => {
   ): Promise<void> => {
     const apiBase =
       typeof import.meta !== "undefined" &&
-        (import.meta as any).env?.API_BASE_URL
+      (import.meta as any).env?.API_BASE_URL
         ? (import.meta as any).env.API_BASE_URL
         : "";
     const audience = (import.meta as any)?.env?.AUTH0_AUDIENCE ?? apiBase;
@@ -459,6 +466,7 @@ export const useSecuredApi = () => {
         }),
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
   };
 
@@ -475,7 +483,7 @@ export const useSecuredApi = () => {
   ): Promise<void> => {
     const apiBase =
       typeof import.meta !== "undefined" &&
-        (import.meta as any).env?.API_BASE_URL
+      (import.meta as any).env?.API_BASE_URL
         ? (import.meta as any).env.API_BASE_URL
         : "";
     const audience = (import.meta as any)?.env?.AUTH0_AUDIENCE ?? apiBase;
@@ -498,6 +506,7 @@ export const useSecuredApi = () => {
         }),
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
   };
 
@@ -521,6 +530,7 @@ export const useSecuredApi = () => {
         },
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
   };
 
@@ -535,7 +545,9 @@ export const useSecuredApi = () => {
         "Content-Type": "application/json",
       },
     });
+
     if (!resp.ok) throw new Error(await resp.text());
+
     return resp.json();
   };
 
@@ -565,6 +577,7 @@ export const useSecuredApi = () => {
         }),
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
   };
 
@@ -587,8 +600,10 @@ export const useSecuredApi = () => {
         },
       },
     );
+
     if (!resp.ok) throw new Error(await resp.text());
     const data = await resp.json();
+
     return data.scopes ?? [];
   };
 
@@ -603,7 +618,10 @@ export const useSecuredApi = () => {
   ): Promise<{ value: string; description: string }[]> => {
     const servers = await getResourceServers(mgmtToken);
     const server = servers.find((s) => s.identifier === audience);
-    if (!server) throw new Error(`Resource server with audience ${audience} not found`);
+
+    if (!server)
+      throw new Error(`Resource server with audience ${audience} not found`);
+
     return getResourceServerScopes(mgmtToken, server.id);
   };
 
@@ -620,7 +638,10 @@ export const useSecuredApi = () => {
   ): Promise<void> => {
     const servers = await getResourceServers(mgmtToken);
     const server = servers.find((s) => s.identifier === audience);
-    if (!server) throw new Error(`Resource server with audience ${audience} not found`);
+
+    if (!server)
+      throw new Error(`Resource server with audience ${audience} not found`);
+
     return updateResourceServerScopes(mgmtToken, server.id, scopes);
   };
 
@@ -637,6 +658,7 @@ export const useSecuredApi = () => {
     targetScopes: { value: string; description: string }[],
   ): Promise<boolean> => {
     const currentScopes = await getResourceServerScopes(mgmtToken, id);
+
     if (currentScopes.length !== targetScopes.length) return false;
 
     const currentValues = new Set(currentScopes.map((s) => s.value));
@@ -646,6 +668,7 @@ export const useSecuredApi = () => {
     for (const val of targetValues) {
       if (!currentValues.has(val)) return false;
     }
+
     // Since lengths are equal, if all target are in current, they are identical
     return true;
   };
@@ -663,7 +686,10 @@ export const useSecuredApi = () => {
   ): Promise<boolean> => {
     const servers = await getResourceServers(mgmtToken);
     const server = servers.find((s) => s.identifier === audience);
-    if (!server) throw new Error(`Resource server with audience ${audience} not found`);
+
+    if (!server)
+      throw new Error(`Resource server with audience ${audience} not found`);
+
     return checkResourceServerScopes(mgmtToken, server.id, targetScopes);
   };
 
@@ -707,8 +733,17 @@ export const useSecuredApi = () => {
  * 5. On success, force a token refresh (`cacheMode: "off"`) and reload the page.
  * 6. The `sessionStorage` flag is cleaned up ONLY once the user is confirmed to have all permissions.
  */
-export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading, user, hasPermission, postJson, getAccessToken } = useAuth();
+export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const {
+    isAuthenticated,
+    isLoading,
+    user,
+    hasPermission,
+    postJson,
+    getAccessToken,
+  } = useAuth();
   const [isProvisioning, setIsProvisioning] = useState(false);
 
   useEffect(() => {
@@ -716,17 +751,22 @@ export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({ childre
     if (isLoading || !isAuthenticated || isProvisioning) return;
 
     const userId = user?.sub;
+
     if (!userId) return;
 
     // 2. Configuration: Retrieve the list of target permissions from environment
     const autoPerms = (import.meta as any).env.AUTH0_AUTOMATIC_PERMISSIONS;
-    if (!autoPerms || !Array.isArray(autoPerms) || autoPerms.length === 0) return;
+
+    if (!autoPerms || !Array.isArray(autoPerms) || autoPerms.length === 0)
+      return;
 
     const checkAndProvision = async () => {
       // 3. Permission Detection: Check which target permissions are currently missing
       const missingPerms: string[] = [];
+
       for (const p of autoPerms) {
         const has = await hasPermission(p);
+
         if (!has) missingPerms.push(p);
       }
 
@@ -737,6 +777,7 @@ export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({ childre
         if (sessionStorage.getItem(storageKey)) {
           sessionStorage.removeItem(storageKey);
         }
+
         return;
       }
 
@@ -767,7 +808,15 @@ export const AutoPermissionProvisioner: FC<{ children: ReactNode }> = ({ childre
     };
 
     checkAndProvision();
-  }, [isAuthenticated, isLoading, user, hasPermission, postJson, getAccessToken, isProvisioning]);
+  }, [
+    isAuthenticated,
+    isLoading,
+    user,
+    hasPermission,
+    postJson,
+    getAccessToken,
+    isProvisioning,
+  ]);
 
   if (isProvisioning) {
     return <SiteLoading />;

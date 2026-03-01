@@ -21,9 +21,9 @@ import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
 import { button as buttonStyles } from "@heroui/theme";
 import { Trans, useTranslation } from "react-i18next";
+
 import { useAuth } from "@/authentication";
 import { LoginButton, LogoutButton } from "@/authentication";
-
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
@@ -83,7 +83,10 @@ export default function IndexPage() {
               </p>
               <div className="mt-2">
                 <Link
-                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  className={buttonStyles({
+                    variant: "bordered",
+                    radius: "full",
+                  })}
                   href="/openapi"
                 >
                   {t("openapi-docs")}
@@ -96,17 +99,26 @@ export default function IndexPage() {
           ) : (
             <>
               <p>
-                <Trans i18nKey="template_welcome_back" values={{ name: user?.nickname || user?.name }} />
+                <Trans
+                  i18nKey="template_welcome_back"
+                  values={{ name: user?.nickname || user?.name }}
+                />
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
                 <Link
-                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  className={buttonStyles({
+                    variant: "bordered",
+                    radius: "full",
+                  })}
                   href="/api"
                 >
                   {t("api")}
                 </Link>
                 <Link
-                  className={buttonStyles({ variant: "bordered", radius: "full" })}
+                  className={buttonStyles({
+                    variant: "bordered",
+                    radius: "full",
+                  })}
                   href="/openapi"
                 >
                   {t("openapi-docs")}
@@ -128,7 +140,8 @@ export default function IndexPage() {
           </Snippet>
           <p className="text-xs mt-2">
             <Trans i18nKey="template_clone_instructions">
-              Clone this repo, edit <code>.env</code> and run <code>yarn install && yarn dev:env</code> to get started.
+              Clone this repo, edit <code>.env</code> and run{" "}
+              <code>yarn install && yarn dev:env</code> to get started.
             </Trans>
           </p>
         </div>

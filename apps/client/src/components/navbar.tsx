@@ -18,7 +18,6 @@
 
 import { Kbd } from "@heroui/kbd";
 import { Input } from "@heroui/input";
-import { LinkUniversal } from "./link-universal";
 import {
   Navbar as HeroUINavbar,
   NavbarBrand,
@@ -32,6 +31,7 @@ import { link as linkStyles } from "@heroui/theme";
 import { clsx } from "@heroui/shared-utils";
 import { Trans, useTranslation } from "react-i18next";
 
+import { LinkUniversal } from "./link-universal";
 import { I18nIcon, LanguageSwitch } from "./language-switch";
 
 import { LoginLogoutButton, LoginLogoutLink } from "@/authentication";
@@ -122,7 +122,12 @@ export const Navbar = () => {
           >
             <DiscordIcon className="text-default-500" />
           </LinkUniversal>
-          <LinkUniversal isExternal isInternet href={siteConfig().links.github} title={t("github")}>
+          <LinkUniversal
+            isExternal
+            isInternet
+            href={siteConfig().links.github}
+            title={t("github")}
+          >
             <GithubIcon className="text-default-500" />
           </LinkUniversal>
           <ThemeSwitch />
@@ -138,8 +143,8 @@ export const Navbar = () => {
             isExternal
             isInternet
             className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig().links.sponsor}
             color="foreground"
+            href={siteConfig().links.sponsor}
           >
             <HeartFilledIcon className="text-danger" />
             <Trans i18nKey="sponsor" />

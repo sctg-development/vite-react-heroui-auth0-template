@@ -23,8 +23,10 @@
  */
 
 import { decodeJwt } from "jose";
-import { Router } from "./router";
+
 import { getManagementToken, addPermissionsToUser } from "../auth0";
+
+import { Router } from "./router";
 
 /**
  * @openapi
@@ -179,7 +181,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *     summary: Get Auth0 Management Token (auth0:admin:api)
 	 *     description: |
 	 *       Requests an Auth0 Management API token.
-	 *       
+	 *
 	 *       **Required Permission**: `auth0:admin:api`
 	 *     security:
 	 *       - bearerAuth: ["auth0:admin:api"]
@@ -211,10 +213,15 @@ export const setupRoutes = (router: Router, env: Env) => {
 				// We don't have the full response here anymore, but we can return the token.
 				// For backwards compatibility with the UI expecting specific fields:
 				let exp: number | undefined;
+
 				try {
 					const decoded = decodeJwt(token);
+
 					exp = (decoded?.exp as number) || undefined;
-				} catch (_) { }
+				} catch (_) {
+					// If token decoding fails, we can still return the token without expiration info.
+					console.error("Failed to decode JWT for expiration info");
+				}
 
 				const now = Math.floor(Date.now() / 1000);
 
@@ -227,7 +234,10 @@ export const setupRoutes = (router: Router, env: Env) => {
 					}),
 					{
 						status: 200,
-						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+						headers: {
+							...router.corsHeaders,
+							"Content-Type": "application/json",
+						},
 					},
 				);
 			} catch (error) {
@@ -235,7 +245,10 @@ export const setupRoutes = (router: Router, env: Env) => {
 					JSON.stringify({ success: false, error: String(error) }),
 					{
 						status: 500,
-						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+						headers: {
+							...router.corsHeaders,
+							"Content-Type": "application/json",
+						},
 					},
 				);
 			}
@@ -255,7 +268,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *     summary: Auto-assign permissions (JWT required)
 	 *     description: |
 	 *       Assigns default permissions to the current user if missing.
-	 *       
+	 *
 	 *       **Requirements**: A valid JWT (authentication required, but no specific scope needed).
 	 *     security:
 	 *       - bearerAuth: []
@@ -284,41 +297,73 @@ export const setupRoutes = (router: Router, env: Env) => {
 		async (request) => {
 			try {
 				const autoPermsStr = env.AUTH0_AUTOMATIC_PERMISSIONS || "";
+
 				if (!autoPermsStr) {
-					return new Response(JSON.stringify({ success: true, message: "No automatic permissions configured" }), {
-						status: 200,
-						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-					});
+					return new Response(
+						JSON.stringify({
+							success: true,
+							message: "No automatic permissions configured",
+						}),
+						{
+							status: 200,
+							headers: {
+								...router.corsHeaders,
+								"Content-Type": "application/json",
+							},
+						},
+					);
 				}
 
-				const autoPerms = autoPermsStr.split(",").map(p => p.trim()).filter(p => p !== "");
+				const autoPerms = autoPermsStr
+					.split(",")
+					.map((p) => p.trim())
+					.filter((p) => p !== "");
 				const currentPerms = router.userPermissions || [];
-				const missingPerms = autoPerms.filter(p => !currentPerms.includes(p));
+				const missingPerms = autoPerms.filter((p) => !currentPerms.includes(p));
 
 				if (missingPerms.length === 0) {
-					return new Response(JSON.stringify({ success: true, message: "User already has all automatic permissions" }), {
-						status: 200,
-						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-					});
+					return new Response(
+						JSON.stringify({
+							success: true,
+							message: "User already has all automatic permissions",
+						}),
+						{
+							status: 200,
+							headers: {
+								...router.corsHeaders,
+								"Content-Type": "application/json",
+							},
+						},
+					);
 				}
 
 				const userId = router.jwtPayload.sub;
+
 				if (!userId) {
 					throw new Error("User ID not found in token");
 				}
 
 				await addPermissionsToUser(userId, missingPerms, env);
 
-				return new Response(JSON.stringify({ success: true, added: missingPerms }), {
-					status: 200,
-					headers: { ...router.corsHeaders, "Content-Type": "application/json" },
-				});
+				return new Response(
+					JSON.stringify({ success: true, added: missingPerms }),
+					{
+						status: 200,
+						headers: {
+							...router.corsHeaders,
+							"Content-Type": "application/json",
+						},
+					},
+				);
 			} catch (error) {
 				return new Response(
 					JSON.stringify({ success: false, error: String(error) }),
 					{
 						status: 500,
-						headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+						headers: {
+							...router.corsHeaders,
+							"Content-Type": "application/json",
+						},
 					},
 				);
 			}
@@ -341,7 +386,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *     summary: Protected ping (read:api)
 	 *     description: |
 	 *       Verify authentication and basic connectivity.
-	 *       
+	 *
 	 *       **Required Permission**: `read:api`
 	 *     security:
 	 *       - bearerAuth: ["read:api"]
@@ -387,7 +432,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *     summary: Get user ID (read:api)
 	 *     description: |
 	 *       Returns the sub claim of the authenticated user.
-	 *       
+	 *
 	 *       **Required Permission**: `read:api`
 	 *     security:
 	 *       - bearerAuth: ["read:api"]
@@ -428,7 +473,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *     summary: Debug request info (read:api)
 	 *     description: |
 	 *       Returns detailed session and request info.
-	 *       
+	 *
 	 *       **Required Permission**: `read:api`
 	 *     security:
 	 *       - bearerAuth: ["read:api"]

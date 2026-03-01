@@ -24,8 +24,11 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export const PermissionEnumValues = import.meta.env.PERMISSIONS as string[];
 
-export const Permission = PermissionEnumValues.reduce((acc, key) => {
-  acc[key] = key;
-  return acc;
-}, {} as Record<(typeof PermissionEnumValues)[number], string>);
+export const Permission = PermissionEnumValues.reduce(
+  (acc, key) => {
+    acc[key] = key;
 
+    return acc;
+  },
+  {} as Record<(typeof PermissionEnumValues)[number], string>,
+);

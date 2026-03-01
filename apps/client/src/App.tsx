@@ -18,13 +18,10 @@
 
 import { Route, Routes } from "react-router-dom";
 import { Suspense } from "react";
-import { useTranslation } from "react-i18next";
 
 import { SiteLoading } from "./components/site-loading";
-import DefaultLayout from "./layouts/default";
-import { title } from "./components/primitives";
 import { PageNotFound } from "./pages/404";
-import { AuthenticationGuard, LogoutButton, useAuth } from "./authentication";
+import { AuthenticationGuard, useAuth } from "./authentication";
 
 import IndexPage from "@/pages/index";
 import ApiPage from "@/pages/api";
@@ -35,8 +32,7 @@ import UsersAndPermissionsPage from "@/pages/admin/users-and-permissions";
 import { SwaggerPage } from "@/pages/swagger";
 
 function App() {
-  const { isLoading, isAuthenticated } = useAuth();
-  const { t } = useTranslation();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return <SiteLoading />;
@@ -44,7 +40,7 @@ function App() {
 
   // Gérer les erreurs
   // Note: we no longer block the whole app when the user is unauthenticated.
-  // Individual routes that require auth use <AuthenticationGuard> instead.  
+  // Individual routes that require auth use <AuthenticationGuard> instead.
   // The landing page should be accessible to everyone, otherwise GitHub
   // Pages visitors just see an "authentication error" message.
 

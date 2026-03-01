@@ -20,14 +20,13 @@ import type React from "react";
 
 import { Link } from "@heroui/link";
 import { Trans, useTranslation } from "react-i18next";
-
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState, useRef } from "react";
 import { JWTPayload, jwtVerify } from "jose";
 
 import { getLocalJwkSet } from "@/authentication/utils/jwks";
 import { Navbar } from "@/components/navbar";
-import { UserTechnicalInfoModal } from "@/modals/user-technical-info"
+import { UserTechnicalInfoModal } from "@/modals/user-technical-info";
 
 export default function DefaultLayout({
   children,
@@ -114,14 +113,15 @@ export default function DefaultLayout({
       </footer>
       {user ? (
         <UserTechnicalInfoModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          user={user}
           accessToken={accessToken}
+          isOpen={isModalOpen}
           tokenPayload={decodedToken}
+          user={user}
+          onClose={() => setIsModalOpen(false)}
         />
-      ) : <></>
-      }
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
