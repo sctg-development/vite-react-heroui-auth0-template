@@ -43,32 +43,10 @@ function App() {
   }
 
   // Gérer les erreurs
-  if (!isAuthenticated && !isLoading) {
-    // eslint-disable-next-line no-console
-    console.log(
-      "User is not authenticated but auth is not loading - likely an error condition",
-    );
-
-    return (
-      <DefaultLayout>
-        <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-          <div className="inline-block max-w-lg text-center justify-center">
-            <div className="mb-4">
-              <h1 className={title()}>
-                {t("error")}: {t("authentication_error")}
-              </h1>
-            </div>
-            <div>
-              <LogoutButton
-                showButtonIfNotAuthenticated={true}
-                text={t("reload")}
-              />
-            </div>
-          </div>
-        </section>
-      </DefaultLayout>
-    );
-  }
+  // Note: we no longer block the whole app when the user is unauthenticated.
+  // Individual routes that require auth use <AuthenticationGuard> instead.  
+  // The landing page should be accessible to everyone, otherwise GitHub
+  // Pages visitors just see an "authentication error" message.
 
   return (
     <Suspense fallback={<SiteLoading />}>

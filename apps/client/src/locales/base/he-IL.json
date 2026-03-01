@@ -106,5 +106,9 @@
   "nav-user-dropdown-loading": "טוען...",
   "duration-day_one": "יום אחד",
   "duration-day_two": "יומיים",
-  "duration-day_other": "{{count}} ימים"
+  "duration-day_other": "{{count}} ימים",
+  "template_login_prompt": "לחץ על הכפתור למטה כדי לנסות את הדמו.",
+  "template_welcome_back": "ברוך הבא {{name}}, חקור את דפי הדוגמה למטה או התנתק כדי להתחיל מחדש.",
+  "template_clone_instructions": "שכפל את המאגר הזה, ערוך את .env והפעל yarn install && yarn dev:env כדי להתחיל.",
+  "template_login_required": "(נדרשת התחברות כדי לגשת)"
 }

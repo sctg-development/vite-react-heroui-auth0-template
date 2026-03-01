@@ -2,7 +2,16 @@
 ![](https://tokeisrv.sctg.eu.org/b1/github.com/sctg-development/vite-react-heroui-auth0-template?type=TypeScript,TSX,html&category=comments)
 # Vite, OAuth & HeroUI Template
 
-This is a monorepo template for creating applications using Vite 7, HeroUI (v2) and a flexible authentication layer that supports multiple OAuth providers (Auth0, Dex, and more). Built with Turborepo and Yarn 4 workspaces for optimal developer experience and performance.
+Welcome to a fully‑functional starter you can fork and deploy in minutes 🔥
+
+This monorepo template combines **Vite 7**, **HeroUI v2**, and a powerful
+authentication abstraction supporting multiple OAuth providers (Auth0, Dex,
+and others). The repo includes a backend Cloudflare Worker demo with
+built‑in automatic permission provisioning and OpenAPI documentation, a
+polished landing page with one‑click login, and complete i18n support.
+
+Under the hood it uses Turborepo and Yarn 4 workspaces for fast installs,
+parallel builds and a great developer experience.
 
 [Try it on CodeSandbox](https://githubbox.com/sctg-development/vite-react-heroui-auth0-template)
 
@@ -11,6 +20,11 @@ This is a monorepo template for creating applications using Vite 7, HeroUI (v2) 
 **If you appreciate my work, please consider giving it a star! 🤩**
 
 ## Live demo
+
+Click the screenshot below to try the public deployment. Visitors see an
+attractive landing page with a **Log in** button and direct links to a sample
+API and auto‑generated OpenAPI/Swagger docs — no auth required to view the
+interface.
 
 [<img width="1271" alt="demo" src="https://github.com/user-attachments/assets/f41f1fc3-ab50-40af-8ece-af4602812cc3" />](https://sctg-development.github.io/vite-react-heroui-auth0-template)
 
@@ -23,6 +37,7 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - 🚀 Fast development with Vite 7
 - 🎨 Beautiful UI components from HeroUI v2
 - 🔐 Flexible authentication with multiple OAuth providers (Auth0, Dex)
+- 🏠 Polished landing page with login button and quick links to API demo & built‑in OpenAPI/Swagger docs (works even when unauthenticated).
 - 🛠️ **Auth0 User & Permission Management**: Built-in administration panel to manage users and sync permissions.
 - 📊 **Localized Session Details**: Real-time technical information modal with JWT payload analysis.
 - 🌐 Internationalization with i18next (6 languages included)
@@ -57,17 +72,17 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 # Clone the repository
 git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.git
 
-# Change directory
+# Change to project directory
 cd vite-react-heroui-auth0-template
 
-# Install Yarn 4 (if not already installed)
+# Ensure Yarn 4 is active (corepack included in modern Node)
 corepack enable
-yarn set version 4.9.2
+yarn set version 4.2.2
 
-# Install all dependencies (uses Yarn workspaces)
+# Install dependencies (monorepo workspaces)
 yarn install
 
-# Create a .env file with your Auth0 credentials
+# Create a `.env` with your Auth0 credentials
 cat <<EOF > .env
 AUTHENTICATION_PROVIDER_TYPE=auth0
 AUTH0_CLIENT_ID=your-auth0-client-id
@@ -83,8 +98,13 @@ ADMIN_PERMISSION=admin:api
 AUTHENTICATION_PROVIDER_TYPE=auth0
 EOF
 
-# Start both applications with environment variables
+# Spin up frontend + worker with environment vars
 yarn dev:env
+
+# Open your browser at http://localhost:5173/
+# You'll land on a friendly home page with a login CTA and links to
+# the example API and Swagger docs. Click "Log in" to exercise the
+# built-in Auth0 permission provisioning and explore the secured routes.
 ```
 
 For more detailed commands, see the [Turborepo Guide](./TURBOREPO-GUIDE.md).
@@ -387,7 +407,89 @@ yarn dev:worker:env
 
 ## Administration & User Management
 
-This template includes a powerful administration interface for managing users and permissions directly via the Auth0 Management API.
+This template includes a powerful administration interface (route `/admin/users`) for managing users and permissions directly via the Auth0 Management API.
+
+### How the admin panel works
+
+When a user with the `ADMIN_AUTH0_PERMISSION` (default `auth0:admin:api`) opens
+the technical info modal they see a chip labelled with the permission. Clicking
+that chip navigates to the admin page.
+
+The admin page itself doesn’t talk to Auth0 directly from the browser – instead
+it obtains a short‑lived Management API token from the **Cloudflare Worker** by
+posting to `POST /api/__auth0/token`.  The worker is configured with two
+secrets:
+
+```env
+AUTH0_MANAGEMENT_API_CLIENT_ID=your-m2m-client-id
+AUTH0_MANAGEMENT_API_CLIENT_SECRET=your-m2m-client-secret
+```
+
+These credentials belong to an Auth0 Machine‑to‑Machine application that has at
+least the `update:users` and `read:users` scopes. The worker caches the token
+in KV to reduce Auth0 rate limit usage.
+
+Once the frontend receives the token, it uses it to call the Auth0 Management
+API (listing users, adding/removing permissions, deleting accounts…).  The
+`useSecuredApi` hook provides helper methods such as
+`getAuth0ManagementToken`, `listAuth0Users`, `addPermissionToUser`, etc.  All of
+those methods simply wrap fetch calls to Auth0 endpoints using the supplied
+token.
+
+Because the service token never leaves the worker, your client code and end
+users never see the underlying M2M credentials – they only receive the
+short‑lived access token returned by `/api/__auth0/token`, which expires after
+about an hour.
+
+### Auth0 Configuration for the admin token
+
+The client application exposes a set of **utility functions** (exported by
+`useSecuredApi` in `auth-components.tsx`) that wrap the Management API logic
+used by the admin page.  In addition to listing users, adding/removing
+permissions and deleting accounts, the helpers include several functions
+related to your Auth0 **resource server scopes**:
+
+- `getResourceServers`, `getResourceServerScopes` – query the configured APIs.
+- `updateResourceServerScopes` – patch an API with a new list of scopes.
+- `checkResourceServerScopes` – compare the current scopes against a target
+  list and return `true` when they match.
+- variant helpers that accept an audience URL instead of an ID.
+
+These methods power the “Sync Auth0” button on the admin page.  The button
+compares the local `Permission` enum with the scopes stored in Auth0 and,
+if they differ, updates the resource server in one call.  A user must not
+only possess the `ADMIN_AUTH0_PERMISSION` to reach the page, they also need
+additional Management API privileges in order to read and write resource
+server definitions – the same M2M client configured via
+`AUTH0_MANAGEMENT_API_CLIENT_ID`/`SECRET` should be granted the `read:api`
+and `update:api` (or more generally `read:resource_servers` and
+`update:resource_servers`) scopes.
+
+You can also invoke the same functions directly from your own code (e.g. as
+part of a migration script or CI job) to keep definitions in sync
+programmatically.
+
+Having these utilities means the template is not only a sample UI, it also
+provides a convenient API layer for managing scopes without writing raw
+fetches or dealing with the Management API boilerplate yourself.
+
+### Auth0 Configuration for the admin token
+
+1. In your Auth0 dashboard create a **Machine-to-Machine Application**.
+2. Grant it access to the Management API with the following scopes:
+   - `read:users`
+   - `update:users`
+   - (optionally `delete:users` if you want to allow account removal)
+3. Copy the generated **Client ID** and **Client Secret** and set them as the
+   worker/environment variables `AUTH0_MANAGEMENT_API_CLIENT_ID` and
+   `AUTH0_MANAGEMENT_API_CLIENT_SECRET`.
+4. Add the `ADMIN_AUTH0_PERMISSION` (typically `auth0:admin:api`) to the list
+   of permissions for any user who should be able to reach the admin panel.  In
+   the demo we automatically grant it on first login via the auto‑permission
+   provisioner.
+
+With this configuration the admin interface will function correctly, and only
+users who already possess the required permission can access it.
 
 ### User Management Page
 

@@ -16,11 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { Link } from "react-router-dom";
 
 export default function DocsPage() {
   const { t } = useTranslation();
@@ -30,11 +29,8 @@ export default function DocsPage() {
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block max-w-lg text-center justify-center">
           <h1 className={title()}>
-            <Trans t={t}>about</Trans>
+            {t("about")}
           </h1>
-          <Link to="/openapi" className="text-primary">
-           {t("openapi-docs")}
-          </Link>
         </div>
       </section>
     </DefaultLayout>

@@ -109,5 +109,9 @@
   "duration-day_two": "يومان",
   "duration-day_few": "{{count}} أيام",
   "duration-day_many": "{{count}} يومًا",
-  "duration-day_other": "{{count}} يوم"
+  "duration-day_other": "{{count}} يوم",
+  "template_login_prompt": "انقر على الزر أدناه لتجربة العرض التجريبي.",
+  "template_welcome_back": "مرحبًا {{name}}، استكشف الصفحات التجريبية أدناه أو قم بتسجيل الخروج للبدء من جديد.",
+  "template_clone_instructions": "استنسخ هذا المستودع، حرر .env وشغّل yarn install && yarn dev:env للبدء.",
+  "template_login_required": "(يتطلب تسجيل الدخول للوصول)"
 }

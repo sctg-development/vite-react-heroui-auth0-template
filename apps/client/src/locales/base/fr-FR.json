@@ -106,5 +106,9 @@
   "nav-user-dropdown-access-token": "Jeton d'accès (Bearer)",
   "nav-user-dropdown-loading": "Chargement...",
   "duration-day_one": "{{count}} jour",
-  "duration-day_other": "{{count}} jours"
+  "duration-day_other": "{{count}} jours",
+  "template_login_prompt": "Cliquez sur le bouton ci-dessous pour essayer la démo.",
+  "template_welcome_back": "Bienvenue {{name}}, explorez les pages exemples ci‑dessous ou déconnectez-vous pour recommencer.",
+  "template_clone_instructions": "Clonez ce repo, modifiez .env et lancez yarn install && yarn dev:env pour commencer.",
+  "template_login_required": "(connexion requise pour accéder)"
 }

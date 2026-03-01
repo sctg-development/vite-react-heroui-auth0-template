@@ -105,5 +105,9 @@
   "nav-user-dropdown-access-token": "Token de Acceso (Bearer)",
   "nav-user-dropdown-loading": "Cargando...",
   "duration-day_one": "{{count}} día",
-  "duration-day_other": "{{count}} días"
+  "duration-day_other": "{{count}} días",
+  "template_login_prompt": "Haga clic en el botón abajo para probar la demo.",
+  "template_welcome_back": "Bienvenido {{name}}, explora las páginas de ejemplo a continuación o cierra sesión para comenzar de nuevo.",
+  "template_clone_instructions": "Clona este repositorio, edita .env y ejecuta yarn install && yarn dev:env para empezar.",
+  "template_login_required": "(inicio de sesión requerido para acceder)"
 }

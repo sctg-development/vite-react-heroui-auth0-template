@@ -108,5 +108,9 @@
   "duration-day_one": "{{count}} day",
   "duration-day_other": "{{count}} days",
   "api-server": "API server",
-  "openapi-docs": "Openapi with Swagger-ui"
+  "openapi-docs": "Openapi with Swagger-ui",
+  "template_login_prompt": "Click the button below to try the demo.",
+  "template_welcome_back": "Welcome {{name}}, explore the example pages below or log out to start over.",
+  "template_clone_instructions": "Clone this repo, edit .env and run yarn install && yarn dev:env to get started.",
+  "template_login_required": "(login required to access)"
 }
