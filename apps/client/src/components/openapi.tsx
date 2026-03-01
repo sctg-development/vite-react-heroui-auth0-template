@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2025-2026 Ronan LE MEILLAT
+ * Copyright (c) 2025 Ronan LE MEILLAT
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,65 +26,88 @@
 import { useEffect, useState, useCallback } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import { useTranslation } from "react-i18next";
-import { useAuth0 } from "@auth0/auth0-react";
 
-export function OpenAPI() {
-    const { t } = useTranslation();
-    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-    const [token, setToken] = useState<string | null>(null);
-    const url = import.meta.env.BASE_URL.endsWith("/")
-        ? import.meta.env.BASE_URL + "openapi.json"
-        : import.meta.env.BASE_URL + "/openapi.json";
+export interface OpenAPIProps {
+  /**
+   * URL where the OpenAPI json should be fetched from.
+   * If omitted the component will still attempt to read from
+   * `import.meta.env.BASE_URL` as a fallback, but callers are
+   * encouraged to supply the value explicitly for reusability.
+   */
+  source?: string;
 
-    /**
-     * If user is authenticated, set the token
-     */
-    useEffect(() => {
-        if (isAuthenticated) {
-            getAccessTokenSilently().then((token) => {
-                setToken(token);
-            });
-        } else {
-            setToken(null);
-        }
-    }, [isAuthenticated, getAccessTokenSilently]);
+  /**
+   * List of server base URLs that will be injected into the
+   * specification before rendering. Corresponds to `servers` in
+   * the OpenAPI document.  _optional_ because the component is
+   * sometimes rendered standalone (e.g. via a route) without
+   * any props passed.
+   */
+  dataServers?: string[];
 
-    // Fetch the OpenAPI spec from the server
-    const [openApiSpec, setOpenApiSpec] = useState(null);
+  /**
+   * Human‑readable description that will be attached to each of
+   * the provided servers (they all share the same description).
+   */
+  description: string;
 
-    useEffect(() => {
-        fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                data.servers = [
-                    {
-                        url: import.meta.env.API_BASE_URL.endsWith("/api")
-                            ? import.meta.env.API_BASE_URL.split("/api")[0]
-                            : import.meta.env.API_BASE_URL,
-                        description: t("api-server"),
-                    },
-                ];
-                setOpenApiSpec(data);
-            })
-            .catch((error) => console.error("Error fetching OpenAPI spec:", error));
-    }, [url, t]);
+  /**
+   * Optional bearer token that will be used to pre‑authorize the
+   * Swagger UI instance. The parent component is responsible for
+   * obtaining or refreshing the token; this component has no
+   * dependency on any SDK or authentication library.
+   */
+  bearer?: string;
+}
 
-    // Callback when SwaggerUI is ready
-    const [swaggerUIInstance, setSwaggerUIInstance] = useState<any>(null);
+export function OpenAPI({
+  source,
+  dataServers = [],
+  description,
+  bearer,
+}: OpenAPIProps) {
+  // compute the URL from prop or fallback to env
+  const url =
+    source ||
+    (import.meta.env.BASE_URL.endsWith("/")
+      ? import.meta.env.BASE_URL + "openapi.json"
+      : import.meta.env.BASE_URL + "/openapi.json");
 
-    const onComplete = useCallback((instance: any) => {
-        console.log("SwaggerUI instance ready");
-        setSwaggerUIInstance(instance);
-    }, []);
 
-    // Effect to set authorization when token or SwaggerUI instance changes
-    useEffect(() => {
-        if (token && swaggerUIInstance) {
-            console.log("Setting bearer token:", token);
-            swaggerUIInstance.preauthorizeApiKey("bearerAuth", token);
-        }
-    }, [token, swaggerUIInstance]);
+  // Fetch the OpenAPI spec from the server
+  const [openApiSpec, setOpenApiSpec] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // defensive: make sure we have an array before mapping
+        data.servers = (dataServers || []).map((u) => ({ url: u, description }));
+        setOpenApiSpec(data);
+      })
+      .catch((error) => console.error("Error fetching OpenAPI spec:", error));
+  }, [url, dataServers, description]);
+
+  // Callback when SwaggerUI is ready
+  const [swaggerUIInstance, setSwaggerUIInstance] = useState<any>(null);
+
+  const onComplete = useCallback((instance: any) => {
+    console.log("SwaggerUI instance ready");
+    setSwaggerUIInstance(instance);
+  }, []);
+
+  /**
+   * whenever a bearer token is provided by the parent, apply it
+   * to the UI. the parent is responsible for refreshing/obtaining
+   * a token (e.g. via Auth0) so this component has no SDK
+   * dependency.
+   */
+  useEffect(() => {
+    if (bearer && swaggerUIInstance) {
+      console.log("Setting bearer token:", bearer);
+      swaggerUIInstance.preauthorizeApiKey("bearerAuth", bearer);
+    }
+  }, [bearer, swaggerUIInstance]);
 
     // Custom Swagger UI Plugin to display scope chips
     const ScopeChipsPlugin = () => {

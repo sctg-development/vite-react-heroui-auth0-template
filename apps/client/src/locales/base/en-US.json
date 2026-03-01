@@ -106,5 +106,7 @@
   "nav-user-dropdown-access-token": "Access Token (Bearer)",
   "nav-user-dropdown-loading": "Loading...",
   "duration-day_one": "{{count}} day",
-  "duration-day_other": "{{count}} days"
+  "duration-day_other": "{{count}} days",
+  "api-server": "API server",
+  "openapi-docs": "Openapi with Swagger-ui"
 }

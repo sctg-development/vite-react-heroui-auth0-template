@@ -20,6 +20,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
+import { Link } from "react-router-dom";
 
 export default function DocsPage() {
   const { t } = useTranslation();
@@ -31,8 +32,12 @@ export default function DocsPage() {
           <h1 className={title()}>
             <Trans t={t}>about</Trans>
           </h1>
+          <Link to="/openapi" className="text-primary">
+           {t("openapi-docs")}
+          </Link>
         </div>
       </section>
     </DefaultLayout>
   );
 }
+

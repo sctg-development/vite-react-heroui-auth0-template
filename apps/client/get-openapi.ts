@@ -17,82 +17,89 @@
  */
 
 import fs from "fs";
-import swaggerJsdoc from "swagger-jsdoc";
 import dotenv from "dotenv";
 import path from "path";
+import swaggerJsdoc from "swagger-jsdoc";
 
 const env = dotenv.config({
-    path: path.resolve(import.meta.dirname, '../../.env'),
+  path: path.resolve(import.meta.dirname, '../../.env'),
 });
-
 
 export const API_VERSION = "1.0.0";
 const AUTH0_DOMAIN = env.parsed?.AUTH0_DOMAIN;
 if (!AUTH0_DOMAIN) {
-    throw new Error("AUTH0_DOMAIN is not defined");
+  throw new Error("AUTH0_DOMAIN is not defined");
 }
 const AUTH0_AUTHORIZATION_URL = `https://${AUTH0_DOMAIN}/authorize`;
 const AUTH0_TOKEN_URL = `https://${AUTH0_DOMAIN}/oauth/token`;
 
+// Construct an array containing all the *_PERMISSION values from the .env file
+const scopesArray = Object.entries(env.parsed || {})
+  .filter(([key]) => key.endsWith("_PERMISSION"))
+  .map(([_, value]) => value);
+scopesArray.push("openid", "profile", "email");
+// Construct the scopes object for the OpenAPI spec
+const scopesObject = scopesArray.reduce((acc, scope) => {
+  // Desscription is the permission simply by replacing : with a space and capitalizing the first letter of each word
+  const description = scope.split(":").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  acc[scope] = description; // You can provide a more detailed description if needed
+  return acc;
+}, {} as Record<string, string>);
+
 const options = {
-    encoding: "utf8",
-    failOnErrors: false,
-    format: "json",
-    info: {
+  encoding: "utf8",
+  failOnErrors: false, // Whether or not to throw when parsing errors. Defaults to false.
+  format: "json",
+  info: {
         title: "SCTG Vite React Heroui Auth0 Template API",
-        version: API_VERSION,
-    },
-    definition: {
-        openapi: "3.0.0",
-        info: {
+    version: API_VERSION,
+  },
+  definition: {
+    openapi: "3.0.0",
+    info: {
             title: "SCTG Vite React Heroui Auth0 Template API",
-            version: API_VERSION,
-        },
+      version: API_VERSION,
     },
-    apis: [
-        "../cloudflare-worker/src/routes/index.ts",
+  }, // You can move properties from definition here if needed
+  apis: [
+    "../cloudflare-worker/src/routes/index.ts",
     ],
 };
 
 const openApi = await swaggerJsdoc(options) as any;
 
 openApi.components.securitySchemes = {
-    bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-    },
-    oauth2: {
-        type: "oauth2",
-        description: "Auth0 OAuth2 Authorization Code Flow",
-        flows: {
-            authorizationCode: {
-                authorizationUrl: AUTH0_AUTHORIZATION_URL,
-                tokenUrl: AUTH0_TOKEN_URL,
-                scopes: {
-                    "openid": "OpenID Connect",
-                    "profile": "Profile",
-                    "email": "Email",
-                    "read:api": "Read API",
-                    "write:api": "Write API",
-                    "auth0:admin:api": "Auth0 Admin API",
-                },
-            },
+  bearerAuth: {
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT",
+  },
+  oauth2: {
+    type: "oauth2",
+    description: "Auth0 OAuth2 Authorization Code Flow",
+    flows: {
+      authorizationCode: {
+        authorizationUrl: AUTH0_AUTHORIZATION_URL,
+        tokenUrl: AUTH0_TOKEN_URL,
+        scopes: scopesObject,
         },
+      },
     },
-};
+  };
+
 openApi.security = [
-    {
-        bearerAuth: [],
-    },
-    {
-        oauth2: [],
-    },
+  {
+    bearerAuth: [],
+  },
+  {
+    oauth2: [],
+  },
+
 ];
 
 // Write the OpenAPI spec to a file public/openapi.json
 fs.writeFileSync(
-    "./public/openapi.json",
-    JSON.stringify(openApi, null, 2),
-    "utf8",
+  "./public/openapi.json",
+  JSON.stringify(openApi, null, 2),
+  "utf8",
 );

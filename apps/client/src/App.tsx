@@ -32,7 +32,7 @@ import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import UsersAndPermissionsPage from "@/pages/admin/users-and-permissions";
-import { OpenAPI } from "@/components/openapi";
+import { SwaggerPage } from "@/pages/swagger";
 
 function App() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -92,7 +92,7 @@ function App() {
           path="/admin/users"
         />
         <Route
-          element={<AuthenticationGuard component={OpenAPI} />}
+          element={<AuthenticationGuard component={SwaggerPage} />}
           path="/openapi"
         />
         <Route element={<PageNotFound />} path="*" />

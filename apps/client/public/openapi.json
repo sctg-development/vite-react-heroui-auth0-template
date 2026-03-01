@@ -253,12 +253,13 @@
             "authorizationUrl": "https://sctg-development.eu.auth0.com/authorize",
             "tokenUrl": "https://sctg-development.eu.auth0.com/oauth/token",
             "scopes": {
-              "openid": "OpenID Connect",
+              "auth0:admin:api": "Auth0 Admin Api",
+              "read:api": "Read Api",
+              "write:api": "Write Api",
+              "admin:api": "Admin Api",
+              "openid": "Openid",
               "profile": "Profile",
-              "email": "Email",
-              "read:api": "Read API",
-              "write:api": "Write API",
-              "auth0:admin:api": "Auth0 Admin API"
+              "email": "Email"
             }
           }
         }
