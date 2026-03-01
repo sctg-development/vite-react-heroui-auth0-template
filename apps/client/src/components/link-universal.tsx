@@ -20,7 +20,7 @@ import type { ReactNode } from "react";
 import type { LinkProps } from "@heroui/link";
 
 import { forwardRef } from "react";
-import { Link } from "@heroui/link";
+import { Link as RouterLink } from "react-router-dom";
 import { link as linkStyles } from "@heroui/theme";
 import { clsx } from "@heroui/shared-utils";
 
@@ -72,29 +72,7 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
     },
     ref,
   ) => {
-    // If not an internet link, use HeroUI Link component (supports react-router)
-    if (!isInternet) {
-      return (
-        <Link
-          ref={ref}
-          anchorIcon={anchorIcon}
-          className={className}
-          color={color}
-          disableAnimation={disableAnimation}
-          href={href}
-          isDisabled={isDisabled}
-          isExternal={isExternal}
-          showAnchorIcon={showAnchorIcon}
-          size={size}
-          underline={underline}
-          {...props}
-        >
-          {children}
-        </Link>
-      );
-    }
-
-    // For internet links, create a native <a> with HeroUI Link styles applied
+    // decide whether to render an internal router link or external/internet link
     const styledClassName = clsx(
       linkStyles({
         color: color as any,
@@ -106,6 +84,24 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
       className,
     );
 
+    if (!isInternet) {
+      // use react-router-dom Link for internal navigation
+      // href is expected to be a string path
+      return (
+        <RouterLink
+          ref={ref as any}
+          to={href || ""}
+          className={styledClassName}
+          aria-disabled={isDisabled}
+          {...props}
+        >
+          {children}
+          {showAnchorIcon && anchorIcon}
+        </RouterLink>
+      );
+    }
+
+    // For internet links, render native <a> with same styling
     return (
       <a
         ref={ref}

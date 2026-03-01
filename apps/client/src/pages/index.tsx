@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Link } from "@heroui/link";
+import { LinkUniversal } from "@/components/link-universal";
 import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
 import { button as buttonStyles } from "@heroui/theme";
@@ -52,7 +52,7 @@ export default function IndexPage() {
 
         {/* call-to-action buttons */}
         <div className="flex gap-3">
-          <Link
+          <LinkUniversal  
             isExternal
             className={buttonStyles({
               color: "primary",
@@ -62,15 +62,15 @@ export default function IndexPage() {
             href={siteConfig().links.docs}
           >
             <Trans i18nKey="documentation" />
-          </Link>
-          <Link
+          </LinkUniversal>
+          <LinkUniversal
             isExternal
             className={buttonStyles({ variant: "bordered", radius: "full" })}
             href={siteConfig().links.github}
           >
             <GithubIcon size={20} />
             GitHub
-          </Link>
+          </LinkUniversal>
         </div>
 
         {/* dynamic area depending on auth state */}
@@ -82,7 +82,7 @@ export default function IndexPage() {
                 <Trans i18nKey="template_login_prompt" />
               </p>
               <div className="mt-2">
-                <Link
+                <LinkUniversal
                   className={buttonStyles({
                     variant: "bordered",
                     radius: "full",
@@ -90,7 +90,7 @@ export default function IndexPage() {
                   href="/openapi"
                 >
                   {t("openapi-docs")}
-                </Link>
+                </LinkUniversal>
                 <p className="text-xs mt-1 opacity-70">
                   <Trans i18nKey="template_login_required" />
                 </p>
@@ -105,7 +105,7 @@ export default function IndexPage() {
                 />
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
-                <Link
+                <LinkUniversal
                   className={buttonStyles({
                     variant: "bordered",
                     radius: "full",
@@ -113,8 +113,8 @@ export default function IndexPage() {
                   href="/api"
                 >
                   {t("api")}
-                </Link>
-                <Link
+                </LinkUniversal>
+                <LinkUniversal
                   className={buttonStyles({
                     variant: "bordered",
                     radius: "full",
@@ -122,7 +122,7 @@ export default function IndexPage() {
                   href="/openapi"
                 >
                   {t("openapi-docs")}
-                </Link>
+                </LinkUniversal>
               </div>
               <div className="mt-4">
                 <LogoutButton text={t("log-out")} />
