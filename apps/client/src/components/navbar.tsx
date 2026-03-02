@@ -64,7 +64,7 @@ export const Navbar = () => {
       labelPlacement="outside"
       placeholder={`${t("search")}…`}
       startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+        <SearchIcon className="text-base text-default-400 pointer-events-none shrink-0" />
       }
       type="search"
     />
