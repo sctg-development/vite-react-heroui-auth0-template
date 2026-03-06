@@ -64,7 +64,8 @@ export interface AuthProvider {
   getJson(url: string): Promise<any>;
   postJson(url: string, data: any): Promise<any>;
   putJson(url: string, data: any): Promise<any>;
-  deleteJson(url: string): Promise<any>;
+  deleteJson(url: string): Promise<any>;  
+  patchJson?(url: string, data: any): Promise<any>;
 }
 
 /**

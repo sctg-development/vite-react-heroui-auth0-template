@@ -52,6 +52,9 @@
     "eslint.workingDirectories": [
       "apps/client",
       "apps/cloudflare-worker"
+    ],
+    "i18n-ally-next.localesPaths": [
+      "apps/client/src/locales"
     ]
   },
   "extensions": {

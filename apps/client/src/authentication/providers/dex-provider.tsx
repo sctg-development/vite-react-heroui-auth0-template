@@ -457,6 +457,35 @@ export const useDexProvider = (
     }
   };
 
+  const patchJson = async (url: string, data: any): Promise<any> => {
+    try {
+      const accessToken = await getAccessToken();
+
+      if (!accessToken) {
+        throw new Error("Not authenticated");
+      }
+
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error ${response.status}: ${response.statusText}`,
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error patching JSON:", error);
+      throw error;
+    }
+  };
   // Map OIDC user to common AuthUser format
   const authUser: AuthUser | null = user
     ? {
@@ -478,6 +507,7 @@ export const useDexProvider = (
     getJson,
     postJson,
     putJson,
+    patchJson,
     deleteJson,
   };
 };
