@@ -67,12 +67,21 @@ export class Router {
 	jwtPayload: JWTPayload = {};
 	userPermissions: string[] = [];
 	routes: Route[] = [];
-	corsHeaders: Record<string, string>;
+	// list of allowed origins parsed from env.CORS_ORIGIN (comma-separated)
+	allowedOrigins: string[] = [];
+	// static CORS settings; the origin portion is filled in per request
+	baseCorsHeaders: Record<string, string> = {};
 
 	constructor(env: Env) {
-		this.corsHeaders = {
+		// parse allowed origins from environment variable (comma-separated)
+		this.allowedOrigins = (env.CORS_ORIGIN || "")
+			.split(",")
+			.map((o) => o.trim())
+			.filter((o) => o !== "");
+
+		// static headers that are same for every response; origin set later
+		this.baseCorsHeaders = {
 			"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-			"Access-Control-Allow-Origin": env.CORS_ORIGIN,
 			"Access-Control-Allow-Headers": "Content-Type, Authorization",
 			"Content-Type": "application/json",
 		};
@@ -181,6 +190,36 @@ export class Router {
 	}
 
 	/**
+	 * Build CORS headers for a specific request.
+	 *
+	 * env.CORS_ORIGIN may contain a single origin or multiple values
+	 * separated by commas. If the incoming request includes an "Origin"
+	 * header that matches one of the allowed origins, that origin is echoed.
+	 * Otherwise the first configured origin is used. When no origins are
+	 * configured the wildcard "*" is returned.
+	 *
+	 * @param {Request} request - incoming fetch request
+	 * @returns {Record<string,string>} headers object to merge into responses
+	 */
+	getCorsHeaders(request: Request): Record<string, string> {
+		const origin = request.headers.get("Origin") || "";
+		let allow: string;
+
+		if (this.allowedOrigins.length === 0) {
+			allow = "*";
+		} else if (this.allowedOrigins.includes(origin)) {
+			allow = origin;
+		} else {
+			allow = this.allowedOrigins[0];
+		}
+
+		return {
+			...this.baseCorsHeaders,
+			"Access-Control-Allow-Origin": allow,
+		};
+	}
+
+	/**
 	 * Returns a standard 403 Forbidden response for unauthorized requests.
 	 *
 	 * @returns {Promise<Response>} A JSON response indicating unauthorized access.
@@ -208,7 +247,7 @@ export class Router {
 			return new Response(null, {
 				status: 204,
 				headers: {
-					...this.corsHeaders,
+					...this.getCorsHeaders(request),
 					"Access-Control-Allow-Credentials": "true",
 				},
 			});
@@ -233,7 +272,7 @@ export class Router {
 						{
 							status: 429,
 							headers: {
-								...this.corsHeaders,
+								...this.getCorsHeaders(request),
 								"X-RateLimit-Limit": "10",
 								"X-RateLimit-Remaining": "0",
 								"X-RateLimit-Reset": "60",
@@ -294,7 +333,7 @@ export class Router {
 						}),
 						{
 							status: 401,
-							headers: { ...this.corsHeaders },
+						headers: { ...this.getCorsHeaders(request) },
 						},
 					);
 				}
@@ -309,7 +348,7 @@ export class Router {
 						}),
 						{
 							status: 401,
-							headers: { ...this.corsHeaders },
+						headers: { ...this.getCorsHeaders(request) },
 						},
 					);
 				}
@@ -334,7 +373,7 @@ export class Router {
 						}),
 						{
 							status: 403,
-							headers: { ...this.corsHeaders },
+						headers: { ...this.getCorsHeaders(request) },
 						},
 					);
 				}
@@ -357,7 +396,7 @@ export class Router {
 					JSON.stringify({ success: false, error: "Internal server error" }),
 					{
 						status: 500,
-						headers: { ...this.corsHeaders },
+						headers: { ...this.getCorsHeaders(request) },
 					},
 				);
 			}
@@ -367,7 +406,7 @@ export class Router {
 			JSON.stringify({ success: false, error: "Not found" }),
 			{
 				status: 404,
-				headers: { ...this.corsHeaders },
+				headers: { ...this.getCorsHeaders(request) },
 			},
 		);
 	}

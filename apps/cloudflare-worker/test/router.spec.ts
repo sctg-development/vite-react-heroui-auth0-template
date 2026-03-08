@@ -65,22 +65,34 @@ beforeEach(() => {
 });
 
 describe("Router basic behavior", () => {
+    test("getCorsHeaders returns configured origin or wildcard", () => {
+        const env = makeEnv({ CORS_ORIGIN: "https://foo.com,https://bar.com" });
+        const router = new Router(env);
+        const req1 = makeRequest("GET", "https://example.test/", { Origin: "https://bar.com" });
+        expect(router.getCorsHeaders(req1)["Access-Control-Allow-Origin"]).toBe("https://bar.com");
+
+        const req2 = makeRequest("GET", "https://example.test/", { Origin: "https://unknown.com" });
+        expect(router.getCorsHeaders(req2)["Access-Control-Allow-Origin"]).toBe("https://foo.com");
+
+        const req3 = makeRequest("GET", "https://example.test/");
+        expect(router.getCorsHeaders(req3)["Access-Control-Allow-Origin"]).toBe("https://foo.com");
+    });
     test("OPTIONS returns 204", async () => {
         const router = new Router(makeEnv());
-        const res = await router.handleRequest(makeRequest("OPTIONS", "https://example.test/"), makeEnv());
+        const res = await router.handleRequest(makeRequest("OPTIONS", "https://example.test/", { Origin: "https://example.test" }), makeEnv());
         expect(res.status).toBe(204);
     });
 
     test("Unknown path returns 404", async () => {
         const router = new Router(makeEnv());
-        const res = await router.handleRequest(makeRequest("GET", "https://example.test/unknown"), makeEnv());
+        const res = await router.handleRequest(makeRequest("GET", "https://example.test/unknown", { Origin: "https://example.test" }), makeEnv());
         expect(res.status).toBe(404);
     });
 
     test("Rate limiter can return 429", async () => {
         const env = makeEnv({ RATE_LIMITER: { limit: async () => ({ success: false }) } as any });
         const router = new Router(env);
-        const res = await router.handleRequest(makeRequest("GET", "https://example.test/any"), env);
+        const res = await router.handleRequest(makeRequest("GET", "https://example.test/any", { Origin: "https://example.test" }), env);
         expect(res.status).toBe(429);
     });
 

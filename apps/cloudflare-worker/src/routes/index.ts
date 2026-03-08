@@ -129,7 +129,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * @returns {Promise<Response>} A "Hello World!" text response.
 	 */
-	router.get("/", async () => {
+	router.get("/", async (request) => {
 		return new Response("Hello World!", {
 			status: 200,
 			headers: { "Content-Type": "text/plain" },
@@ -163,10 +163,10 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 *
 	 * @returns {Promise<Response>} A JSON response indicating success.
 	 */
-	router.get("/health", async () => {
+	router.get("/health", async (request) => {
 		return new Response(JSON.stringify({ success: true, status: "ok" }), {
 			status: 200,
-			headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+			headers: { ...router.getCorsHeaders(request), "Content-Type": "application/json" },
 		});
 	});
 	/**
@@ -207,7 +207,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 */
 	router.post(
 		"/api/__auth0/token",
-		async () => {
+		async (request) => {
 			try {
 				const token = await getManagementToken(env);
 				// We don't have the full response here anymore, but we can return the token.
@@ -235,7 +235,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 					{
 						status: 200,
 						headers: {
-							...router.corsHeaders,
+							...router.getCorsHeaders(request),
 							"Content-Type": "application/json",
 						},
 					},
@@ -246,7 +246,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 					{
 						status: 500,
 						headers: {
-							...router.corsHeaders,
+							...router.getCorsHeaders(request),
 							"Content-Type": "application/json",
 						},
 					},
@@ -307,7 +307,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 						{
 							status: 200,
 							headers: {
-								...router.corsHeaders,
+								...router.getCorsHeaders(request),
 								"Content-Type": "application/json",
 							},
 						},
@@ -330,7 +330,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 						{
 							status: 200,
 							headers: {
-								...router.corsHeaders,
+								...router.getCorsHeaders(request),
 								"Content-Type": "application/json",
 							},
 						},
@@ -350,7 +350,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 					{
 						status: 200,
 						headers: {
-							...router.corsHeaders,
+							...router.getCorsHeaders(request),
 							"Content-Type": "application/json",
 						},
 					},
@@ -361,7 +361,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 					{
 						status: 500,
 						headers: {
-							...router.corsHeaders,
+							...router.getCorsHeaders(request),
 							"Content-Type": "application/json",
 						},
 					},
@@ -406,13 +406,13 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 */
 	router.get(
 		"/api/ping",
-		async (_request) => {
+		async (request) => {
 			return new Response(
 				JSON.stringify({ success: true, user: router.jwtPayload.sub || null }),
 				{
 					status: 200,
 					headers: {
-						...router.corsHeaders,
+						...router.getCorsHeaders(request),
 						"Content-Type": "application/json",
 					},
 				},
@@ -450,12 +450,12 @@ export const setupRoutes = (router: Router, env: Env) => {
 	 */
 	router.get(
 		"/api/get_user",
-		async (_request) => {
+		async (request) => {
 			const user = router.jwtPayload.sub || ""; // Attach the JWT payload to the request for use in the handler
 
 			return new Response(JSON.stringify({ success: true, user }), {
 				status: 200,
-				headers: { ...router.corsHeaders, "Content-Type": "application/json" },
+				headers: { ...router.getCorsHeaders(request), "Content-Type": "application/json" },
 			});
 		},
 		env.READ_PERMISSION,
@@ -511,7 +511,7 @@ export const setupRoutes = (router: Router, env: Env) => {
 				{
 					status: 200,
 					headers: {
-						...router.corsHeaders,
+						...router.getCorsHeaders(request),
 						"Content-Type": "application/json",
 					},
 				},
