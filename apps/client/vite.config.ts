@@ -158,17 +158,28 @@ export default defineConfig({
          * Groups all @heroui dependencies into a single chunk
          * to optimize loading performance and avoid oversized chunks
          */
-        manualChunks: {
-          react: [
-            "react",
-            "react-dom",
-            "react-router-dom",
-            "react-i18next",
-            "i18next",
-            "i18next-http-backend",
-          ],
-          heroui: extractPerVendorDependencies(packageJson, "@heroui"),
-          auth0: extractPerVendorDependencies(packageJson, "@auth0"),
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+
+          // Group core React + i18n dependencies into a single chunk
+          if (
+            [
+              "react",
+              "react-dom",
+              "react-router-dom",
+              "react-i18next",
+              "i18next",
+              "i18next-http-backend",
+            ].some((name) => id.includes(`/node_modules/${name}/`))
+          ) {
+            return "react";
+          }
+
+          // Group Heroui packages together for better caching
+          if (id.includes("/node_modules/@heroui/")) return "heroui";
+
+          // Group Auth0 packages together
+          if (id.includes("/node_modules/@auth0/")) return "auth0";
         },
       },
     },
