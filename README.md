@@ -277,6 +277,13 @@ To enable secure API calls in your application:
    - Enable RBAC (Role-Based Access Control) if you need granular permission management
    - Define permissions (scopes) that represent specific actions (e.g., `read:api`, `write:api`)
    - Configure token settings as needed (expiration, etc.)
+     - Access tokens are short‑lived (e.g. 1h). If you make very frequent API calls, you can reduce the duration (more secure) or increase it (fewer refreshes) depending on your use-case.
+     - ID tokens are also time‑limited and are used for user identity information (not API access).
+     - For SPA clients, enable **Refresh Token Rotation** and set a sensible **Refresh Token Expiration (Idle / Absolute)** in the **Advanced Settings → OAuth** section of your Auth0 Application. This template uses silent refresh via the Auth0 React SDK; if the refresh token expires, users must re-authenticate.
+     - The client code is already wired to:
+       - proactively refresh the access token if it is about to expire (within ~10s)
+       - retry a request once on `401` by forcing a token refresh (`ignoreCache: true`)
+       - avoid infinite retry loops (only one retry per failed request)
    - Include permissions in the access token
 
 3. **Set Environment Variables:**
