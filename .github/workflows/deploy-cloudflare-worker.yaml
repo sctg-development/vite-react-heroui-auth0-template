@@ -95,17 +95,6 @@ jobs:
             exit 1
           fi
 
-      # Deploy first so wrangler updates the worker settings and clears any legacy
-      # plain-text var bindings (from the previous workflow format). Without this
-      # step, wrangler secret bulk fails with "Binding name already in use" (code 10053)
-      # when trying to register as secrets names that were previously registered as vars.
-      - name: Deploy (clears legacy var bindings)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/cloudflare-worker
-
       - name: Set Wrangler secrets in bulk from secrets.json
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
