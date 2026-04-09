@@ -35,6 +35,8 @@ jobs:
       - name: Create .env file
         run: |
           echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > .env
+          echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> .env
+          echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env
           echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> .env
           echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
           echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
@@ -53,7 +55,9 @@ jobs:
 
       - name: Generate wrangler.jsonc from .env
         run: |
-          python3 scripts/generate-wrangler-jsonc.py .env apps/cloudflare-worker/wrangler.jsonc apps/cloudflare-worker/wrangler.jsonc
+          python3 scripts/generate-wrangler-jsonc.py .env apps/cloudflare-worker/wrangler.jsonc wrangler.jsonc
+          cp wrangler.jsonc apps/cloudflare-worker/wrangler.jsonc
+          cp secrets.json apps/cloudflare-worker/secrets.json 
 
       - name: Create encrypted artifact with .env, wrangler.jsonc and secrets.json
         run: |
