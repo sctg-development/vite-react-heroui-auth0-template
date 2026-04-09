@@ -95,48 +95,16 @@ jobs:
             exit 1
           fi
 
-      - name: Clear existing plain-text var bindings (migration from vars to secrets)
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          WORKER_NAME=$(python3 -c "
-          import json, re
-          with open('apps/cloudflare-worker/wrangler.jsonc') as f:
-              text = re.sub(r'/\*.*?\*/', '', f.read(), flags=re.DOTALL)
-              text = re.sub(r'//[^\n]*', '', text)
-              print(json.loads(text)['name'])
-          ")
-          echo "Worker: $WORKER_NAME"
-          # Fetch current settings
-          SETTINGS=$(curl -sf \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}/settings" \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
-          # Build new bindings array without plain_text (var) bindings
-          NEW_BINDINGS=$(echo "$SETTINGS" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          bindings = data.get('result', {}).get('bindings', [])
-          kept = [b for b in bindings if b.get('type') != 'plain_text']
-          removed = [b['name'] for b in bindings if b.get('type') == 'plain_text']
-          if removed:
-              print(f'Removing var bindings: {removed}', file=sys.stderr)
-          print(json.dumps({'bindings': kept}))
-          ")
-          # Patch settings: remove var bindings so they can be re-registered as secrets
-          curl -sf -X PATCH \
-            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}/settings" \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d "$NEW_BINDINGS" | python3 -c "
-          import sys, json
-          r = json.load(sys.stdin)
-          if r.get('success'):
-              print('✓ Var bindings cleared')
-          else:
-              print(f'API error: {r}', file=sys.stderr)
-              sys.exit(1)
-          " || echo "⚠ Worker may not exist yet — skipping var cleanup"
+      # Deploy first so wrangler updates the worker settings and clears any legacy
+      # plain-text var bindings (from the previous workflow format). Without this
+      # step, wrangler secret bulk fails with "Binding name already in use" (code 10053)
+      # when trying to register as secrets names that were previously registered as vars.
+      - name: Deploy (clears legacy var bindings)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/cloudflare-worker
 
       - name: Set Wrangler secrets in bulk from secrets.json
         env:
@@ -150,7 +118,8 @@ jobs:
           cd apps/cloudflare-worker
           npx wrangler secret bulk < secrets.json
 
-      - name: Deploy
+      # Redeploy so the worker runs with the secrets now registered above.
+      - name: Redeploy with secrets active
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
