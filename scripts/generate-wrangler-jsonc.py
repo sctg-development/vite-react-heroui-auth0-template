@@ -90,10 +90,10 @@ def main():
 
     current_vars = dict(wrangler_config.get("vars", {}))
 
-    # Treat all environment variables as secrets into required list for wrangler config.
-    required_secrets = sorted(env_vars.keys())
-    if required_secrets:
-        wrangler_config["secrets"] = {"required": required_secrets}
+    # Do NOT inject secrets.required into wrangler.jsonc — that field is for local
+    # wrangler dev only and causes "binding already in use" errors (code 10053) when
+    # wrangler secret bulk runs in the same directory and tries to register the same
+    # names both as binding declarations and as secrets via the API.
 
     # Ensure kv_namespaces exist and set KV_CACHE id if available.
     kv_namespaces = wrangler_config.get("kv_namespaces", [])
