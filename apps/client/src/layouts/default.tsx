@@ -18,7 +18,7 @@
 
 import type React from "react";
 
-import { Link } from "@heroui/link";
+import { Link } from "@heroui/react";
 import { Trans, useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState, useRef } from "react";
@@ -85,17 +85,17 @@ export default function DefaultLayout({
   }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen bg-background text-foreground" data-test="default-layout">
       <Navbar />
       <main className="container mx-auto max-w-7xl px-6 flex-grow pt-16">
         {children}
       </main>
       <footer className="w-full flex items-center justify-center py-3">
         <Link
-          isExternal
           className="flex items-center gap-1 text-current"
           href="https://github.com/sctg-development/vite-react-heroui-auth0-template"
-          title={t("vite-react-heroui-auth0-template")}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <span className="text-default-600">
             <Trans ns="base">powered-by</Trans>

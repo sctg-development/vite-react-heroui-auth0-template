@@ -25,6 +25,8 @@ export const AuthProviderWrapper: React.FC<AuthProviderWrapperProps> = ({
   children,
   providerType = "auth0",
 }) => {
+  console.log("AuthProviderWrapper mount", { providerType });
+
   // Select the appropriate provider implementation based on the type
   let authProvider: AuthProvider;
 
@@ -41,6 +43,12 @@ export const AuthProviderWrapper: React.FC<AuthProviderWrapperProps> = ({
       authProvider = useAuth0Provider();
   }
 
+  console.log("AuthProviderWrapper authProvider", {
+    isAuthenticated: authProvider.isAuthenticated,
+    isLoading: authProvider.isLoading,
+    user: authProvider.user,
+  });
+
   return (
     <AuthContext.Provider value={authProvider}>{children}</AuthContext.Provider>
   );
@@ -53,8 +61,15 @@ export const useAuth = (): AuthProvider => {
   const context = useContext(AuthContext);
 
   if (!context) {
+    console.error("useAuth error: no auth context provided");
     throw new Error("useAuth must be used within an AuthProviderWrapper");
   }
+
+  console.log("useAuth context", {
+    isAuthenticated: context.isAuthenticated,
+    isLoading: context.isLoading,
+    user: context.user,
+  });
 
   return context;
 };

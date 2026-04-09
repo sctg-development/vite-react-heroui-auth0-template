@@ -16,10 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LinkUniversal } from "@/components/link-universal";
-import { Snippet } from "@heroui/snippet";
-import { Code } from "@heroui/code";
-import { button as buttonStyles } from "@heroui/theme";
+import { Button } from "@heroui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useAuth } from "@/authentication";
@@ -51,26 +49,18 @@ export default function IndexPage() {
         </div>
 
         {/* call-to-action buttons */}
-        <div className="flex gap-3">
-          <LinkUniversal  
-            isExternal
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href={siteConfig().links.docs}
-          >
-            <Trans i18nKey="documentation" />
-          </LinkUniversal>
-          <LinkUniversal
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig().links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </LinkUniversal>
+        <div className="flex gap-3 items-center">
+          <a href={siteConfig().links.docs} target="_blank" rel="noopener noreferrer">
+            <Button className="rounded-full">
+              <Trans i18nKey="documentation" />
+            </Button>
+          </a>
+          <a href={siteConfig().links.github} target="_blank" rel="noopener noreferrer">
+            <Button className="rounded-full" variant="outline">
+              <GithubIcon size={20} />
+              GitHub
+            </Button>
+          </a>
         </div>
 
         {/* dynamic area depending on auth state */}
@@ -82,15 +72,11 @@ export default function IndexPage() {
                 <Trans i18nKey="template_login_prompt" />
               </p>
               <div className="mt-2">
-                <LinkUniversal
-                  className={buttonStyles({
-                    variant: "bordered",
-                    radius: "full",
-                  })}
-                  href="/openapi"
-                >
-                  {t("openapi-docs")}
-                </LinkUniversal>
+                <RouterLink to="/openapi">
+                  <Button className="rounded-full" variant="outline">
+                    {t("openapi-docs")}
+                  </Button>
+                </RouterLink>
                 <p className="text-xs mt-1 opacity-70">
                   <Trans i18nKey="template_login_required" />
                 </p>
@@ -104,25 +90,17 @@ export default function IndexPage() {
                   values={{ name: user?.nickname || user?.name }}
                 />
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
-                <LinkUniversal
-                  className={buttonStyles({
-                    variant: "bordered",
-                    radius: "full",
-                  })}
-                  href="/api"
-                >
-                  {t("api")}
-                </LinkUniversal>
-                <LinkUniversal
-                  className={buttonStyles({
-                    variant: "bordered",
-                    radius: "full",
-                  })}
-                  href="/openapi"
-                >
-                  {t("openapi-docs")}
-                </LinkUniversal>
+              <div className="flex flex-row gap-3 justify-center mt-4">
+                <RouterLink to="/api">
+                  <Button className="rounded-full" variant="outline">
+                    {t("api")}
+                  </Button>
+                </RouterLink>
+                <RouterLink to="/openapi">
+                  <Button className="rounded-full" variant="outline">
+                    {t("openapi-docs")}
+                  </Button>
+                </RouterLink>
               </div>
               <div className="mt-4">
                 <LogoutButton text={t("log-out")} />
@@ -132,12 +110,12 @@ export default function IndexPage() {
         </div>
 
         <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
+          <div className="rounded-lg border border-default-200 bg-default-100 p-3">
             <span>
               <Trans i18nKey="get-started-by-editing" />{" "}
-              <Code color="primary">pages/index.tsx</Code>
+              <code className="font-mono text-primary">pages/index.tsx</code>
             </span>
-          </Snippet>
+          </div>
           <p className="text-xs mt-2">
             <Trans i18nKey="template_clone_instructions">
               Clone this repo, edit <code>.env</code> and run{" "}

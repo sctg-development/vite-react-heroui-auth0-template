@@ -10,9 +10,9 @@ import type {
 } from "../types/auth0.types";
 
 import { FC, ReactNode, useEffect, useState } from "react";
-import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
-import { Link } from "@heroui/link";
+import { Button } from "@heroui/react";
+import { Tooltip } from "@heroui/react";
+import { Link } from "@heroui/react";
 import { useTranslation } from "react-i18next";
 
 import { SiteLoading } from "../components/site-loading";
@@ -34,8 +34,13 @@ export function Profile() {
   console.log(JSON.stringify(user));
 
   return (
-    <Tooltip content={user?.nickname} delay={750}>
-      <span>{user?.name}</span>
+    <Tooltip delay={750}>
+      <Tooltip.Trigger>
+        <span>{user?.name}</span>
+      </Tooltip.Trigger>
+      <Tooltip.Content>
+        <p>{user?.nickname || ""}</p>
+      </Tooltip.Content>
     </Tooltip>
   );
 }
@@ -75,16 +80,7 @@ export const LoginButton: FC<{ text?: string }> = ({ text }) => {
  * @param [props.text] - Custom text for the link. Defaults to localized "log-in" text.
  * @returns Login link or null if user is already authenticated
  */
-export const LoginLink: FC<{
-  text?: string;
-  color?:
-    | "primary"
-    | "foreground"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
-}> = ({ text, color }) => {
+export const LoginLink: FC<{ text?: string }> = ({ text }) => {
   const { isAuthenticated, login } = useAuth();
   const { t } = useTranslation();
 
@@ -95,8 +91,7 @@ export const LoginLink: FC<{
   return (
     !isAuthenticated && (
       <Link
-        color={color}
-        size="lg"
+        className="text-accent hover:text-accent-dark"
         onPress={() => {
           login();
         }}
@@ -141,43 +136,37 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
 
   return (
     (isAuthenticated || showButtonIfNotAuthenticated) && (
-      <Tooltip
-        content={`${user?.name || ""}\n${user?.nickname || ""}\n${user?.email || ""}\n${user?.sub || ""} `}
-        delay={750}
-      >
-        <Button
-          className="text-sm font-normal text-default-600 bg-default-100"
-          type="button"
-          onPress={() => {
-            logout({
-              logoutParams: {
-                returnTo: new URL(
-                  import.meta.env.BASE_URL || "/",
-                  window.location.origin,
-                ).toString(),
-              },
-            });
-          }}
-        >
-          <span>{text}</span>
-        </Button>
+      <Tooltip delay={750}>
+        <Tooltip.Trigger>
+          <Button
+            className="text-sm font-normal text-default-600 bg-default-100"
+            type="button"
+            onPress={() => {
+              logout({
+                logoutParams: {
+                  returnTo: new URL(
+                    import.meta.env.BASE_URL || "/",
+                    window.location.origin,
+                  ).toString(),
+                },
+              });
+            }}
+          >
+            <span>{text}</span>
+          </Button>
+        </Tooltip.Trigger>
+        <Tooltip.Content>
+          <p>{user?.name || ""}</p>
+          <p>{user?.nickname || ""}</p>
+          <p>{user?.email || ""}</p>
+          <p>{user?.sub || ""}</p>
+        </Tooltip.Content>
       </Tooltip>
     )
   );
 };
 
-interface LogoutLinkProps extends LogoutButtonProps {
-  /**
-   * Button color
-   */
-  color?:
-    | "primary"
-    | "foreground"
-    | "secondary"
-    | "success"
-    | "warning"
-    | "danger";
-}
+interface LogoutLinkProps extends LogoutButtonProps {}
 
 /**
  * Renders a logout link for authentication.
@@ -189,7 +178,6 @@ interface LogoutLinkProps extends LogoutButtonProps {
 export const LogoutLink: FC<LogoutLinkProps> = ({
   showButtonIfNotAuthenticated = false,
   text,
-  color,
 }) => {
   const { isAuthenticated, logout, user } = useAuth();
   const { t } = useTranslation();
@@ -203,8 +191,7 @@ export const LogoutLink: FC<LogoutLinkProps> = ({
   return isAuthenticated || showButtonIfNotAuthenticated ? (
     <>
       <Link
-        color={color}
-        size="lg"
+        className="text-accent hover:text-accent-dark"
         onPress={() => {
           logout({
             logoutParams: {
@@ -253,13 +240,11 @@ export const LoginLogoutButton: FC<LogoutButtonProps> = ({
 export const LoginLogoutLink: FC<LogoutLinkProps> = ({
   showButtonIfNotAuthenticated = false,
   text,
-  color,
 }) => {
   const { isAuthenticated } = useAuth();
 
   return isAuthenticated ? (
     <LogoutLink
-      color={color}
       showButtonIfNotAuthenticated={showButtonIfNotAuthenticated}
       text={text}
     />

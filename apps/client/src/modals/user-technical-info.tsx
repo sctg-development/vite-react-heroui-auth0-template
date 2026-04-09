@@ -7,10 +7,10 @@
  */
 
 import { memo, useState, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
-import { Chip } from "@heroui/chip";
-import { Divider } from "@heroui/divider";
-import { ScrollShadow } from "@heroui/scroll-shadow";
+import { Modal } from "@heroui/react";
+import { Chip } from "@heroui/react";
+import { Separator } from "@heroui/react";
+import { ScrollShadow } from "@heroui/react";
 import { JWTPayload } from "jose";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -78,166 +78,156 @@ export const UserTechnicalInfoModal = memo<UserTechnicalInfoModalProps>(
       (tokenPayload?.permissions as string[] | undefined) ?? [];
     const isExpiringSoon = secondsLeft < 120;
 
+    const handleOpenChange = (open: boolean) => {
+      if (!open) onClose();
+    };
+
     return (
-      <Modal
-        classNames={{
-          wrapper: "sm:items-end sm:justify-end sm:p-4",
-          base: "sm:m-0 sm:max-w-[400px] bg-content1 border border-default-100 shadow-2xl",
-          header: "border-b border-default-100 pb-3",
-          body: "px-5 py-4",
-        }}
-        isOpen={isOpen}
-        motionProps={{
-          variants: {
-            enter: { opacity: 1, y: 0, transition: { duration: 0.2 } },
-            exit: { opacity: 0, y: 16, transition: { duration: 0.15 } },
-          },
-        }}
-        placement="auto"
-        onClose={onClose}
-      >
-        <ModalContent>
-          <ModalHeader className="flex items-center gap-2">
-            <div className="flex flex-col gap-0.5">
-              <span className="font-black text-foreground text-base leading-tight">
-                {t("nav-user-dropdown-connected-as")}
-              </span>
-              <span className="text-sm font-semibold text-primary truncate max-w-[300px]">
-                {user.email}
-              </span>
-            </div>
-          </ModalHeader>
+      <Modal isOpen={isOpen} onOpenChange={handleOpenChange}>
+        <Modal.Backdrop>
+          <Modal.Container placement="bottom">
+            <Modal.Dialog>
+              {({ close }) => (
+                <>
+                  <Modal.CloseTrigger onPress={close} />
+                  <Modal.Header className="flex items-center gap-2 border-b border-default-100 pb-3">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-black text-foreground text-base leading-tight">
+                        {t("nav-user-dropdown-connected-as")}
+                      </span>
+                      <span className="text-sm font-semibold text-primary truncate max-w-[300px]">
+                        {user.email}
+                      </span>
+                    </div>
+                  </Modal.Header>
 
-          <ModalBody className="gap-4">
-            {/* User Identity */}
-            <div className="bg-default-100 border border-default-200 rounded-xl p-3 space-y-1">
-              <p className="text-xs text-default-400 uppercase tracking-wider font-bold mb-2">
-                Identité
-              </p>
-              <p className="text-sm font-semibold text-foreground">
-                {user.name}
-              </p>
-              <p className="text-xs text-default-500 font-mono break-all">
-                ID: {user.sub}
-              </p>
-            </div>
+                  <Modal.Body className="px-5 py-4 space-y-4">
+                    {/* User Identity */}
+                    <div className="bg-default-100 border border-default-200 rounded-xl p-3 space-y-1">
+                      <p className="text-xs text-default-400 uppercase tracking-wider font-bold mb-2">
+                        Identité
+                      </p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-default-500 font-mono break-all">
+                        ID: {user.sub}
+                      </p>
+                    </div>
 
-            <Divider className="bg-default-100" />
+                    <Separator className="my-2" />
 
-            {/* Token Status */}
-            <div className="space-y-2">
-              <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
-                {t("nav-user-dropdown-token-status")}
-              </p>
-              {tokenPayload?.exp ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-default-500">
-                      {t("nav-user-dropdown-expires-in")}
-                    </span>
-                    <Chip
-                      className="font-mono font-bold text-xs"
-                      color={isExpiringSoon ? "danger" : "success"}
-                      size="sm"
-                      variant="flat"
-                    >
-                      {formatDuration(secondsLeft, t)}
-                    </Chip>
-                  </div>
-                  <div className="flex justify-between items-center text-xs text-default-500">
-                    <span>Expiration</span>
-                    <span className="font-mono text-default-400">
-                      {formatExpiry(tokenPayload.exp)}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-danger">
-                  {t("nav-user-dropdown-no-expiry")}
-                </p>
-              )}
-            </div>
-
-            {/* Permissions */}
-            {permissions.length > 0 && (
-              <>
-                <Divider className="bg-default-100" />
-                <div className="space-y-2">
-                  <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
-                    Permissions
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {permissions.map((perm) => {
-                      if (
-                        perm ===
-                        (import.meta.env.ADMIN_AUTH0_PERMISSION as string)
-                      ) {
-                        return (
-                          <AuthenticationGuardWithPermission
-                            key={perm}
-                            permission={
-                              import.meta.env.ADMIN_AUTH0_PERMISSION as string
-                            }
-                          >
+                    {/* Token Status */}
+                    <div className="space-y-2">
+                      <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
+                        {t("nav-user-dropdown-token-status")}
+                      </p>
+                      {tokenPayload?.exp ? (
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-default-500">
+                              {t("nav-user-dropdown-expires-in")}
+                            </span>
                             <Chip
-                              className="text-xs font-mono cursor-pointer hover:bg-primary-600 transition-colors"
-                              color="primary"
+                              className="font-mono font-bold text-xs"
+                              color={isExpiringSoon ? "danger" : "success"}
                               size="sm"
-                              variant="solid"
-                              onClick={() => {
-                                navigate("/admin/users");
-                                onClose();
-                              }}
                             >
-                              {perm} (Admin Panel)
+                              {formatDuration(secondsLeft, t)}
                             </Chip>
-                          </AuthenticationGuardWithPermission>
-                        );
-                      }
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-default-500">
+                            <span>Expiration</span>
+                            <span className="font-mono text-default-400">
+                              {formatExpiry(tokenPayload.exp)}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-danger">
+                          {t("nav-user-dropdown-no-expiry")}
+                        </p>
+                      )}
+                    </div>
 
-                      return (
-                        <Chip
-                          key={perm}
-                          className="text-xs font-mono"
-                          color="secondary"
-                          size="sm"
-                          variant="flat"
-                        >
-                          {perm}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            )}
+                    {/* Permissions */}
+                    {permissions.length > 0 && (
+                      <>
+                        <Separator className="my-2" />
+                        <div className="space-y-2">
+                          <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
+                            Permissions
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {permissions.map((perm) => {
+                              if (
+                                perm ===
+                                (import.meta.env.ADMIN_AUTH0_PERMISSION as string)
+                              ) {
+                                return (
+                                  <AuthenticationGuardWithPermission
+                                    key={perm}
+                                    permission={
+                                      import.meta.env.ADMIN_AUTH0_PERMISSION as string
+                                    }
+                                  >
+                                    <Chip
+                                      className="text-xs font-mono cursor-pointer bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+                                      size="sm"
+                                      onClick={() => {
+                                        navigate("/admin/users");
+                                        close();
+                                      }}
+                                    >
+                                      {perm} (Admin Panel)
+                                    </Chip>
+                                  </AuthenticationGuardWithPermission>
+                                );
+                              }
 
-            <Divider className="bg-default-100" />
+                              return (
+                                <Chip
+                                  key={perm}
+                                  className="text-xs font-mono bg-default-100 text-default-700"
+                                  size="sm"
+                                >
+                                  {perm}
+                                </Chip>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    )}
 
-            {/* Access Token */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
-                  {t("nav-user-dropdown-access-token")}
-                </p>
-                <CopyButton
-                  className="h-7 w-7 min-w-7"
-                  color="default"
-                  value={accessToken ?? ""}
-                  variant="flat"
-                />
-              </div>
-              <ScrollShadow
-                className="h-[80px] w-full"
-                orientation="horizontal"
-              >
-                <p className="text-[10px] text-default-500 font-mono break-all leading-relaxed select-all">
-                  {accessToken || t("nav-user-dropdown-loading")}
-                </p>
-              </ScrollShadow>
-            </div>
-          </ModalBody>
-        </ModalContent>
+                    <Separator className="my-2" />
+
+                    {/* Access Token */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-default-400 uppercase tracking-wider font-bold">
+                          {t("nav-user-dropdown-access-token")}
+                        </p>
+                        <CopyButton
+                          className="h-7 w-7 min-w-7"
+                          value={accessToken ?? ""}
+                        />
+                      </div>
+                      <ScrollShadow
+                        className="h-[80px] w-full"
+                        orientation="horizontal"
+                      >
+                        <p className="text-[10px] text-default-500 font-mono break-all leading-relaxed select-all">
+                          {accessToken || t("nav-user-dropdown-loading")}
+                        </p>
+                      </ScrollShadow>
+                    </div>
+                  </Modal.Body>
+                </>
+              )}
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     );
   },

@@ -51,19 +51,6 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v5
-        with:
-          path: |
-            .yarn/cache
-            .yarn/unplugged
-            .yarn/build-state.yml
-            .yarn/install-state.gz
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: Cache Turborepo
         uses: actions/cache@v5
         with:
@@ -74,8 +61,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          corepack enable
-          yarn install --immutable
+          npm i
 
       - name: Create .env file
         run: |
@@ -95,7 +81,7 @@ jobs:
       - name: Build project
         # You can change the base path to your repository name
         run: |
-          yarn build:client:env -- --base="/${{ github.event.repository.name }}/"
+          npm run build:client:env -- --base="/${{ github.event.repository.name }}/"
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}

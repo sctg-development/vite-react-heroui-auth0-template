@@ -3,13 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "npm@11.6.2",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
     "build": "turbo run build",
-    "build:env": "turbo run build:env",
+    "build:env": "bash -c 'turbo run build:env -- \"$@\"' --",
     "dev": "turbo run dev",
     "dev:env": "turbo run dev:env",
     "preview:env": "turbo run preview:env",
@@ -28,12 +28,12 @@
     "deploy:worker": "turbo run deploy --filter=cloudflare-worker"
   },
   "devDependencies": {
+    "@heroui/react-mcp": "^1.1.0",
     "@types/node": "^24.10.11",
-    "turbo": "^2.8.3",
+    "turbo": "^2.9.5",
     "typescript": "^5.9.2"
   },
   "engines": {
-    "node": ">=24.0.0",
-    "yarn": ">=4.0.0"
+    "node": ">=24.0.0"
   }
 }

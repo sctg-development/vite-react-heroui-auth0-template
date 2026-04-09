@@ -23,9 +23,8 @@ import React, {
   useCallback,
   forwardRef,
 } from "react";
-import { useClipboard } from "@heroui/use-clipboard";
-import { Button, type ButtonProps } from "@heroui/button";
-import { clsx } from "@heroui/shared-utils";
+import { Button, type ButtonProps } from "@heroui/react";
+import clsx from "clsx";
 
 import { IconSvgProps } from "@/types";
 
@@ -45,7 +44,7 @@ export const PreviewButton = forwardRef<
       isIconOnly
       className={clsx("relative z-50 text-zinc-300", className)}
       size="sm"
-      variant={props.variant ?? "light"}
+      variant={props.variant ?? "secondary"}
       {...buttonProps}
     >
       {icon}
@@ -75,7 +74,7 @@ export const CopyButton = memo<CopyButtonProps>(
     isImage = false,
     ...buttonProps
   }) => {
-    const { copy, copied } = useClipboard();
+    const [isCopied, setIsCopied] = useState(false);
     const [hasCopyError, setHasCopyError] = useState(false);
 
     useEffect(() => {
@@ -86,21 +85,25 @@ export const CopyButton = memo<CopyButtonProps>(
       }
     }, [hasCopyError, copiedTimeout]);
 
-    const handleCopy = useCallback(() => {
+    const handleCopy = useCallback(async () => {
       if (!isImage) {
         const textToCopy = Array.isArray(value) ? value.join(", ") : value;
 
         try {
-          copy(textToCopy);
+          if (!textToCopy) {
+            throw new Error("No value to copy");
+          }
+
+          await navigator.clipboard.writeText(textToCopy);
+          setIsCopied(true);
           if (onCopySuccess) onCopySuccess();
+          setTimeout(() => setIsCopied(false), copiedTimeout);
         } catch (error) {
           setHasCopyError(true);
           if (onCopyError) onCopyError(error);
         }
       }
-    }, [value, copy, onCopySuccess, onCopyError, isImage]);
-
-    const isCopied = copied;
+    }, [value, onCopySuccess, onCopyError, isImage, copiedTimeout]);
 
     const icon = hasCopyError ? (
       <ErrorIcon
@@ -127,7 +130,6 @@ export const CopyButton = memo<CopyButtonProps>(
         aria-label={isCopied ? "Copié" : "Copier dans le presse-papier"}
         className={className ?? "bottom-0 left-0.5"}
         icon={icon}
-        title={isCopied ? "Copié" : "Copier dans le presse-papier"}
         onPress={handleCopy}
         {...buttonProps}
       />

@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { heroui } from "@heroui/theme";
+// HeroUI v3 no longer requires Tailwind plugin integration in user files.
+// Keep this stub for compatibility with existing imports if needed.
 
-export default heroui();
+export default {};
+

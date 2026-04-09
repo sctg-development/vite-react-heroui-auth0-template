@@ -17,20 +17,29 @@
  */
 
 import type { ReactNode } from "react";
-import type { LinkProps } from "@heroui/link";
+import type { LinkProps } from "@heroui/react";
 
 import { forwardRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { link as linkStyles } from "@heroui/theme";
-import { clsx } from "@heroui/shared-utils";
+import clsx from "clsx";
 
 type LinkUniversalProps = Omit<LinkProps, "as"> & {
   /**
-   * If true, renders as a native <a> tag with HeroUI Link styles applied.
-   * If false or undefined, renders as HeroUI <Link> component (supports react-router).
+   * If true, renders as a native <a> tag with standard styling.
+   * If false or undefined, renders as react-router <Link>.
    * @default false
    */
   isInternet?: boolean;
+  /**
+   * Marks the link as external and sets relay attributes.
+   */
+  isExternal?: boolean;
+  /**
+   * Show link icon (deprecated for v3, pass children Link.Icon instead)
+   */
+  showAnchorIcon?: boolean;
+  anchorIcon?: ReactNode;
+  title?: string;
   /**
    * Children content of the link
    */
@@ -60,11 +69,8 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
       children,
       className,
       href,
-      color,
-      size,
-      underline,
+      title,
       isDisabled,
-      disableAnimation,
       isExternal,
       showAnchorIcon,
       anchorIcon,
@@ -74,13 +80,8 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
   ) => {
     // decide whether to render an internal router link or external/internet link
     const styledClassName = clsx(
-      linkStyles({
-        color: color as any,
-        size: size as any,
-        underline: underline as any,
-        isDisabled: isDisabled as any,
-        disableAnimation: disableAnimation as any,
-      }),
+      "text-accent hover:text-accent-dark transition-colors",
+      isDisabled ? "opacity-50 pointer-events-none" : "",
       className,
     );
 
@@ -93,7 +94,8 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
           to={href || ""}
           className={styledClassName}
           aria-disabled={isDisabled}
-          {...props}
+          title={title}
+          {...(props as any)}
         >
           {children}
           {showAnchorIcon && anchorIcon}
@@ -108,9 +110,10 @@ export const LinkUniversal = forwardRef<HTMLAnchorElement, LinkUniversalProps>(
         aria-disabled={isDisabled}
         className={styledClassName}
         href={href}
-        rel={isExternal ? "noopener noreferrer" : undefined}
         target={isExternal ? "_blank" : undefined}
-        {...props}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        title={title}
+        {...(props as any)}
       >
         {children}
         {showAnchorIcon && anchorIcon}

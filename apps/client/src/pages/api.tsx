@@ -18,7 +18,6 @@
 
 import { Trans, useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { Snippet } from "@heroui/snippet";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -56,11 +55,11 @@ export default function ApiPage() {
             <Trans t={t}>api-answer</Trans>
           </h1>
         </div>
-        <Snippet className="max-w-11/12" symbol="" title="api-response">
-          <div className="max-w-2xs sm:max-w-sm md:max-w-md lg:max-w-5xl  whitespace-break-spaces  text-wrap break-words">
+        <div className="max-w-11/12 rounded-lg border border-default-200 bg-default-100 p-3">
+          <pre className="max-w-2xs sm:max-w-sm md:max-w-md lg:max-w-5xl whitespace-pre-wrap break-words text-sm">
             {JSON.stringify(apiResponse, null, 2)}
-          </div>
-        </Snippet>
+          </pre>
+        </div>
       </section>
     </DefaultLayout>
   );

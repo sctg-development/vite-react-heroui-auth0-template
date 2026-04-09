@@ -20,23 +20,23 @@ import type {
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@heroui/button";
-import { Checkbox } from "@heroui/checkbox";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@heroui/table";
-import { Chip } from "@heroui/chip";
-import { addToast } from "@heroui/toast";
+import { Button } from "@heroui/react";
+import { Chip } from "@heroui/react";
+import { toast } from "@heroui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import DefaultLayout from "@/layouts/default";
 import { useSecuredApi } from "@/authentication";
 const Permission = import.meta.env.PERMISSIONS as string[];
+
+function showToast(options: { title: string; description?: string; type?: "success" | "error"; [key: string]: any }) {
+  const message = options.description ? `${options.title}: ${options.description}` : options.title;
+  if (options.type === "success") {
+    toast.success(message);
+  } else {
+    toast.danger(message);
+  }
+}
 
 export default function UsersAndPermissionsPage() {
   const { user: currentUser } = useAuth0();
@@ -65,6 +65,7 @@ export default function UsersAndPermissionsPage() {
   >({});
   // userId of the user currently being edited in the modal
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const selectedId = selectedUserId ?? "";
   const [modalLoading, setModalLoading] = useState(false);
   const [savingUserId, setSavingUserId] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -117,14 +118,14 @@ export default function UsersAndPermissionsPage() {
             setUsers(u ?? []);
           } catch (err) {
             console.error("Error loading users:", err);
-            addToast({
+            showToast({
               title: t("error"),
               description: t("admin-users-toast-error-loading-users"),
               variant: "solid",
             });
           }
         } else {
-          addToast({
+          showToast({
             title: t("error"),
             description: t("admin-users-toast-no-management-token"),
             variant: "solid",
@@ -133,7 +134,7 @@ export default function UsersAndPermissionsPage() {
       })
       .catch((err) => {
         console.error("Management token error:", err);
-        addToast({
+        showToast({
           title: t("error"),
           description: t("admin-users-toast-no-management-token"),
           variant: "solid",
@@ -179,7 +180,7 @@ export default function UsersAndPermissionsPage() {
       setEditing((prev) => ({ ...prev, [userId]: permState }));
     } catch (err) {
       console.error("Error loading permissions from Auth0:", err);
-      addToast({
+      showToast({
         title: t("error"),
         description: t("admin-users-toast-error-loading-perms"),
         variant: "solid",
@@ -241,9 +242,10 @@ export default function UsersAndPermissionsPage() {
         }
       }
 
-      addToast({
+      showToast({
         title: t("success"),
         description: t("admin-users-toast-success-update"),
+        type: "success",
         variant: "solid",
         timeout: 4000,
       });
@@ -251,7 +253,7 @@ export default function UsersAndPermissionsPage() {
       setSelectedUserId(null);
     } catch (err) {
       console.error("Error saving permissions:", err);
-      addToast({
+      showToast({
         title: t("error"),
         description: t("error-updating-user"),
         variant: "solid",
@@ -265,7 +267,7 @@ export default function UsersAndPermissionsPage() {
   const deleteUser = async (userId: string) => {
     if (!mgmtToken) return;
     if (userId === currentUserId) {
-      addToast({
+      showToast({
         title: t("error"),
         description: t("admin-users-toast-cannot-delete-self"),
         variant: "solid",
@@ -280,14 +282,15 @@ export default function UsersAndPermissionsPage() {
       // Locally update the UI to remove the deleted user
       setUsers((prev) => prev.filter((u) => u.user_id !== userId));
       if (selectedUserId === userId) setSelectedUserId(null);
-      addToast({
+      showToast({
         title: t("success"),
         description: t("admin-users-toast-success-delete"),
+        type: "success",
         variant: "solid",
       });
     } catch (err) {
       console.error("Error deleting user:", err);
-      addToast({
+      showToast({
         title: t("error"),
         description: t("admin-users-toast-error-delete"),
         variant: "solid",
@@ -324,9 +327,10 @@ export default function UsersAndPermissionsPage() {
       );
 
       if (isUpToDate) {
-        addToast({
+        showToast({
           title: t("success"),
           description: t("admin-users-toast-sync-success"),
+          type: "success",
           variant: "solid",
           timeout: 5000,
         });
@@ -342,9 +346,10 @@ export default function UsersAndPermissionsPage() {
       );
       setIsUpToDate(true);
 
-      addToast({
+      showToast({
         title: t("success"),
         description: t("admin-users-toast-sync-success"),
+        type: "success",
         variant: "solid",
         timeout: 5000,
       });
@@ -352,7 +357,7 @@ export default function UsersAndPermissionsPage() {
       console.error("Error synchronizing Auth0 Resource Server:", err);
       const msg = (err as Error).message ?? "";
 
-      addToast({
+      showToast({
         title: t("error"),
         description: msg.includes("not found")
           ? t("admin-users-toast-no-resource-server")
@@ -386,18 +391,15 @@ export default function UsersAndPermissionsPage() {
             <Chip
               color="success"
               size="sm"
-              startContent={<span className="ml-1">✓</span>}
-              variant="flat"
             >
+              <span className="mr-1">✓</span>
               {t("admin-users-auth0-up-to-date")}
             </Chip>
           ) : (
             <Button
-              color="secondary"
+              variant="outline"
               isDisabled={!mgmtToken || isUpToDate === null}
-              isLoading={isSyncing}
-              size="sm"
-              variant="flat"
+              isPending={isSyncing}
               onPress={syncAuth0Permissions}
             >
               {t("admin-users-btn-sync-auth0")}
@@ -409,76 +411,83 @@ export default function UsersAndPermissionsPage() {
         {loadingUsers ? (
           <p className="text-default-500">{t("admin-users-loading-users")}</p>
         ) : (
-          <Table aria-label="Auth0 Users" selectionMode="none">
-            <TableHeader>
-              <TableColumn>{t("admin-users-col-user")}</TableColumn>
-              <TableColumn>{t("admin-users-col-email")}</TableColumn>
-              <TableColumn>{t("admin-users-col-logins")}</TableColumn>
-              <TableColumn>{t("admin-users-col-actions")}</TableColumn>
-            </TableHeader>
-            <TableBody emptyContent={t("admin-users-empty-users")}>
-              {users.map((u) => (
-                <TableRow key={u.user_id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {u.picture && (
-                        <img
-                          alt={u.name}
-                          className="w-8 h-8 rounded-full"
-                          src={u.picture}
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium text-sm">
-                          {u.name || u.nickname}
-                        </p>
-                        <p className="text-xs text-default-400">{u.user_id}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm">{u.email}</span>
-                      {u.email_verified && (
-                        <span className="text-success-500 text-xs">✓</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{u.logins_count ?? 0}</span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        color="primary"
-                        isDisabled={!mgmtToken}
-                        size="sm"
-                        variant="flat"
-                        onPress={() => openUserEditing(u.user_id)}
-                      >
-                        {t("admin-users-btn-permissions")}
-                      </Button>
-                      {u.user_id !== currentUserId && (
-                        <Button
-                          color="danger"
-                          isDisabled={!mgmtToken}
-                          size="sm"
-                          variant="flat"
-                          onPress={() => deleteUser(u.user_id)}
-                        >
-                          {t("admin-users-btn-delete")}
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-
-        {/* Permissions Edition Panel (Inline Modal) */}
-        {selectedUserId && (
+          <>
+            <div className="overflow-auto rounded-lg border border-default-200">
+            <table className="min-w-full divide-y divide-default-200">
+              <thead className="bg-default-100">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-bold uppercase">
+                    {t("admin-users-col-user")}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-bold uppercase">
+                    {t("admin-users-col-email")}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-bold uppercase">
+                    {t("admin-users-col-logins")}
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-bold uppercase">
+                    {t("admin-users-col-actions")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-4 text-center text-sm text-default-500">
+                      {t("admin-users-empty-users")}
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.user_id} className="hover:bg-default-50">
+                      <td className="px-3 py-2 align-top">
+                        <div className="flex items-center gap-2">
+                          {u.picture && (
+                            <img alt={u.name} className="w-8 h-8 rounded-full" src={u.picture} />
+                          )}
+                          <div>
+                            <p className="font-medium text-sm">{u.name || u.nickname}</p>
+                            <p className="text-xs text-default-400">{u.user_id}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 align-top">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm">{u.email}</span>
+                          {u.email_verified && (
+                            <span className="text-success-500 text-xs">✓</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 align-top">
+                        <span className="text-sm">{u.logins_count ?? 0}</span>
+                      </td>
+                      <td className="px-3 py-2 align-top">
+                        <div className="flex gap-2">
+                          <Button
+                            variant="primary"
+                            isDisabled={!mgmtToken}
+                            onPress={() => openUserEditing(u.user_id)}
+                          >
+                            {t("admin-users-btn-permissions")}
+                          </Button>
+                          {u.user_id !== currentUserId && (
+                            <Button
+                              variant="danger"
+                              isDisabled={!mgmtToken}
+                              onPress={() => deleteUser(u.user_id)}
+                            >
+                              {t("admin-users-btn-delete")}
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
           <div className="mt-6 p-6 border border-default-200 rounded-xl bg-default-50">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">
@@ -490,10 +499,10 @@ export default function UsersAndPermissionsPage() {
               </h2>
               <Button
                 size="sm"
-                variant="light"
+                variant="tertiary"
                 onPress={() => {
                   setSelectedUserId(null);
-                  setEditing((prev) => ({ ...prev, [selectedUserId]: {} }));
+                  setEditing((prev) => ({ ...prev, [selectedId]: {} }));
                 }}
               >
                 {t("admin-users-modal-btn-close")}
@@ -508,46 +517,35 @@ export default function UsersAndPermissionsPage() {
               <>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
                   {Permission.map((permValue) => (
-                    <Checkbox
-                      key={permValue}
-                      isDisabled={
-                        // Prevent removing one's own auth0:admin:api permission
-                        // to avoid getting locked out of this page
-                        selectedUserId === currentUserId &&
-                        permValue === "auth0:admin:api"
-                      }
-                      isSelected={editing[selectedUserId]?.[permValue] ?? false}
-                      size="sm"
-                      onValueChange={() =>
-                        togglePermission(selectedUserId, permValue)
-                      }
-                    >
-                      <span className="text-xs">
-                        {t(
-                          `permission-${permValue.replace(/:/g, "-")}`,
-                          permValue,
-                        )}
-                      </span>
-                    </Checkbox>
+                    <label key={permValue} className="flex items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        disabled={
+                          selectedUserId === currentUserId &&
+                          permValue === "auth0:admin:api"
+                        }
+                        checked={editing[selectedId]?.[permValue] ?? false}
+                        onChange={() => selectedId && togglePermission(selectedId, permValue)}
+                      />
+                      {t(`permission-${permValue.replace(/:/g, "-")}`, permValue)}
+                    </label>
                   ))}
                 </div>
 
                 <div className="flex gap-3">
                   <Button
-                    color="primary"
-                    isDisabled={
-                      Object.keys(editing[selectedUserId] ?? {}).length === 0
-                    }
-                    isLoading={savingUserId === selectedUserId}
-                    onPress={() => savePermissions(selectedUserId)}
+                    variant="primary"
+                    isDisabled={!selectedId || Object.keys(editing[selectedId] ?? {}).length === 0}
+                    isPending={savingUserId === selectedUserId}
+                    onPress={() => selectedUserId && savePermissions(selectedUserId)}
                   >
                     {t("admin-users-modal-btn-save")}
                   </Button>
                   <Button
-                    variant="flat"
+                    variant="tertiary"
                     onPress={() => {
+                      setEditing((prev) => ({ ...prev, [selectedId]: {} }));
                       setSelectedUserId(null);
-                      setEditing((prev) => ({ ...prev, [selectedUserId]: {} }));
                     }}
                   >
                     {t("admin-users-modal-btn-cancel")}
@@ -556,6 +554,7 @@ export default function UsersAndPermissionsPage() {
               </>
             )}
           </div>
+        </>
         )}
       </section>
     </DefaultLayout>

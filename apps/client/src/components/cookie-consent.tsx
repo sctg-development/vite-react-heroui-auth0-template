@@ -16,17 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import React from "react";
-import { Link } from "@heroui/link";
+import { Link } from "@heroui/react";
 import { Trans, useTranslation } from "react-i18next";
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/modal";
 
 import { useCookieConsent } from "../contexts/cookie-consent-context";
 
@@ -41,46 +34,24 @@ export const CookieConsent: React.FC = () => {
   // État pour contrôler la visibilité du modal
   const isOpen = cookieConsent === "pending" && siteConfig().needCookieConsent;
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <Modal
-      backdrop="blur"
-      isDismissable={false}
-      isKeyboardDismissDisabled={true}
-      isOpen={isOpen}
-      motionProps={{
-        variants: {
-          enter: {
-            y: 0,
-            opacity: 1,
-            transition: {
-              duration: 0.3,
-              ease: "easeOut",
-            },
-          },
-          exit: {
-            y: 20,
-            opacity: 0,
-            transition: {
-              duration: 0.2,
-              ease: "easeIn",
-            },
-          },
-        },
-      }}
-      placement="bottom"
-    >
-      <ModalContent>
-        <ModalHeader className="text-lg font-semibold text-default-900">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4">
+      <div className="w-full max-w-lg rounded-xl bg-white p-4 shadow-2xl">
+        <div className="text-lg font-semibold text-default-900">
           {t("cookie-consent-title")}
-        </ModalHeader>
-        <ModalBody className="text-small font-normal text-default-700">
+        </div>
+        <div className="mt-2 text-sm font-normal text-default-700">
           <Trans i18nKey="cookie-consent" t={t} />
           &nbsp;
-          <Link className="text-small" href="#">
+          <Link className="text-sm" href="#">
             {t("cookie-policy")}
           </Link>
-        </ModalBody>
-        <ModalFooter className="flex justify-end gap-2">
+        </div>
+        <div className="mt-4 flex justify-end gap-2">
           <div className="mt-4 flex items-center gap-x-1">
             <Button
               className={buttonGradient({ bordered: "violet" })}
@@ -89,15 +60,15 @@ export const CookieConsent: React.FC = () => {
               {t("accept-all")}
             </Button>
             <Button
-              className="rounded-large"
-              variant="bordered"
+              className="rounded-lg border border-accent"
+              variant="secondary"
               onPress={rejectCookies}
             >
               {t("reject")}
             </Button>
           </div>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </div>
+    </div>
   );
 };
