@@ -4,7 +4,7 @@
 
 Welcome to a fully‑functional starter you can fork and deploy in minutes 🔥
 
-This monorepo template combines **Vite 7**, **HeroUI v2**, and a powerful
+This monorepo template combines **Vite 8**, **HeroUI v3**, and a powerful
 authentication abstraction supporting multiple OAuth providers (Auth0, Dex,
 and others). The repo includes a backend Cloudflare Worker demo with
 built‑in automatic permission provisioning and OpenAPI documentation, a
@@ -52,7 +52,7 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 
 ## Technologies Used
 
-- [Vite 7](https://vitejs.dev/guide/)
+- [Vite 8](https://vitejs.dev/guide/)
 - [HeroUI](https://heroui.com)
 - [Tailwind CSS 4](https://tailwindcss.com)
 - [Tailwind Variants](https://tailwind-variants.org)
@@ -64,7 +64,6 @@ Ths plugin uses our [@sctg/vite-plugin-github-pages-spa](https://github.com/sctg
 - [TypeScript](https://www.typescriptlang.org)
 - [Framer Motion](https://www.framer.com/motion)
 - [Turborepo](https://turbo.build/) (Monorepo build system)
-- [Yarn 4](https://yarnpkg.com/) (Package manager with workspaces)
 
 ## Quick Start
 
@@ -75,12 +74,9 @@ git clone https://github.com/sctg-development/vite-react-heroui-auth0-template.g
 # Change to project directory
 cd vite-react-heroui-auth0-template
 
-# Ensure Yarn 4 is active (corepack included in modern Node)
-corepack enable
-yarn set version 4.2.2
 
 # Install dependencies (monorepo workspaces)
-yarn install
+npm install
 
 # Create a `.env` with your Auth0 credentials
 cat <<EOF > .env
@@ -100,7 +96,7 @@ AUTHENTICATION_PROVIDER_TYPE=auth0
 EOF
 
 # Spin up frontend + worker with environment vars
-yarn dev:env
+npm run dev:env
 
 # Open your browser at http://localhost:5173/
 # You'll land on a friendly home page with a login CTA and links to
