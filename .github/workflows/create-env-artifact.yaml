@@ -1,0 +1,71 @@
+# Copyright (c) 2024-2026 Ronan LE MEILLAT
+# License: AGPL-3.0-or-later
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+name: Create shared encrypted .env artifact
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  create-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+          fetch-depth: 1
+
+      - name: Create .env file
+        run: |
+          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > .env
+          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> .env
+          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
+          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
+          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
+          echo "AUTH0_MANAGEMENT_API_CLIENT_ID=${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_ID }}" >> .env
+          echo "AUTH0_MANAGEMENT_API_CLIENT_SECRET=${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_SECRET }}" >> .env
+          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> .env
+          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
+          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> .env
+          echo "WRITE_PERMISSION=${{ secrets.WRITE_PERMISSION }}" >> .env
+          echo "ADMIN_PERMISSION=${{ secrets.ADMIN_PERMISSION }}" >> .env
+          echo "ADMIN_AUTH0_PERMISSION=${{ secrets.ADMIN_AUTH0_PERMISSION }}" >> .env
+          echo "AUTH0_AUTOMATIC_PERMISSIONS=${{ secrets.AUTH0_AUTOMATIC_PERMISSIONS }}" >> .env
+
+      - name: Generate wrangler.jsonc from .env
+        run: |
+          python3 scripts/generate-wrangler-jsonc.py .env apps/cloudflare-worker/wrangler.jsonc apps/cloudflare-worker/wrangler.jsonc
+
+      - name: Create encrypted artifact with .env, wrangler.jsonc and secrets.json
+        run: |
+          tar -czf env_and_wrangler.tar.gz \
+            .env \
+            apps/cloudflare-worker/wrangler.jsonc apps/cloudflare-worker/secrets.json
+          openssl enc -aes-256-cbc -salt -in env_and_wrangler.tar.gz -out .env.enc -iter 10000 -pass pass:"${{ secrets.CRYPTOKEN }}"
+          rm .env env_and_wrangler.tar.gz
+
+      - name: Upload shared encrypted artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: shared-env
+          include-hidden-files: true
+          path: .env.enc

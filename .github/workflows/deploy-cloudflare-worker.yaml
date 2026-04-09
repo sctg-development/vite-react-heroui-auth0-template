@@ -24,6 +24,8 @@ on:
       - apps/cloudflare-worker/**
       - yarn.lock
       - .github/workflows/deploy-cloudflare-worker.yaml
+      - .github/workflows/create-env-artifact.yaml
+      - scripts/generate-wrangler-jsonc.py
 
   workflow_dispatch:
 
@@ -35,12 +37,20 @@ permissions:
   attestations: write
 
 jobs:
+  create-env:
+    uses: ./.github/workflows/create-env-artifact.yaml
+    secrets: inherit
+
   build:
+    needs: create-env
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+          fetch-depth: 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -59,72 +69,47 @@ jobs:
         run: |
           npm i
 
-      - name: Create .env file
-        run: |
-          echo -n ${{ secrets.AUTH0_AUDIENCE }} | sed -n 's/http.:\/\/\(.*\)/DOMAIN_NAME=\1\n/p' > .env
-          echo "AUTHENTICATION_PROVIDER_TYPE=${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}" >> .env
-          echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
-          echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
-          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
-          echo "AUTH0_MANAGEMENT_API_CLIENT_ID=${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_ID }}" >> .env
-          echo "AUTH0_MANAGEMENT_API_CLIENT_SECRET=${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_SECRET }}" >> .env
-          echo "AUTH0_SCOPE=\"${{ secrets.AUTH0_SCOPE }}\"" >> .env
-          echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
-          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
-          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
-          echo "READ_PERMISSION=${{ secrets.READ_PERMISSION }}" >> .env
-          echo "WRITE_PERMISSION=${{ secrets.WRITE_PERMISSION }}" >> .env
-          echo "ADMIN_PERMISSION=${{ secrets.ADMIN_PERMISSION }}" >> .env
-          echo "ADMIN_AUTH0_PERMISSION=${{ secrets.ADMIN_AUTH0_PERMISSION }}" >> .env
-          echo "AUTH0_AUTOMATIC_PERMISSIONS=${{ secrets.AUTH0_AUTOMATIC_PERMISSIONS }}" >> .env
+      - name: Download shared .env artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: shared-env
+          path: .
 
-      - name: Replace "// vars.*" in wrangler.jsonc with a json string
+      # .env.enc was encrypted with openssl enc -aes-256-cbc -salt -in env_and_wrangler.tar.gz -out .env.enc -iter 10000 -pass pass:"${{ secrets.CRYPTOKEN }}"
+      # Decrypt it using the same key and parameters
+      - name: Decrypt .env + wrangler.jsonc artifact
         run: |
-          cp .env apps/cloudflare-worker/.env
+          openssl enc -aes-256-cbc -d -salt -in .env.enc -out env_and_wrangler.tar.gz -iter 10000 -pass pass:"${{ secrets.CRYPTOKEN }}"
+          tar -xzvf env_and_wrangler.tar.gz
+          rm env_and_wrangler.tar.gz .env.enc
+          if [ ! -f .env ]; then
+            echo "Decrypted artifact does not contain .env"
+            exit 1
+          fi
+          if [ ! -f apps/cloudflare-worker/wrangler.jsonc ]; then
+            echo "Decrypted artifact does not contain apps/cloudflare-worker/wrangler.jsonc"
+            exit 1
+          fi
+          if ! grep -q "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" .env; then
+            echo "Decrypted .env file does not contain expected AUTH0_DOMAIN value"
+            exit 1
+          fi
+
+      - name: Set Wrangler secrets in bulk from secrets.json
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ ! -f apps/cloudflare-worker/secrets.json ]; then
+            echo "secrets.json file not found in decrypted artifact"
+            exit 1
+          fi
           cd apps/cloudflare-worker
-          cp wrangler.jsonc wrangler.jsonc.bak
-          set -a && source .env && set +a 
-          cat .env
-          cat wrangler.jsonc.bak | sed 's|// "vars".*.|,"vars": { "AUTHENTICATION_PROVIDER_TYPE": "'"${AUTHENTICATION_PROVIDER_TYPE}"'", "AUTH0_DOMAIN": "'"${AUTH0_DOMAIN}"'", "AUTH0_CLIENT_ID": "'"${AUTH0_CLIENT_ID}"'","AUTH0_CLIENT_SECRET": "'"${AUTH0_CLIENT_SECRET}"'", "AUTH0_SCOPE": "'"${AUTH0_SCOPE}"'", "AUTH0_AUDIENCE": "'"${AUTH0_AUDIENCE}"'", "API_BASE_URL": "'"${API_BASE_URL}"'", "CORS_ORIGIN": "'"${CORS_ORIGIN}"'", "READ_PERMISSION": "'"${READ_PERMISSION}"'", "ADMIN_AUTH0_PERMISSION": "'"${ADMIN_AUTH0_PERMISSION}"'","AUTH0_MANAGEMENT_API_CLIENT_ID": "'"${AUTH0_MANAGEMENT_API_CLIENT_ID}"'", "AUTH0_MANAGEMENT_API_CLIENT_SECRET": "'"${AUTH0_MANAGEMENT_API_CLIENT_SECRET}"'", "AUTH0_AUTOMATIC_PERMISSIONS": "'"${AUTH0_AUTOMATIC_PERMISSIONS}"'" }|' > wrangler.jsonc.2
-          cat wrangler.jsonc.2 | sed 's|// "routes".*.|,"routes": [{ "pattern": "'"${DOMAIN_NAME}"'", "custom_domain": true }]|'  > wrangler.jsonc
-          cat wrangler.jsonc
+          npx wrangler secret bulk < secrets.json
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/cloudflare-worker
-          vars: |
-            AUTHENTICATION_PROVIDER_TYPE
-            AUTH0_DOMAIN
-            AUTH0_CLIENT_ID
-            AUTH0_CLIENT_SECRET
-            AUTH0_MANAGEMENT_API_CLIENT_ID
-            AUTH0_MANAGEMENT_API_CLIENT_SECRET
-            AUTH0_AUTOMATIC_PERMISSIONS
-            AUTH0_SCOPE
-            AUTH0_AUDIENCE
-            API_BASE_URL
-            CORS_ORIGIN
-            READ_PERMISSION
-            WRITE_PERMISSION
-            ADMIN_PERMISSION
-            ADMIN_AUTH0_PERMISSION
-        env:
-          AUTHENTICATION_PROVIDER_TYPE: ${{ secrets.AUTHENTICATION_PROVIDER_TYPE }}
-          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-          AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-          AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-          AUTH0_MANAGEMENT_API_CLIENT_ID: ${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_ID }}
-          AUTH0_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.AUTH0_MANAGEMENT_API_CLIENT_SECRET }}
-          AUTH0_AUTOMATIC_PERMISSIONS: ${{ secrets.AUTH0_AUTOMATIC_PERMISSIONS }}
-          AUTH0_SCOPE: ${{ secrets.AUTH0_SCOPE }}
-          AUTH0_AUDIENCE: ${{ secrets.AUTH0_AUDIENCE }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-          READ_PERMISSION: ${{ secrets.READ_PERMISSION }}
-          WRITE_PERMISSION: ${{ secrets.WRITE_PERMISSION }}
-          ADMIN_PERMISSION: ${{ secrets.ADMIN_PERMISSION }}
-          ADMIN_AUTH0_PERMISSION: ${{ secrets.ADMIN_AUTH0_PERMISSION }}
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
