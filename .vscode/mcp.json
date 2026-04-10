@@ -1,9 +1,5 @@
 {
   "servers": {
-    "heroui-migration": {
-      "type": "http",
-      "url": "https://migration-mcp.heroui.com"
-    },
     "heroui-react": {
       "command": "npx",
       "args": ["-y", "@heroui/react-mcp@latest"]
